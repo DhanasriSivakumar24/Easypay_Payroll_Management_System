@@ -1,4 +1,7 @@
 
+using Easypay_App.Context;
+using Microsoft.EntityFrameworkCore;
+
 namespace Easypay_App
 {
     public class Program
@@ -13,6 +16,11 @@ namespace Easypay_App
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddDbContext<PayrollContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
 
             var app = builder.Build();
 

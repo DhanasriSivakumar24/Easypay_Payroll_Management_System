@@ -9,11 +9,11 @@
         public string Gender { get; set; } = string.Empty;
         public DateTime JoinDate { get; set; }
         public int StatusId { get; set; }
-        public EmployeeStatusMaster? Status { get; set; }
+        public EmployeeStatusMaster Status { get; set; }
         public int DepartmentId { get; set; }
-        public DepartmentMaster? Department { get; set; }
+        public DepartmentMaster Department { get; set; }
         public int RoleId { get; set; }
-        public RoleMaster? Role { get; set; }
+        public RoleMaster Role { get; set; }
         public int? ReportingManagerId { get; set; }
         public Employee? ReportingManager { get; set; }
         public string Email { get; set; } = string.Empty;
@@ -32,7 +32,7 @@
             
         }
 
-        public Employee(int id, string firstName, string lastName, DateTime dateOfBirth, string gender, DateTime joinDate, int statusId, EmployeeStatusMaster? status, int departmentId, DepartmentMaster? department, int roleId, RoleMaster? role, int reportingManagerId, Employee? reportingManager, string email, string phoneNumber, string address, string panNumber, DateTime createdAt, DateTime updatedAt)
+        public Employee(int id, string firstName, string lastName, DateTime dateOfBirth, string gender, DateTime joinDate, int statusId, EmployeeStatusMaster status, int departmentId, DepartmentMaster department, int roleId, RoleMaster role, int? reportingManagerId, Employee? reportingManager, string email, string phoneNumber, string address, string panNumber, DateTime createdAt, DateTime updatedAt, ICollection<Attendance>? attendances, ICollection<BenefitEnrollment>? benefitEnrollments, ICollection<Payroll>? payrolls, UserAccount? userAccount)
         {
             Id = id;
             FirstName = firstName;
@@ -54,6 +54,10 @@
             PanNumber = panNumber;
             CreatedAt = createdAt;
             UpdatedAt = updatedAt;
+            Attendances = attendances;
+            BenefitEnrollments = benefitEnrollments;
+            Payrolls = payrolls;
+            UserAccount = userAccount;
         }
     }
 }
