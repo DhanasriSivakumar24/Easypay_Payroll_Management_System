@@ -1,4 +1,4 @@
-﻿using Easypay_App.Interfaces;
+﻿using Easypay_App.Interface;
 using Easypay_App.Models.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

@@ -1,6 +1,6 @@
 ﻿using Easypay_App.Models.DTO;
 
-namespace Easypay_App.Interfaces
+namespace Easypay_App.Interface
 {
     public interface IEmployeeService
     {

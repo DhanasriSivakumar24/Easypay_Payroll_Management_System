@@ -37,6 +37,15 @@ namespace Easypay_App.Mapper
 
             #endregion
 
+            #region Leave Request
+            CreateMap<LeaveRequestDTO, LeaveRequest>();
+            CreateMap<LeaveRequest, LeaveRequestResponseDTO>()
+                .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => src.Employee.FirstName + " " + src.Employee.LastName))
+                .ForMember(dest => dest.LeaveTypeName, opt => opt.MapFrom(src => src.LeaveType.LeaveTypeName))
+                .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.Status.StatusName))
+                .ForMember(dest => dest.ApprovedManagerName, opt => opt.MapFrom(src => src.ApprovedManager != null ? src.ApprovedManager.FirstName + " " + src.ApprovedManager.LastName : ""))
+                .ForMember(dest => dest.Reason, opt => opt.MapFrom(src => src.Reason));
+            #endregion
         }
 
     }

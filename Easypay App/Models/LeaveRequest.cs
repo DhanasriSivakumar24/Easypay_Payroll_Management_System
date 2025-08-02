@@ -9,9 +9,10 @@
         public LeaveTypeMaster? LeaveType { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+        public string Reason { get; set; } = string.Empty;
         public int StatusId { get; set; }
         public LeaveStatusMaster? Status { get; set; }
-        public int ApprovedBy { get; set; }
+        public int? ApprovedBy { get; set; }
         public Employee? ApprovedManager { get; set; }
         public DateTime RequestedAt { get; set; }
         public DateTime? ActionedAt { get; set; }

@@ -1,11 +1,8 @@
 ﻿using AutoMapper;
-using Easypay_App.Context;
 using Easypay_App.Exceptions;
 using Easypay_App.Interface;
-using Easypay_App.Interfaces;
 using Easypay_App.Models;
 using Easypay_App.Models.DTO;
-using EasyPay_App.Repositories;
 
 namespace Easypay_App.Services
 {

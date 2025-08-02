@@ -4,6 +4,7 @@ using Easypay_App.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Easypay_App.Migrations
 {
     [DbContext(typeof(PayrollContext))]
-    partial class PayrollContextModelSnapshot : ModelSnapshot
+    [Migration("20250802160844_MakeApprovedByNullable")]
+    partial class MakeApprovedByNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -605,10 +608,6 @@ namespace Easypay_App.Migrations
 
                     b.Property<int>("LeaveTypeId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Reason")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("RequestedAt")
                         .HasColumnType("datetime2");

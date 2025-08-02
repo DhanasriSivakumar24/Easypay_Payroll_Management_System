@@ -1,6 +1,5 @@
-﻿
-using Easypay_App.Context;
-using Easypay_App.Interfaces;
+﻿using Easypay_App.Context;
+using Easypay_App.Interface;
 using Easypay_App.Models;
 
 namespace Easypay_App.Repositories

@@ -1,5 +1,5 @@
 ﻿using Easypay_App.Exceptions;
-using Easypay_App.Interfaces;
+using Easypay_App.Interface;
 
 namespace Easypay_App.Repositories
 {

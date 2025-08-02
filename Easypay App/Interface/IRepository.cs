@@ -1,4 +1,4 @@
-﻿namespace Easypay_App.Interfaces
+﻿namespace Easypay_App.Interface
 {
     public interface IRepository<K,T> where T : class
     {
