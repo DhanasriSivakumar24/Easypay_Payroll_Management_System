@@ -17,35 +17,35 @@ namespace Easypay_App.Controllers
         }
 
         [HttpPost("add")]
-        public IActionResult AddEmployee([FromBody] EmployeeAddRequestDTO employeeDto)
+        public ActionResult AddEmployee( EmployeeAddRequestDTO employeeDto)
         {
             var result = _employeeService.AddEmployee(employeeDto);
             return Ok(result);
         }
 
         [HttpPut("update/{id}")]
-        public IActionResult UpdateEmployee(int id, [FromBody] EmployeeAddRequestDTO employeeDto)
+        public ActionResult UpdateEmployee(int id, EmployeeAddRequestDTO employeeDto)
         {
             var result = _employeeService.UpdateEmployee(id, employeeDto);
             return Ok(result);
         }
 
         [HttpDelete("delete/{id}")]
-        public IActionResult DeleteEmployee(int id)
+        public ActionResult DeleteEmployee(int id)
         {
             var result = _employeeService.DeleteEmployee(id);
             return Ok(result);
         }
 
         [HttpGet("all")]
-        public IActionResult GetAllEmployees()
+        public ActionResult GetAllEmployees()
         {
             var employees = _employeeService.GetAllEmployees();
             return Ok(employees);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetEmployeeById(int id)
+        public ActionResult GetEmployeeById(int id)
         {
             var employee = _employeeService.GetEmployeeById(id);
             return Ok(employee);

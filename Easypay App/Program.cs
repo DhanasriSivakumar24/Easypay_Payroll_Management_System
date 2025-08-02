@@ -1,5 +1,6 @@
 using AutoMapper;
 using Easypay_App.Context;
+using Easypay_App.Interface;
 using Easypay_App.Interfaces;
 using Easypay_App.Mapper;
 using Easypay_App.Models;
@@ -24,15 +25,17 @@ namespace Easypay_App
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddDbContext<PayrollContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+            builder.Services.AddScoped<IPayrollPolicyService,PayrollPolicyService>();
 
             builder.Services.AddScoped<IRepository<int, Employee>, EmployeeRepositoryDb>();
             builder.Services.AddScoped<IRepository<int, DepartmentMaster>, DepartmentRepository>();
             builder.Services.AddScoped<IRepository<int, RoleMaster>, RoleRepository>();
             builder.Services.AddScoped<IRepository<int, EmployeeStatusMaster>, EmployeeStatusRepository>();
             builder.Services.AddScoped<IRepository<int, UserRoleMaster>, UserRoleRepository>();
+            builder.Services.AddScoped<IRepository<int,PayrollPolicyMaster>,PayrollPolicyRepository>();
 
             builder.Services.AddAutoMapper(typeof(EmployeeMapper));
 

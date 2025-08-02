@@ -8,6 +8,7 @@ namespace Easypay_App.Mapper
     {
         public EmployeeMapper()
         {
+            #region Employee Add Mapper
             // Mapping from AddRequestDTO → Entity
             CreateMap<EmployeeAddRequestDTO, Employee>();
 
@@ -17,6 +18,13 @@ namespace Easypay_App.Mapper
                 .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.Role != null ? src.Role.RoleName : string.Empty))
                 .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.Status != null ? src.Status.StatusName : string.Empty))
                 .ForMember(dest => dest.ReportingManager, opt => opt.MapFrom(src => src.ReportingManagerId));
+            #endregion
+
+            #region Payroll Policy
+            CreateMap<PayrollPolicyMaster, PayrollPolicyRequestDTO>().ReverseMap();
+            CreateMap<PayrollPolicyMaster, PayrollPolicyResponseDTO>().ReverseMap();
+            #endregion
+
         }
 
     }
