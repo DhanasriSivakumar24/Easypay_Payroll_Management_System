@@ -1,6 +1,6 @@
 ﻿namespace Easypay_App.Models.DTO
 {
-    public class PayrollPolicyResponseDTO:PayrollPolicyRequestDTO
+    public class PayrollPolicyAddResponseDTO:PayrollPolicyAddRequestDTO
     {
         public int Id { get; set; }
     }

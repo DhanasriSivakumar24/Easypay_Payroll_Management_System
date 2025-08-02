@@ -1,6 +1,6 @@
 ﻿namespace Easypay_App.Models.DTO
 {
-    public class PayrollPolicyRequestDTO
+    public class PayrollPolicyAddRequestDTO
     {
         public string PolicyName { get; set; }
         public decimal BasicPercent { get; set; }

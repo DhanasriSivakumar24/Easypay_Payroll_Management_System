@@ -29,6 +29,7 @@ namespace Easypay_App
 
             builder.Services.AddScoped<IEmployeeService, EmployeeService>();
             builder.Services.AddScoped<IPayrollPolicyService,PayrollPolicyService>();
+            builder.Services.AddScoped<IBenefitEnrollmentService, BenefitEnrollmentService>();
 
             builder.Services.AddScoped<IRepository<int, Employee>, EmployeeRepositoryDb>();
             builder.Services.AddScoped<IRepository<int, DepartmentMaster>, DepartmentRepository>();
@@ -36,6 +37,9 @@ namespace Easypay_App
             builder.Services.AddScoped<IRepository<int, EmployeeStatusMaster>, EmployeeStatusRepository>();
             builder.Services.AddScoped<IRepository<int, UserRoleMaster>, UserRoleRepository>();
             builder.Services.AddScoped<IRepository<int,PayrollPolicyMaster>,PayrollPolicyRepository>();
+            builder.Services.AddScoped<IRepository<int,BenefitEnrollment>, BenefitEnrollmentRepository>();
+            builder.Services.AddScoped<IRepository<int, BenefitStatusMaster>, BenefitsStatusRepository>();
+            builder.Services.AddScoped<IRepository<int, BenefitMaster>, BenefitsRepository>();
 
             builder.Services.AddAutoMapper(typeof(EmployeeMapper));
 

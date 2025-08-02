@@ -21,8 +21,20 @@ namespace Easypay_App.Mapper
             #endregion
 
             #region Payroll Policy
-            CreateMap<PayrollPolicyMaster, PayrollPolicyRequestDTO>().ReverseMap();
-            CreateMap<PayrollPolicyMaster, PayrollPolicyResponseDTO>().ReverseMap();
+            CreateMap<PayrollPolicyMaster, PayrollPolicyAddRequestDTO>().ReverseMap();
+            CreateMap<PayrollPolicyMaster, PayrollPolicyAddResponseDTO>().ReverseMap();
+            #endregion
+
+            #region Benefit Enrollment
+            CreateMap<BenefitEnrollmentAddRequestDTO, BenefitEnrollment>();
+            CreateMap<BenefitEnrollment, BenefitEnrollmentAddResponseDTO>()
+                .ForMember(dest => dest.EmployeeName,
+                        opt => opt.MapFrom(src =>
+                            src.Employee != null ? src.Employee.FirstName + " " + src.Employee.LastName : string.Empty))
+                .ForMember(dest => dest.BenefitName, opt => opt.MapFrom(src => src.Benefit != null ? src.Benefit.BenefitName : string.Empty))
+                .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.Status.StatusName));
+            CreateMap<BenefitEnrollmentAddResponseDTO, BenefitEnrollment>();
+
             #endregion
 
         }

@@ -21,44 +21,44 @@ namespace Easypay_App.Services
             _payrollPolicyRepository=payrollPolicyRepository;
             _mapper=mapper;
         }
-        public PayrollPolicyResponseDTO AddPolicy(PayrollPolicyRequestDTO dto)
+        public PayrollPolicyAddResponseDTO AddPolicy(PayrollPolicyAddRequestDTO dto)
         {
             var policy = _mapper.Map<PayrollPolicyMaster>(dto);
             _payrollPolicyRepository.AddValue(policy);
-            var response = _mapper.Map<PayrollPolicyResponseDTO>(policy);
+            var response = _mapper.Map<PayrollPolicyAddResponseDTO>(policy);
             return response;
         }
 
-        public PayrollPolicyResponseDTO DeletePolicy(int id)
+        public PayrollPolicyAddResponseDTO DeletePolicy(int id)
         {
             var policy = _payrollPolicyRepository.GetValueById(id);
             if (policy == null)
                 throw new NoItemFoundException();
             _payrollPolicyRepository.DeleteValue(id);
 
-            var response = _mapper.Map<PayrollPolicyResponseDTO>(policy);
+            var response = _mapper.Map<PayrollPolicyAddResponseDTO>(policy);
             return response;
         }
 
-        public IEnumerable<PayrollPolicyResponseDTO> GetAll()
+        public IEnumerable<PayrollPolicyAddResponseDTO> GetAll()
         {
             var policy = _payrollPolicyRepository.GetAllValue();
             if (policy == null)
                 throw new NoItemFoundException();
-            var response = policy.Select(_mapper.Map<PayrollPolicyResponseDTO>).ToList();
+            var response = policy.Select(_mapper.Map<PayrollPolicyAddResponseDTO>).ToList();
             return response;
         }
 
-        public PayrollPolicyResponseDTO GetById(int id)
+        public PayrollPolicyAddResponseDTO GetById(int id)
         {
             var policy = _payrollPolicyRepository.GetValueById(id);
             if (policy == null)
                 throw new NoItemFoundException();
-            var response =_mapper.Map<PayrollPolicyResponseDTO>(policy);
+            var response =_mapper.Map<PayrollPolicyAddResponseDTO>(policy);
             return response;
         }
 
-        public PayrollPolicyResponseDTO UpdatePolicy(int id, PayrollPolicyRequestDTO dto)
+        public PayrollPolicyAddResponseDTO UpdatePolicy(int id, PayrollPolicyAddRequestDTO dto)
         {
             var exsistingPolicy = _payrollPolicyRepository.GetValueById(id);
             if (exsistingPolicy == null)
@@ -78,7 +78,7 @@ namespace Easypay_App.Services
             exsistingPolicy.IsActive = dto.IsActive;
 
             _payrollPolicyRepository.UpdateValue(id, exsistingPolicy);
-            var response = _mapper.Map<PayrollPolicyResponseDTO>(exsistingPolicy);
+            var response = _mapper.Map<PayrollPolicyAddResponseDTO>(exsistingPolicy);
             return response;
         }
     }

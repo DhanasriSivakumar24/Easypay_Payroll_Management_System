@@ -17,13 +17,13 @@ namespace Easypay_App.Controllers
             _payrollPolicyService= payrollPolicyService;
         }
         [HttpPost("add")]
-        public ActionResult AddPolicy(PayrollPolicyRequestDTO dto)
+        public ActionResult AddPolicy(PayrollPolicyAddRequestDTO dto)
         {
             var result = _payrollPolicyService.AddPolicy(dto);
             return Ok(result);
         }
         [HttpPut("update/{id}")]
-        public ActionResult UpdatePolicy(int id, PayrollPolicyRequestDTO dto)
+        public ActionResult UpdatePolicy(int id, PayrollPolicyAddRequestDTO dto)
         {
             var result = _payrollPolicyService.UpdatePolicy(id,dto);
             return Ok(result);
