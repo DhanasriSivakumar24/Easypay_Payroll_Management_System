@@ -1,6 +1,7 @@
 ﻿using Easypay_App.Interface;
 using Easypay_App.Models.DTO;
 using Easypay_App.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,6 +19,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpGet("all")]
+        [Authorize(Roles ="Admin")]
         public ActionResult GetAllRequest()
         {
             var result = _leaveRequestService.GetAllLeaveRequests();

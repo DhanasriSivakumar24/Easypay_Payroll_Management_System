@@ -13,19 +13,22 @@ namespace Easypay_App.Services
 
         public TokenService(IConfiguration configuration) 
         { 
-            string secret = configuration["Tokens:JWT"]??"".ToString();
+            string secret = configuration["Tokens:JWT"]??" ".ToString();
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
         }
         public string GenerateToken(LoginResponseDTO login)
         {
+
             //Payload for the token
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, login.UserName),
                 new Claim(ClaimTypes.Role, login.Role)
             };
+
             //algo used for tokken
             var cred = new SigningCredentials(_key,SecurityAlgorithms.HmacSha256Signature);
+
             //loading token details
             var descriptor = new SecurityTokenDescriptor
             {
@@ -33,6 +36,7 @@ namespace Easypay_App.Services
                 Expires = DateTime.UtcNow.AddDays(2),
                 SigningCredentials = cred
             };
+
             //generating the token
             var tokenHandlers = new JwtSecurityTokenHandler();
             var token = tokenHandlers.CreateToken(descriptor);
