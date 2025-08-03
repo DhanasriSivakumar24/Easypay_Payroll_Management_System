@@ -59,6 +59,11 @@ namespace Easypay_App.Mapper
                 .ForMember(dest => dest.PolicyName, opt => opt.Ignore())
                 .ForMember(dest => dest.StatusName, opt => opt.Ignore());
             #endregion
+
+            #region Login
+            CreateMap<RegisterRequestDTO, Employee>();
+            #endregion
+
         }
 
     }
