@@ -14,7 +14,7 @@ using System.Text;
 
 namespace Easypay_App
 {
-    public class Program
+    public class Program 
     {
         public static void Main(string[] args)
         {
