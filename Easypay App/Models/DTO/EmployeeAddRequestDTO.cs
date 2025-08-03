@@ -15,5 +15,6 @@
         public string PhoneNumber { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
         public string PanNumber { get; set; } = string.Empty;
+        public decimal Salary { get; set; }
     }
 }

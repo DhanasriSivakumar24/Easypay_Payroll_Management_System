@@ -12,5 +12,6 @@
         public string StatusName { get; set; } = string.Empty;
         public int? ReportingManager { get; set; }
         public string ReportingManagerName { get; internal set; }
+        public decimal Salary { get; set; }
     }
 }

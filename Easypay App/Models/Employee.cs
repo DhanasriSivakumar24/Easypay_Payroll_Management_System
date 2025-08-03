@@ -26,13 +26,14 @@
         public ICollection<BenefitEnrollment>? BenefitEnrollments { get; set; }
         public ICollection<Payroll>? Payrolls { get; set; }
         public UserAccount? UserAccount { get; set; }
+        public decimal Salary { get; set; }
 
         public Employee()
         {
             
         }
 
-        public Employee(int id, string firstName, string lastName, DateTime dateOfBirth, string gender, DateTime joinDate, int statusId, EmployeeStatusMaster status, int departmentId, DepartmentMaster department, int roleId, RoleMaster role, int? reportingManagerId, Employee? reportingManager, string email, string phoneNumber, string address, string panNumber, DateTime createdAt, DateTime updatedAt, ICollection<Attendance>? attendances, ICollection<BenefitEnrollment>? benefitEnrollments, ICollection<Payroll>? payrolls, UserAccount? userAccount)
+        public Employee(int id, string firstName, string lastName, DateTime dateOfBirth, string gender, DateTime joinDate, int statusId, EmployeeStatusMaster status, int departmentId, DepartmentMaster department, int roleId, RoleMaster role, int? reportingManagerId, Employee? reportingManager, string email, string phoneNumber, string address, string panNumber, DateTime createdAt, DateTime updatedAt, ICollection<Attendance>? attendances, ICollection<BenefitEnrollment>? benefitEnrollments, ICollection<Payroll>? payrolls, UserAccount? userAccount, decimal salary)
         {
             Id = id;
             FirstName = firstName;
@@ -58,6 +59,7 @@
             BenefitEnrollments = benefitEnrollments;
             Payrolls = payrolls;
             UserAccount = userAccount;
+            Salary = salary;
         }
     }
 }

@@ -56,6 +56,7 @@ namespace Easypay_App.Services
             existing.RoleId = dto.RoleId;
             existing.StatusId = dto.StatusId;
             existing.ReportingManagerId = dto.ReportingManagerId;
+            existing.Salary = dto.Salary;
 
             _employeeRepository.UpdateValue(existing.Id, existing);
 

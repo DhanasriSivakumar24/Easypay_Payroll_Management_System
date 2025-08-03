@@ -17,7 +17,7 @@
         public PayrollStatusMaster? Status { get; set; }
         public DateTime GeneratedDate { get; set; }
         public DateTime ApprovedDate { get; set; }
-        public int ApprovedBy { get; set; }
+        public int? ApprovedBy { get; set; }
         public Employee? ApprovedById { get; set; }
         public DateTime PaidDate { get; set; }
         public int PaidBy { get; set; }
@@ -29,7 +29,7 @@
         {
             
         }
-        public Payroll(int id, int employeeId, Employee? employee, int policyId, PayrollPolicyMaster? policy, DateTime periodStart, DateTime periodEnd, decimal basicPay, decimal allowances, decimal deductions, decimal netPay, int statusId, PayrollStatusMaster? status, DateTime generatedDate, DateTime approvedDate, int approvedBy, Employee? approvedById, DateTime paidDate, int paidBy, UserRoleMaster? paidById, DateTime createdAt)
+        public Payroll(int id, int employeeId, Employee? employee, int policyId, PayrollPolicyMaster? policy, DateTime periodStart, DateTime periodEnd, decimal basicPay, decimal allowances, decimal deductions, decimal netPay, int statusId, PayrollStatusMaster? status, DateTime generatedDate, DateTime approvedDate, int? approvedBy, Employee? approvedById, DateTime paidDate, int paidBy, UserRoleMaster? paidById, DateTime createdAt)
         {
             Id = id;
             EmployeeId = employeeId;
