@@ -17,16 +17,18 @@ namespace Easypay_Test
         private IRepository<int, Employee> _employeeRepo;
         private IRepository<int, DepartmentMaster> _departmentRepo;
         private IRepository<int, RoleMaster> _roleRepo;
+
         private IRepository<int, EmployeeStatusMaster> _statusRepo;
 
         private Mock<IMapper> _mockMapper;
         private EmployeeService _service;
+        private IRepository<int, UserRoleMaster> _userRoleRepo;
 
         [SetUp]
         public void Setup()
         {
             var options = new DbContextOptionsBuilder<PayrollContext>()
-                .UseInMemoryDatabase("EmployeeServiceTestDB")
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) //Fresh DB for each test — clean, isolated
                 .Options;
 
             var context = new PayrollContext(options);
@@ -37,13 +39,18 @@ namespace Easypay_Test
             _statusRepo = new EmployeeStatusRepository(context);
 
             // Seed Master Tables
+            _userRoleRepo = new UserRoleRepository(context); 
+            _userRoleRepo.AddValue(new UserRoleMaster { Id = 1, UserRoleName = "Admin" });
+            _userRoleRepo.AddValue(new UserRoleMaster { Id = 3, UserRoleName = "Employee" });
+
             _departmentRepo.AddValue(new DepartmentMaster { Id = 1, DepartmentName = "HR" });
             _roleRepo.AddValue(new RoleMaster { Id = 1, RoleName = "Manager" });
             _statusRepo.AddValue(new EmployeeStatusMaster { Id = 1, StatusName = "Active" });
 
             _mockMapper = new Mock<IMapper>();
 
-            _service = new EmployeeService(_employeeRepo, _departmentRepo, _roleRepo, _statusRepo, _mockMapper.Object);
+            _service = new EmployeeService(_employeeRepo, _departmentRepo, _roleRepo, _statusRepo, _userRoleRepo, _mockMapper.Object);
+
         }
 
         [Test]
@@ -99,8 +106,7 @@ namespace Easypay_Test
         [Test]
         public void GetEmployeeById()
         {
-
-            // Add employee
+            // Arrange
             var employee = new Employee
             {
                 Id = 1,
@@ -111,18 +117,24 @@ namespace Easypay_Test
                 DepartmentId = 1,
                 RoleId = 1,
                 StatusId = 1,
+                UserRoleId = 1,
                 Salary = 30000
             };
             _employeeRepo.AddValue(employee);
 
-            _mockMapper.Setup(m => m.Map<EmployeeAddResponseDTO>(employee)).Returns(new EmployeeAddResponseDTO
-            {
-                Id = employee.Id,
-                FirstName = employee.FirstName,
-                LastName = employee.LastName,
-                Email = employee.Email,
-                PhoneNumber = employee.PhoneNumber
-            });
+            _mockMapper.Setup(m => m.Map<EmployeeAddResponseDTO>(employee))
+                .Returns(new EmployeeAddResponseDTO
+                {
+                    Id = employee.Id,
+                    FirstName = employee.FirstName,
+                    LastName = employee.LastName,
+                    Email = employee.Email,
+                    PhoneNumber = employee.PhoneNumber,
+                    DepartmentName = "HR",
+                    RoleName = "Manager",
+                    StatusName = "Active",
+                    UserRoleName = "Admin"
+                });
 
             // Act
             var result = _service.GetEmployeeById(1);
@@ -130,6 +142,13 @@ namespace Easypay_Test
             // Assert
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Email, Is.EqualTo("john@test.com"));
+        }
+
+        
+        [Test]
+        public void GetEmployeeById_Exception()
+        {
+            Assert.Throws<NoItemFoundException>(() => _service.GetEmployeeById(999));
         }
 
         [Test]
@@ -145,14 +164,16 @@ namespace Easypay_Test
                 PhoneNumber = "9999999999",
                 DepartmentId = 1,
                 RoleId = 1,
-                StatusId = 1
+                StatusId = 1,
+                UserRoleId = 3
             };
             _employeeRepo.AddValue(employee);
 
             _mockMapper.Setup(m => m.Map<EmployeeAddResponseDTO>(employee)).Returns(new EmployeeAddResponseDTO
             {
                 Id = employee.Id,
-                Email = employee.Email
+                Email = employee.Email,
+                UserRoleName = "Employee"
             });
 
             // Act
@@ -176,7 +197,8 @@ namespace Easypay_Test
                 PhoneNumber = "9999999999",
                 DepartmentId = 1,
                 RoleId = 1,
-                StatusId = 1
+                StatusId = 1,
+                UserRoleId = 3
             };
             _employeeRepo.AddValue(employee);
 
@@ -193,11 +215,10 @@ namespace Easypay_Test
             var result = _service.GetEmployeeById(1);
             Assert.Throws<NoItemFoundException>(() => _service.DeleteEmployee(999));
         }
-
-        [Test]
-        public void GetEmployeeById_Exception()
+        [TearDown]
+        public void TearDown()
         {
-            Assert.Throws<NoItemFoundException>(() => _service.GetEmployeeById(999));
+
         }
     }
 }

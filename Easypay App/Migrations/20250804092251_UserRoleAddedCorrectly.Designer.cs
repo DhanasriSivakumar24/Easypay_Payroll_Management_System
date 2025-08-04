@@ -4,6 +4,7 @@ using Easypay_App.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Easypay_App.Migrations
 {
     [DbContext(typeof(PayrollContext))]
-    partial class PayrollContextModelSnapshot : ModelSnapshot
+    [Migration("20250804092251_UserRoleAddedCorrectly")]
+    partial class UserRoleAddedCorrectly
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -535,6 +538,9 @@ namespace Easypay_App.Migrations
                     b.Property<int>("UserRoleId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("UserRoleMasterId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id")
                         .HasName("PK_Employee");
 
@@ -547,6 +553,8 @@ namespace Easypay_App.Migrations
                     b.HasIndex("StatusId");
 
                     b.HasIndex("UserRoleId");
+
+                    b.HasIndex("UserRoleMasterId");
 
                     b.ToTable("Employees");
                 });
@@ -1391,11 +1399,15 @@ namespace Easypay_App.Migrations
                         .HasConstraintName("FK_Employee_EmployeeStatus");
 
                     b.HasOne("Easypay_App.Models.UserRoleMaster", "UserRole")
-                        .WithMany("Employees")
+                        .WithMany()
                         .HasForeignKey("UserRoleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("FK_Employee_UserRole");
+
+                    b.HasOne("Easypay_App.Models.UserRoleMaster", null)
+                        .WithMany("Employees")
+                        .HasForeignKey("UserRoleMasterId");
 
                     b.Navigation("Department");
 

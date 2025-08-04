@@ -22,7 +22,9 @@ namespace Easypay_App.Mapper
                 .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.Role != null ? src.Role.RoleName : string.Empty))
                 .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.Status != null ? src.Status.StatusName : string.Empty))
                 .ForMember(dest => dest.ReportingManager, opt => opt.MapFrom(src => src.ReportingManagerId))
-                .ForMember(dest => dest.Salary, opt => opt.MapFrom(src => src.Salary)); ;
+                .ForMember(dest => dest.Salary, opt => opt.MapFrom(src => src.Salary))
+                .ForMember(dest => dest.UserRoleName, opt => opt.MapFrom(src => src.UserRole.UserRoleName));
+
             #endregion
 
             #region Payroll Policy
@@ -62,6 +64,14 @@ namespace Easypay_App.Mapper
 
             #region Login
             CreateMap<RegisterRequestDTO, Employee>();
+            #endregion
+
+            #region Notification
+            CreateMap<NotificationLog, NotificationLogDTO>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.StatusName))
+                .ForMember(dest => dest.ChannelName, opt => opt.MapFrom(src => src.Channel.Name));
+
+            CreateMap<NotificationLogRequestDTO, NotificationLog>();
             #endregion
 
         }

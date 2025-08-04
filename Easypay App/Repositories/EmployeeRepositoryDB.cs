@@ -17,6 +17,7 @@ namespace Easypay_App.Repositories
                 .Include(e => e.Department)
                 .Include(e => e.Role)
                 .Include(e => e.Status)
+                .Include(e=>e.UserRole)
                 .ToList();
         }
 
@@ -26,6 +27,7 @@ namespace Easypay_App.Repositories
                 .Include(e => e.Department)
                 .Include(e => e.Role)
                 .Include(e => e.Status)
+                .Include(e => e.UserRole)
                 .FirstOrDefault(e => e.Id == key);
 
             if (result == null)

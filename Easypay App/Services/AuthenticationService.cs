@@ -17,21 +17,21 @@ namespace Easypay_App.Services
         private readonly IEmployeeService _employeeService;
         private readonly IRepository<string, UserAccount> _userRepository;
         private readonly IRepository<int, Employee> _employeeRepo;
-        private readonly IRepository<int, RoleMaster> _roleMasterRepo;
+        private readonly IRepository<int, UserRoleMaster> _userRoleMasterRepo;
         private readonly ITokenService _tokenService;
         private readonly IMapper _mapper;
 
         public AuthenticationService(IEmployeeService employeeService,
             IRepository<string, UserAccount> userRepository,
             IRepository<int,Employee> employeeRepo,
-            IRepository<int,RoleMaster> roleMasterRepo,
+            IRepository<int, UserRoleMaster> userRoleMasterRepo,
             ITokenService tokenService,
             IMapper mapper)
         {
             _employeeService = employeeService;
             _userRepository = userRepository;
             _employeeRepo= employeeRepo;
-            _roleMasterRepo= roleMasterRepo;
+            _userRoleMasterRepo = userRoleMasterRepo;
             _tokenService = tokenService;
             _mapper = mapper;
         }
@@ -53,7 +53,7 @@ namespace Easypay_App.Services
             }
 
             // Get role name from UserRoleMaster
-            var role = _roleMasterRepo.GetValueById(User.UserRoleId)?.RoleName ?? "Unknown";
+            var role = _userRoleMasterRepo.GetValueById(User.UserRoleId)?.UserRoleName ?? "Unknown";
 
             // Return token + username + role
             return new LoginResponseDTO

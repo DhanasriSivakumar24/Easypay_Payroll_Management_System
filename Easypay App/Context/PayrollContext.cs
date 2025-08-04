@@ -404,6 +404,19 @@ namespace Easypay_App.Context
                 .HasForeignKey(be => be.EmployeeId)
                 .HasConstraintName("FK_BenefitEnrollment_Employee")
                 .OnDelete(DeleteBehavior.Restrict);
+
+            
+            modelBuilder.Entity<Employee>()
+                .HasOne(e => e.UserRole)
+                .WithMany(e=>e.Employees)
+                .HasForeignKey(e => e.UserRoleId)
+                .HasConstraintName("FK_Employee_UserRole")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Employee>()
+                .Property(e => e.Salary)
+                .HasColumnType("decimal(18,2)");
+
             #endregion
 
             #region LeaveRequest
@@ -441,6 +454,18 @@ namespace Easypay_App.Context
                 .WithMany()
                 .HasForeignKey(lr => lr.ApprovedBy)
                 .HasConstraintName("FK_LeaveRequest_ApprovedBy")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<LeaveRequest>()
+                .HasOne(lr => lr.Employee)
+                .WithMany()
+                .HasForeignKey(lr => lr.EmployeeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<LeaveRequest>()
+                .HasOne(lr => lr.ApprovedManager)
+                .WithMany()
+                .HasForeignKey(lr => lr.ApprovedBy)
                 .OnDelete(DeleteBehavior.Restrict);
             #endregion
 
@@ -607,17 +632,6 @@ namespace Easypay_App.Context
                 .OnDelete(DeleteBehavior.Cascade);
             #endregion
 
-            modelBuilder.Entity<LeaveRequest>()
-                .HasOne(lr => lr.Employee)
-                .WithMany()
-                .HasForeignKey(lr => lr.EmployeeId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<LeaveRequest>()
-                .HasOne(lr => lr.ApprovedManager)
-                .WithMany()
-                .HasForeignKey(lr => lr.ApprovedBy)
-                .OnDelete(DeleteBehavior.Restrict);
 
         }
     }

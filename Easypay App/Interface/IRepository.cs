@@ -7,6 +7,5 @@
         T DeleteValue(K key);
         IEnumerable<T> GetAllValue();
         T GetValueById(K key);
-
     }
 }

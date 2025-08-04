@@ -14,6 +14,8 @@
         public DepartmentMaster Department { get; set; }
         public int RoleId { get; set; }
         public RoleMaster Role { get; set; }
+        public int UserRoleId { get; set; }
+        public UserRoleMaster? UserRole { get; set; } 
         public int? ReportingManagerId { get; set; }
         public Employee? ReportingManager { get; set; }
         public string Email { get; set; } = string.Empty;
@@ -33,7 +35,7 @@
             
         }
 
-        public Employee(int id, string firstName, string lastName, DateTime dateOfBirth, string gender, DateTime joinDate, int statusId, EmployeeStatusMaster status, int departmentId, DepartmentMaster department, int roleId, RoleMaster role, int? reportingManagerId, Employee? reportingManager, string email, string phoneNumber, string address, string panNumber, DateTime createdAt, DateTime updatedAt, ICollection<Attendance>? attendances, ICollection<BenefitEnrollment>? benefitEnrollments, ICollection<Payroll>? payrolls, UserAccount? userAccount, decimal salary)
+        public Employee(int id, string firstName, string lastName, DateTime dateOfBirth, string gender, DateTime joinDate, int statusId, EmployeeStatusMaster status, int departmentId, DepartmentMaster department, int roleId, RoleMaster role, int userRoleId, UserRoleMaster? userRole, int? reportingManagerId, Employee? reportingManager, string email, string phoneNumber, string address, string panNumber, DateTime createdAt, DateTime updatedAt, ICollection<Attendance>? attendances, ICollection<BenefitEnrollment>? benefitEnrollments, ICollection<Payroll>? payrolls, UserAccount? userAccount, decimal salary)
         {
             Id = id;
             FirstName = firstName;
@@ -47,6 +49,8 @@
             Department = department;
             RoleId = roleId;
             Role = role;
+            UserRoleId = userRoleId;
+            UserRole = userRole;
             ReportingManagerId = reportingManagerId;
             ReportingManager = reportingManager;
             Email = email;

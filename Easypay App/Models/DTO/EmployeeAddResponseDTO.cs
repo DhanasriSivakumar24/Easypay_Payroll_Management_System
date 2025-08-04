@@ -9,6 +9,7 @@
         public string PhoneNumber { get; set; } = string.Empty;
         public string DepartmentName { get; set; } = string.Empty;
         public string RoleName { get; set; } = string.Empty;
+        public string UserRoleName { get; set; } = string.Empty;
         public string StatusName { get; set; } = string.Empty;
         public int? ReportingManager { get; set; }
         public string ReportingManagerName { get; internal set; }

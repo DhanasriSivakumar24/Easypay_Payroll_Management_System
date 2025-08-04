@@ -3,6 +3,7 @@ using Easypay_App.Exceptions;
 using Easypay_App.Interface;
 using Easypay_App.Models;
 using Easypay_App.Models.DTO;
+using EasyPay_App.Repositories;
 
 namespace Easypay_App.Services
 {
@@ -12,6 +13,7 @@ namespace Easypay_App.Services
         private readonly IRepository<int, DepartmentMaster> _departmentRepository;
         private readonly IRepository<int, RoleMaster> _roleRepository;
         private readonly IRepository<int, EmployeeStatusMaster> _statusRepository;
+        private readonly IRepository<int, UserRoleMaster> _userRoleRepository;
         private readonly IMapper _mapper;
 
         public EmployeeService(
@@ -19,12 +21,14 @@ namespace Easypay_App.Services
             IRepository<int, DepartmentMaster> departmentRepository,
             IRepository<int, RoleMaster> roleRepository,
             IRepository<int, EmployeeStatusMaster> statusRepository,
+            IRepository<int, UserRoleMaster> userRoleRepository,
             IMapper mapper)
         {
             _employeeRepository = employeeRepository;
             _departmentRepository = departmentRepository;
             _roleRepository = roleRepository;
             _statusRepository = statusRepository;
+            _userRoleRepository = userRoleRepository;
             _mapper = mapper;
         }
 
@@ -35,6 +39,7 @@ namespace Easypay_App.Services
             // AutoMapper does this automatically based on mappings you defined.
             #endregion
             var employee = _mapper.Map<Employee>(dto); //mapping dto to employee entity
+            employee.UserRoleId = 3;
             _employeeRepository.AddValue(employee);//Calls your repository layer, which in turn uses DbContext to save the employee to the database
 
             var response = _mapper.Map<EmployeeAddResponseDTO>(employee);
@@ -108,10 +113,12 @@ namespace Easypay_App.Services
             var dept = _departmentRepository.GetValueById(emp.DepartmentId);
             var role = _roleRepository.GetValueById(emp.RoleId);
             var status = _statusRepository.GetValueById(emp.StatusId);
+            var userRole = _userRoleRepository.GetValueById(emp.UserRoleId);
 
             dto.DepartmentName = dept?.DepartmentName ?? "N/A";
             dto.RoleName = role?.RoleName ?? "N/A";
             dto.StatusName = status?.StatusName ?? "N/A";
+            dto.UserRoleName = userRole?.UserRoleName ?? "N/A";
             dto.ReportingManager = emp.ReportingManagerId;
         }
     }

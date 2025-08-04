@@ -7,6 +7,7 @@
         public string UserRoleDescription { get; set; } = string.Empty;
         public bool IsActive { get; set; }
         public ICollection<UserAccount>? UserAccounts { get; set; }
+        public ICollection<Employee>? Employees { get; set; }
         public UserRoleMaster()
         {
             

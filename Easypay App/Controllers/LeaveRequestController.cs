@@ -19,47 +19,98 @@ namespace Easypay_App.Controllers
         }
 
         [HttpGet("all")]
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         public ActionResult GetAllRequest()
         {
-            var result = _leaveRequestService.GetAllLeaveRequests();
-            return Ok(result);
+            try
+            {
+                var result = _leaveRequestService.GetAllLeaveRequests();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw new Exception("Unable to Get all Leave Request Details");
+            }
         }
+
         [HttpPost("submit")]
         public ActionResult SubmitLeave([FromBody] LeaveRequestDTO requestDTO)
         {
-            var result = _leaveRequestService.SubmitLeaveRequest(requestDTO);
-            return Ok(result);
+            try
+            {
+                var result = _leaveRequestService.SubmitLeaveRequest(requestDTO);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw new Exception("Unable to Submit Leave Request ");
+            }
         }
 
         [HttpDelete("delete/{id}")]
         public ActionResult Delete(int id)
         {
-            var result = _leaveRequestService.DeleteLeaveRequest(id);
-            return Ok(result);
+            try
+            {
+                var result = _leaveRequestService.DeleteLeaveRequest(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw new Exception($"Unable to Delete Leave Request for Id: {id}");
+            }
         }
 
         [HttpGet("{id}")]
         public ActionResult GetLeaveRequestById(int id)
         {
-            var result = _leaveRequestService.GetLeaveRequestById(id);
-            return Ok(result);
+            try
+            {
+                var result = _leaveRequestService.GetLeaveRequestById(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw new Exception($"Unable to Get Leave Request for Id: {id}");
+            }
         }
 
         // Approve leave request
         [HttpPut("approve/{id}")]
+        [Authorize(Roles ="Admin")]
         public ActionResult ApproveLeave(int id, int managerId)
         {
-            var result = _leaveRequestService.ApproveLeave(id, managerId, true);
-            return Ok(result);
+            try
+            {
+                var result = _leaveRequestService.ApproveLeave(id, managerId, true);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw new Exception($"Unable to Approve Leave Request for Id: {id}");
+            }
         }
 
         // Reject leave request
         [HttpPut("reject/{id}")]
+        [Authorize(Roles = "Admin")]
         public ActionResult RejectLeave(int id, int managerId)
         {
-            var result = _leaveRequestService.RejectLeave(id, managerId);
-            return Ok(result);
+            try
+            {
+                var result = _leaveRequestService.RejectLeave(id, managerId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw new Exception($"Unable to Reject Leave Request for Id: {id}");
+            }
         }
     }
 }
