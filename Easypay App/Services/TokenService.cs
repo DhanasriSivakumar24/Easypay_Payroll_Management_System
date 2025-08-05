@@ -16,7 +16,7 @@ namespace Easypay_App.Services
             string secret = configuration["Tokens:JWT"]??" ".ToString();
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
         }
-        public string GenerateToken(LoginResponseDTO login)
+        public async Task<string> GenerateToken(LoginResponseDTO login)
         {
 
             //Payload for the token

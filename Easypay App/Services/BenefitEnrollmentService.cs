@@ -1,8 +1,10 @@
-﻿using AutoMapper;
+﻿// ✅ FINAL VERSION of BenefitEnrollmentService.cs
+using AutoMapper;
 using Easypay_App.Exceptions;
 using Easypay_App.Interface;
 using Easypay_App.Models;
 using Easypay_App.Models.DTO;
+using Easypay_App.Repositories;
 
 namespace Easypay_App.Services
 {
@@ -13,89 +15,112 @@ namespace Easypay_App.Services
         private readonly IRepository<int, BenefitStatusMaster> _benefitStatusRepository;
         private readonly IMapper _mapper;
 
-        public BenefitEnrollmentService(IRepository<int,BenefitMaster> benefitMasterRepository,
-            IRepository<int,BenefitEnrollment> benefitEnrollmentRepository,
-            IRepository<int,BenefitStatusMaster> benefitStatusRepository,
-            IMapper mapper
-            )
+        public BenefitEnrollmentService(
+            IRepository<int, BenefitMaster> benefitMasterRepository,
+            IRepository<int, BenefitEnrollment> benefitEnrollmentRepository,
+            IRepository<int, BenefitStatusMaster> benefitStatusRepository,
+            IMapper mapper)
         {
             _benefitMasterRepository = benefitMasterRepository;
-            _benefitEnrollmentRepository= benefitEnrollmentRepository;
-            _benefitStatusRepository= benefitStatusRepository;
+            _benefitEnrollmentRepository = benefitEnrollmentRepository;
+            _benefitStatusRepository = benefitStatusRepository;
             _mapper = mapper;
         }
-        public BenefitEnrollmentAddResponseDTO DeleteBenefit(int id)
-        {
-            var benefits = _benefitEnrollmentRepository.GetValueById(id);
-            if (benefits == null)
-                throw new NoItemFoundException();
 
-            _benefitEnrollmentRepository.DeleteValue(id);
-            var response =_mapper.Map< BenefitEnrollmentAddResponseDTO >(benefits);
-            PopulateName(response, benefits);
+        public async Task<BenefitEnrollmentAddResponseDTO> EnrollBenefit(BenefitEnrollmentAddRequestDTO request)
+        {
+            var enrollment = _mapper.Map<BenefitEnrollment>(request);
+            enrollment.CreatedAt = DateTime.Now;
+
+            var benefit = await _benefitMasterRepository.GetValueById(request.BenefitId);
+            enrollment.EmployeeContribution = benefit.EmployeeContribution;
+            enrollment.EmployerContribution = benefit.EmployerContribution;
+
+            await _benefitEnrollmentRepository.AddValue(enrollment);
+
+            var fullEnrollment = await _benefitEnrollmentRepository.GetValueById(enrollment.Id);
+
+            var response = _mapper.Map<BenefitEnrollmentAddResponseDTO>(fullEnrollment);
+            await PopulateName(response, fullEnrollment);
             return response;
         }
 
-        public BenefitEnrollmentAddResponseDTO EnrollBenefit(BenefitEnrollmentAddRequestDTO dto)
+        public async Task<IEnumerable<BenefitEnrollmentAddResponseDTO>> GetAllBenefit()
         {
-            var enrollment = _mapper.Map<BenefitEnrollment>( dto );
-            _benefitEnrollmentRepository.AddValue(enrollment);
-            var response = _mapper.Map<BenefitEnrollmentAddResponseDTO>( enrollment );
-            PopulateName( response, enrollment );
-            return response;
-        }
-
-        private void PopulateName(BenefitEnrollmentAddResponseDTO response, BenefitEnrollment enrollment)
-        {
-            var benefit = _benefitMasterRepository.GetValueById(enrollment.BenefitId);
-            var status = _benefitStatusRepository.GetValueById(enrollment.StatusId);
-
-            response.StatusName = status.StatusName;
-            response.BenefitName = benefit.BenefitName;
-        }
-
-        public IEnumerable<BenefitEnrollmentAddResponseDTO> GetAllBenefit()
-        {
-            var benefits = _benefitEnrollmentRepository.GetAllValue();
+            var benefits = await _benefitEnrollmentRepository.GetAllValue();
             if (benefits == null || !benefits.Any())
                 throw new NoItemFoundException();
-            var response = benefits.Select(benefit =>
+
+            var response = new List<BenefitEnrollmentAddResponseDTO>();
+
+            foreach (var benefit in benefits)
             {
                 var dto = _mapper.Map<BenefitEnrollmentAddResponseDTO>(benefit);
-                PopulateName( dto, benefit );
-                return dto;
-            });
+                await PopulateName(dto, benefit);
+                response.Add(dto);
+            }
+
             return response;
         }
 
-        public BenefitEnrollmentAddResponseDTO GetBenefitById(int id)
+        public async Task<BenefitEnrollmentAddResponseDTO> GetBenefitById(int id)
         {
-            var benefits = _benefitEnrollmentRepository.GetValueById(id);
-            if (benefits == null)
+            var enrollment = await _benefitEnrollmentRepository.GetValueById(id);
+            if (enrollment == null)
                 throw new NoItemFoundException();
 
-            var response = _mapper.Map<BenefitEnrollmentAddResponseDTO>(benefits);
-            PopulateName( response, benefits );
+            var response = _mapper.Map<BenefitEnrollmentAddResponseDTO>(enrollment);
+            await PopulateName(response, enrollment);
             return response;
         }
 
-        public BenefitEnrollmentAddResponseDTO UpdateBenefit(int id, BenefitEnrollmentAddRequestDTO dto)
+        public async Task<BenefitEnrollmentAddResponseDTO> UpdateBenefit(int id, BenefitEnrollmentAddRequestDTO dto)
         {
-            var exsistingBenefit = _benefitEnrollmentRepository.GetValueById(id);
-            if (exsistingBenefit == null)
+            var existing = await _benefitEnrollmentRepository.GetValueById(id);
+            if (existing == null)
                 throw new NoItemFoundException();
 
-            exsistingBenefit.BenefitId = dto.BenefitId;
-            exsistingBenefit.EmployeeId=dto.EmployeeId;
-            exsistingBenefit.StartDate = dto.StartDate;
-            exsistingBenefit.EndDate = dto.EndDate;
-            exsistingBenefit.EmployeeContribution = dto.EmployeeContribution;
-            exsistingBenefit.EmployerContribution = dto.EmployerContribution;
-            exsistingBenefit.StatusId = dto.StatusId;
+            existing.EmployeeId = dto.EmployeeId;
+            existing.BenefitId = dto.BenefitId;
+            existing.StartDate = dto.StartDate;
+            existing.EndDate = dto.EndDate;
+            existing.StatusId = dto.StatusId;
+            existing.CreatedAt = DateTime.Now;
 
-            _benefitEnrollmentRepository.UpdateValue(id, exsistingBenefit);
-            var response =_mapper.Map<BenefitEnrollmentAddResponseDTO>(exsistingBenefit);
+            var benefit = await _benefitMasterRepository.GetValueById(dto.BenefitId);
+            existing.EmployeeContribution = benefit.EmployeeContribution;
+            existing.EmployerContribution = benefit.EmployerContribution;
+
+            await _benefitEnrollmentRepository.UpdateValue(id, existing);
+
+            var response = _mapper.Map<BenefitEnrollmentAddResponseDTO>(existing);
+            await PopulateName(response, existing);
             return response;
+        }
+
+        public async Task<BenefitEnrollmentAddResponseDTO> DeleteBenefit(int id)
+        {
+            var enrollment = await _benefitEnrollmentRepository.GetValueById(id);
+            if (enrollment == null)
+                throw new NoItemFoundException();
+
+            await _benefitEnrollmentRepository.DeleteValue(id);
+
+            var response = _mapper.Map<BenefitEnrollmentAddResponseDTO>(enrollment);
+            await PopulateName(response, enrollment);
+            return response;
+        }
+
+        private async Task PopulateName(BenefitEnrollmentAddResponseDTO response, BenefitEnrollment enrollment)
+        {
+            var benefit = await _benefitMasterRepository.GetValueById(enrollment.BenefitId);
+            var status = await _benefitStatusRepository.GetValueById(enrollment.StatusId);
+
+            response.BenefitName = benefit?.BenefitName ?? "N/A";
+            response.StatusName = status?.StatusName ?? "N/A";
+            response.EmployeeName = enrollment.Employee != null
+                ? $"{enrollment.Employee.FirstName} {enrollment.Employee.LastName}"
+                : "N/A";
         }
     }
 }

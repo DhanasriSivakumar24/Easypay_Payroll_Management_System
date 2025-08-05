@@ -34,13 +34,11 @@ namespace Easypay_App.Mapper
 
             #region Benefit Enrollment
             CreateMap<BenefitEnrollmentAddRequestDTO, BenefitEnrollment>();
+
             CreateMap<BenefitEnrollment, BenefitEnrollmentAddResponseDTO>()
-                .ForMember(dest => dest.EmployeeName,
-                        opt => opt.MapFrom(src =>
-                            src.Employee != null ? src.Employee.FirstName + " " + src.Employee.LastName : string.Empty))
-                .ForMember(dest => dest.BenefitName, opt => opt.MapFrom(src => src.Benefit != null ? src.Benefit.BenefitName : string.Empty))
-                .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.Status.StatusName));
-            CreateMap<BenefitEnrollmentAddResponseDTO, BenefitEnrollment>();
+                .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => src.Employee != null ? src.Employee.FirstName + " " + src.Employee.LastName : "N/A"))
+                .ForMember(dest => dest.BenefitName, opt => opt.MapFrom(src => src.Benefit != null ? src.Benefit.BenefitName : "N/A"))
+                .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.Status != null ? src.Status.StatusName : "N/A"));
 
             #endregion
 

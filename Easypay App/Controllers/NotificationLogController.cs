@@ -1,4 +1,5 @@
-﻿using Easypay_App.Interface;
+﻿using Easypay_App.Filters;
+using Easypay_App.Interface;
 using Easypay_App.Models.DTO;
 using Easypay_App.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -9,6 +10,7 @@ namespace Easypay_App.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [CustomExceptionFilter]
     public class NotificationLogController : ControllerBase
     {
         private readonly INotificationLogService _service;
@@ -20,11 +22,11 @@ namespace Easypay_App.Controllers
 
         [HttpPost("send")]
         [Authorize(Roles = "Admin, HR Manager")]
-        public ActionResult<NotificationLogDTO> SendNotification(NotificationLogRequestDTO request)
+        public async Task<ActionResult<NotificationLogDTO>> SendNotification(NotificationLogRequestDTO request)
         {
             try
             {
-                var result = _service.SendNotification(request);
+                var result = await _service.SendNotification(request);
                 if (result == null)
                     return BadRequest("Notification could not be sent. Invalid user/channel or internal error.");
 
@@ -39,11 +41,11 @@ namespace Easypay_App.Controllers
 
         [HttpGet("user/{userId}")]
         [Authorize(Roles = "Admin, HR Manager")]
-        public ActionResult<IEnumerable<NotificationLogDTO>> GetByUser(int userId)
+        public async Task<ActionResult<IEnumerable<NotificationLogDTO>>> GetByUser(int userId)
         {
             try
             {
-                var result = _service.GetNotificationsByUser(userId);
+                var result = await _service.GetNotificationsByUser(userId);
                 return Ok(result);
             }
             catch (Exception ex)

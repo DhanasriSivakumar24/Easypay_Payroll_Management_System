@@ -13,22 +13,22 @@ namespace EasyPay_App.Repositories
 
         }
 
-        public override IEnumerable<BenefitEnrollment> GetAllValue()
+        public override async Task<IEnumerable<BenefitEnrollment>> GetAllValue()
         {
-            return _context.BenefitEnrollments
+            return await _context.BenefitEnrollments
                     .Include(b => b.Employee)
                     .Include(b => b.Benefit)
                     .Include(b => b.Status)
-                    .ToList();
+                    .ToListAsync();
         }
 
-        public override BenefitEnrollment GetValueById(int key)
+        public override async Task<BenefitEnrollment> GetValueById(int key)
         {
-            var item = _context.BenefitEnrollments
+            var item = await _context.BenefitEnrollments
                     .Include(b => b.Employee)
                     .Include(b => b.Benefit)
                     .Include(b => b.Status)
-                    .FirstOrDefault(x => x.Id == key);
+                    .FirstOrDefaultAsync(x => x.Id == key);
 
             if (item == null)
                 throw new NoItemFoundException();

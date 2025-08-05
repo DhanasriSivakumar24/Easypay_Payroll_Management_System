@@ -1,4 +1,5 @@
-﻿using Easypay_App.Interface;
+﻿using Easypay_App.Filters;
+using Easypay_App.Interface;
 using Easypay_App.Models.DTO;
 using Easypay_App.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -9,6 +10,7 @@ namespace Easypay_App.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [CustomExceptionFilter]
     public class LeaveRequestController : ControllerBase
     {
         private readonly ILeaveRequestService _leaveRequestService;
@@ -20,11 +22,11 @@ namespace Easypay_App.Controllers
 
         [HttpGet("all")]
         [Authorize(Roles = "Admin")]
-        public ActionResult GetAllRequest()
+        public async Task<ActionResult> GetAllRequest()
         {
             try
             {
-                var result = _leaveRequestService.GetAllLeaveRequests();
+                var result = await _leaveRequestService.GetAllLeaveRequests();
                 return Ok(result);
             }
             catch (Exception ex)
@@ -35,11 +37,11 @@ namespace Easypay_App.Controllers
         }
 
         [HttpPost("submit")]
-        public ActionResult SubmitLeave([FromBody] LeaveRequestDTO requestDTO)
+        public async Task<ActionResult> SubmitLeave([FromBody] LeaveRequestDTO requestDTO)
         {
             try
             {
-                var result = _leaveRequestService.SubmitLeaveRequest(requestDTO);
+                var result = await _leaveRequestService.SubmitLeaveRequest(requestDTO);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -50,11 +52,11 @@ namespace Easypay_App.Controllers
         }
 
         [HttpDelete("delete/{id}")]
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
             try
             {
-                var result = _leaveRequestService.DeleteLeaveRequest(id);
+                var result = await _leaveRequestService.DeleteLeaveRequest(id);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -65,11 +67,11 @@ namespace Easypay_App.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult GetLeaveRequestById(int id)
+        public async Task<ActionResult> GetLeaveRequestById(int id)
         {
             try
             {
-                var result = _leaveRequestService.GetLeaveRequestById(id);
+                var result = await _leaveRequestService.GetLeaveRequestById(id);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -82,11 +84,11 @@ namespace Easypay_App.Controllers
         // Approve leave request
         [HttpPut("approve/{id}")]
         [Authorize(Roles ="Admin")]
-        public ActionResult ApproveLeave(int id, int managerId)
+        public async Task<ActionResult> ApproveLeave(int id, int managerId)
         {
             try
             {
-                var result = _leaveRequestService.ApproveLeave(id, managerId, true);
+                var result = await _leaveRequestService.ApproveLeave(id, managerId, true);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -99,11 +101,11 @@ namespace Easypay_App.Controllers
         // Reject leave request
         [HttpPut("reject/{id}")]
         [Authorize(Roles = "Admin")]
-        public ActionResult RejectLeave(int id, int managerId)
+        public async Task<ActionResult> RejectLeave(int id, int managerId)
         {
             try
             {
-                var result = _leaveRequestService.RejectLeave(id, managerId);
+                var result = await _leaveRequestService.RejectLeave(id, managerId);
                 return Ok(result);
             }
             catch (Exception ex)

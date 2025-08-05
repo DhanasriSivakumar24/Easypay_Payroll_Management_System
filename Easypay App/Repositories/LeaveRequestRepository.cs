@@ -2,6 +2,7 @@
 using Easypay_App.Exceptions;
 using Easypay_App.Models;
 using Easypay_App.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace EasyPay_App.Repositories
 {
@@ -11,13 +12,13 @@ namespace EasyPay_App.Repositories
         {
             
         }
-        public override IEnumerable<LeaveRequest> GetAllValue()
+        public override async Task<IEnumerable<LeaveRequest>> GetAllValue()
         {
-            return _context.LeaveRequests.ToList();
+            return await _context.LeaveRequests.ToListAsync();
         }
-        public override LeaveRequest GetValueById(int key)
+        public override async Task<LeaveRequest> GetValueById(int key)
         {
-            var result = _context.LeaveRequests.FirstOrDefault(e => e.Id == key);
+            var result = await _context.LeaveRequests.FirstOrDefaultAsync(e => e.Id == key);
             if (result == null)
                 throw new NoItemFoundException();
             return result;

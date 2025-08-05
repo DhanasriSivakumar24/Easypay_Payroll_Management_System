@@ -1,6 +1,7 @@
 ﻿using Easypay_App.Context;
 using Easypay_App.Exceptions;
 using Easypay_App.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Easypay_App.Repositories
 {
@@ -10,14 +11,14 @@ namespace Easypay_App.Repositories
         {
         }
 
-        public override IEnumerable<UserAccount> GetAllValue()
+        public async override Task<IEnumerable<UserAccount>> GetAllValue()
         {
-            return _context.UserAccounts.ToList();
+            return await _context.UserAccounts.ToListAsync();
         }
 
-        public override UserAccount GetValueById(string key)
+        public async override Task<UserAccount> GetValueById(string key)
         {
-            var item = _context.UserAccounts.FirstOrDefault(x => x.UserName.ToLower() == key.ToLower());
+            var item = await _context.UserAccounts.FirstOrDefaultAsync(x => x.UserName.ToLower() == key.ToLower());
             if (item == null)
                 throw new NoItemFoundException();
             return item;

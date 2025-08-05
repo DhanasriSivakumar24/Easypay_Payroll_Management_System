@@ -26,57 +26,61 @@ namespace Easypay_App.Services
             _leaveTypeRepository = leaveTypeRepository;
             _mapper = mapper;
         }
-        public LeaveRequestResponseDTO ApproveLeave(int id, int managerId, bool isApproved)
+        public async Task<LeaveRequestResponseDTO> ApproveLeave(int id, int managerId, bool isApproved)
         {
-            var leave = _leaveRequestRepository.GetValueById(id);
+            var leave = await _leaveRequestRepository.GetValueById(id);
             if (leave == null) throw new NoItemFoundException();
 
             leave.StatusId = isApproved ? 2 : 3; // 2 - Approved, 3 - Rejected
             leave.ApprovedBy = managerId;
             leave.ActionedAt = DateTime.Now;
 
-            _leaveRequestRepository.UpdateValue(id, leave);
+            await _leaveRequestRepository.UpdateValue(id, leave);
 
             var response = _mapper.Map<LeaveRequestResponseDTO>(leave);
-            PopulateNames(response, leave);
+            await PopulateNames(response, leave);
             return response;
         }
-        public LeaveRequestResponseDTO DeleteLeaveRequest(int id)
+        public async Task<LeaveRequestResponseDTO> DeleteLeaveRequest(int id)
         {
-            var leave = _leaveRequestRepository.GetValueById(id);
+            var leave = await _leaveRequestRepository.GetValueById(id);
             if (leave == null)
                 throw new NoItemFoundException();
             var response = _mapper.Map< LeaveRequestResponseDTO >(leave);
             return response;
         }
 
-        public IEnumerable<LeaveRequestResponseDTO> GetAllLeaveRequests()
+        public async Task<IEnumerable<LeaveRequestResponseDTO>> GetAllLeaveRequests()
         {
-            var all = _leaveRequestRepository.GetAllValue();
-            return all.Select(req =>
+            var all = await _leaveRequestRepository.GetAllValue();
+            var responseList = new List<LeaveRequestResponseDTO>();
+
+            foreach (var req in all)
             {
                 var dto = _mapper.Map<LeaveRequestResponseDTO>(req);
-                PopulateNames(dto, req);
-                return dto;
-            });
+                await PopulateNames(dto, req);
+                responseList.Add(dto);
+            }
+
+            return responseList;
         }
 
-        public LeaveRequestResponseDTO GetLeaveRequestById(int id)
+        public async Task<LeaveRequestResponseDTO> GetLeaveRequestById(int id)
         {
-            var req = _leaveRequestRepository.GetValueById(id);
+            var req = await _leaveRequestRepository.GetValueById(id);
             var dto = _mapper.Map<LeaveRequestResponseDTO>(req);
-            PopulateNames(dto, req);
+            await PopulateNames(dto, req);
             return dto;
         }
 
-        public LeaveRequestResponseDTO RejectLeave(int id, int managerId)
+        public async Task<LeaveRequestResponseDTO> RejectLeave(int id, int managerId)
         {
-            var request = _leaveRequestRepository.GetValueById(id);
+            var request = await _leaveRequestRepository.GetValueById(id);
             if (request == null)
                 throw new NoItemFoundException();
 
-            var rejectedStatus = _leaveStatusRepository.GetAllValue()
-                                 .FirstOrDefault(s => s.StatusName.ToLower() == "rejected");
+            var statuses = await _leaveStatusRepository.GetAllValue();
+            var rejectedStatus = statuses.FirstOrDefault(s => s.StatusName.ToLower() == "rejected");
 
             if (rejectedStatus == null)
                 throw new Exception("Rejected status not found in LeaveStatusMaster");
@@ -85,34 +89,34 @@ namespace Easypay_App.Services
             request.ApprovedBy = managerId;
             request.ActionedAt = DateTime.Now;
 
-            _leaveRequestRepository.UpdateValue(id, request);
+            await _leaveRequestRepository.UpdateValue(id, request);
 
             var response = _mapper.Map<LeaveRequestResponseDTO>(request);
-            PopulateNames(response, request);
+            await PopulateNames(response, request);
             return response;
         }
-        public LeaveRequestResponseDTO SubmitLeaveRequest(LeaveRequestDTO dto)
+        public async Task<LeaveRequestResponseDTO> SubmitLeaveRequest(LeaveRequestDTO dto)
         {
             var leaveRequest = _mapper.Map<LeaveRequest>(dto);
             leaveRequest.RequestedAt = DateTime.Now;
             leaveRequest.StatusId = 1; // Pending
 
-            _leaveRequestRepository.AddValue(leaveRequest);
+            await _leaveRequestRepository.AddValue(leaveRequest);
 
             var response = _mapper.Map<LeaveRequestResponseDTO>(leaveRequest);
-            PopulateNames(response, leaveRequest);
+            await PopulateNames(response, leaveRequest);
             return response;
         }
-        private void PopulateNames(LeaveRequestResponseDTO dto, LeaveRequest request)
+        private async Task PopulateNames(LeaveRequestResponseDTO dto, LeaveRequest request)
         {
-            var emp = _employeeRepository.GetValueById(request.EmployeeId);
-            var type = _leaveTypeRepository.GetValueById(request.LeaveTypeId);
-            var status = _leaveStatusRepository.GetValueById(request.StatusId);
+            var emp = await _employeeRepository.GetValueById(request.EmployeeId);
+            var type = await _leaveTypeRepository.GetValueById(request.LeaveTypeId);
+            var status = await _leaveStatusRepository.GetValueById(request.StatusId);
 
             Employee? approver = null;
             if (request.ApprovedBy.HasValue)
             {
-                approver = _employeeRepository.GetValueById(request.ApprovedBy.Value);
+                approver = await _employeeRepository.GetValueById(request.ApprovedBy.Value);
             }
 
             dto.EmployeeName = $"{emp.FirstName} {emp.LastName}";

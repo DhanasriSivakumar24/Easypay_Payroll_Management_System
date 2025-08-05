@@ -4,10 +4,10 @@ namespace Easypay_App.Interface
 {
     public interface IEmployeeService
     {
-        EmployeeAddResponseDTO AddEmployee(EmployeeAddRequestDTO employeeDto);
-        EmployeeAddResponseDTO UpdateEmployee(int id, EmployeeAddRequestDTO employeeDto);
-        EmployeeAddResponseDTO DeleteEmployee(int id);
-        IEnumerable<EmployeeAddResponseDTO> GetAllEmployees();
-        EmployeeAddResponseDTO GetEmployeeById(int id);
+        public Task<EmployeeAddResponseDTO> AddEmployee(EmployeeAddRequestDTO employeeDto);
+        public Task<EmployeeAddResponseDTO> UpdateEmployee(int id, EmployeeAddRequestDTO employeeDto);
+        public Task<EmployeeAddResponseDTO> DeleteEmployee(int id);
+        public Task<IEnumerable<EmployeeAddResponseDTO>> GetAllEmployees();
+        public Task<EmployeeAddResponseDTO> GetEmployeeById(int id);
     }
 }

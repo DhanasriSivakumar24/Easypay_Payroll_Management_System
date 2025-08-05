@@ -23,18 +23,18 @@ namespace Easypay_App.Services
             _mapper = mapper;
         }
 
-        public IEnumerable<NotificationLogDTO> GetNotificationsByUser(int userId)
+        public async Task<IEnumerable<NotificationLogDTO>> GetNotificationsByUser(int userId)
         {
             var userExists = _context.UserAccounts.Any(u => u.Id == userId);
             if (!userExists)
                 throw new NoItemFoundException("User not found");
 
-            var logs = _context.NotificationLogs
+            var logs = await _context.NotificationLogs
                 .Include(n => n.Channel)
                 .Include(n => n.Status)
                 .Where(n => n.UserId == userId)
                 .OrderByDescending(n => n.SendDate)
-                .ToList();
+                .ToListAsync();
 
             var dtoList = logs.Select(log => new NotificationLogDTO
             {
@@ -49,7 +49,7 @@ namespace Easypay_App.Services
             return dtoList;
         }
 
-        public NotificationLogDTO SendNotification(NotificationLogRequestDTO request)
+        public async Task<NotificationLogDTO> SendNotification(NotificationLogRequestDTO request)
         {
             if (string.IsNullOrWhiteSpace(request.Message))
                 throw new InvalidDataException("Message cannot be empty");
@@ -74,7 +74,7 @@ namespace Easypay_App.Services
                 StatusMessage = "Notification sent successfully"
             };
 
-            _notificationRepository.AddValue(notification);
+            await _notificationRepository.AddValue(notification);
 
             var dto = new NotificationLogDTO
             {

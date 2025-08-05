@@ -12,32 +12,34 @@ namespace Easypay_App.Repositories
         {
             _context = context;
         }
-        public T AddValue(T entity)
+        public async Task<T> AddValue(T entity)
         {
+            _context.ChangeTracker.Clear();
             _context.Add(entity);//Adds the entry to the current collection. Marks teh status of teh entry to added
-            _context.SaveChanges();//Creates the insert query with the new value and executes it.
+            await _context.SaveChangesAsync();//Creates the insert query with the new value and executes it.
             return entity;//new object withteh identity will be provided
         }
 
-        public T DeleteValue(K key)
+        public async Task<T> DeleteValue(K key)
         {
-            var obj = GetValueById(key);//Gets teh object withteh ID
+            _context.ChangeTracker.Clear();
+            var obj = await GetValueById(key);//Gets teh object withteh ID
             _context.Remove(obj);//Identifies teh object within teh colelction, marks teh status to deleted
-            _context.SaveChanges();//Generates the delete queryby default cascading delete
+            await _context.SaveChangesAsync();//Generates the delete queryby default cascading delete
             return obj;//returns the deleted object
         }
 
-        public abstract IEnumerable<T> GetAllValue();
+        public abstract Task<IEnumerable<T>> GetAllValue();
 
 
-        public abstract T GetValueById(K key);
+        public abstract Task<T> GetValueById(K key);
         
 
-        public T UpdateValue(K key, T entity)
+        public async Task<T> UpdateValue(K key, T entity)
         {
-            var obj = GetValueById(key);
+            var obj = await GetValueById(key);
             _context.Entry<T>(obj).CurrentValues.SetValues(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return entity;
         }
     }

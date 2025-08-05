@@ -4,10 +4,10 @@ namespace Easypay_App.Interface
 {
     public interface IPayrollPolicyService
     {
-        PayrollPolicyAddResponseDTO AddPolicy(PayrollPolicyAddRequestDTO dto);
-        PayrollPolicyAddResponseDTO UpdatePolicy(int id, PayrollPolicyAddRequestDTO dto);
-        PayrollPolicyAddResponseDTO DeletePolicy(int id);
-        PayrollPolicyAddResponseDTO GetById(int id);
-        IEnumerable<PayrollPolicyAddResponseDTO> GetAll();
+        public Task<PayrollPolicyAddResponseDTO> AddPolicy(PayrollPolicyAddRequestDTO dto);
+        public Task<PayrollPolicyAddResponseDTO> UpdatePolicy(int id, PayrollPolicyAddRequestDTO dto);
+        public Task<PayrollPolicyAddResponseDTO> DeletePolicy(int id);
+        public Task<PayrollPolicyAddResponseDTO> GetById(int id);
+        public Task<IEnumerable<PayrollPolicyAddResponseDTO>> GetAll();
     }
 }

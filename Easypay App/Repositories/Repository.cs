@@ -6,15 +6,15 @@ namespace Easypay_App.Repositories
     public abstract class Repository<K, T> : IRepository<K, T> where T : class
     {
         protected static List<T> list = new List<T>();
-        public T AddValue(T entity)
+        public async Task<T> AddValue(T entity)
         {
             list.Add(entity);
             return entity;
         }
 
-        public T DeleteValue(K key)
+        public async Task<T> DeleteValue(K key)
         {
-            var value = GetValueById(key);
+            var value = await GetValueById(key);
             if (value != null)
             {
                 list.Remove(value);
@@ -23,16 +23,16 @@ namespace Easypay_App.Repositories
             throw new NotFiniteNumberException();
         }
 
-        public IEnumerable<T> GetAllValue()
+        public async Task<IEnumerable<T>> GetAllValue()
         {
             return list;
         }
 
-        public abstract T GetValueById(K key);
+        public abstract Task<T> GetValueById(K key);
 
-        public T UpdateValue(K key, T entity)
+        public async Task<T> UpdateValue(K key, T entity)
         {
-            var item = GetValueById(key);
+            var item = await GetValueById(key);
             if (item != null)
             {
                 list.Remove(item);

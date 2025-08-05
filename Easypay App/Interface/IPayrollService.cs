@@ -4,7 +4,7 @@ namespace Easypay_App.Interface
 {
     public interface IPayrollService
     {
-        PayrollResponseDTO GeneratePayroll(PayrollRequestDTO dto);
-        IEnumerable<PayrollResponseDTO> GetAllPayrolls();
+        public Task<PayrollResponseDTO> GeneratePayroll(PayrollRequestDTO dto);
+        public Task<IEnumerable<PayrollResponseDTO>> GetAllPayrolls();
     }
 }

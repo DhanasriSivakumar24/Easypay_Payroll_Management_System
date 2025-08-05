@@ -64,7 +64,7 @@ namespace Easypay_App
             builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddScoped<INotificationLogService, NotificationLogService>();
 
-            builder.Services.AddScoped<IRepository<int, Employee>, EmployeeRepositoryDb>();
+            builder.Services.AddScoped<IRepository<int, Employee>, EmployeeRepository>();
             builder.Services.AddScoped<IRepository<int, DepartmentMaster>, DepartmentRepository>();
             builder.Services.AddScoped<IRepository<int, RoleMaster>, RoleRepository>();
             builder.Services.AddScoped<IRepository<int, EmployeeStatusMaster>, EmployeeStatusRepository>();

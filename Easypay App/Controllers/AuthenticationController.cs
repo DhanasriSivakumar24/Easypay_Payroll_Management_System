@@ -1,4 +1,5 @@
-﻿using Easypay_App.Interface;
+﻿using Easypay_App.Filters;
+using Easypay_App.Interface;
 using Easypay_App.Models.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +8,7 @@ namespace Easypay_App.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [CustomExceptionFilter]
     public class AuthenticationController : ControllerBase
     {
         private readonly IAuthenticationService _authenticationService;
@@ -17,39 +19,24 @@ namespace Easypay_App.Controllers
         }
 
         [HttpPost("Register")]
-        public ActionResult<RegisterRequestDTO> Register(RegisterRequestDTO requestDTO)
+        public async Task<ActionResult<RegisterResponseDTO>> Register(RegisterRequestDTO requestDTO)
         {
-            try
-            {
-                var result = _authenticationService.Register(requestDTO);
+            var result = await _authenticationService.Register(requestDTO);
 
-                var response = new RegisterResponseDTO
-                {
-                    UserId = result.Id,
-                    UserName = result.UserName
-                };
-
-                return Created("", response);
-            }
-            catch (Exception ex)
+            var response = new RegisterResponseDTO
             {
-                Console.WriteLine(ex.Message);
-                throw new Exception("Unable to add user: " + ex.Message);
-            }
+                UserId = result.Id,
+                UserName = result.UserName
+            };
+
+            return Ok(result);
         }
 
         [HttpPost("Login")]
-        public ActionResult<LoginResponseDTO> Login(LoginRequestDTO requestDTO)
+        public async Task<ActionResult<LoginResponseDTO>> Login(LoginRequestDTO requestDTO)
         {
-            try
-            {
-                var result = _authenticationService.Login(requestDTO);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Unable to Login"+ex.Message);
-            }
+            var result = await _authenticationService.Login(requestDTO);
+            return Ok(result);
         }
     }
 }

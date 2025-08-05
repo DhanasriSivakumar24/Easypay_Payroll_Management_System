@@ -1,15 +1,39 @@
-﻿using Easypay_App.Exceptions;
+﻿using Easypay_App.Context;
+using Easypay_App.Exceptions;
 using Easypay_App.Models;
+using Microsoft.EntityFrameworkCore;
+
 namespace Easypay_App.Repositories
 {
-    public class EmployeeRepository : Repository<int, Employee>
+    public class EmployeeRepository : RepositoryDb<int, Employee>
     {
-        public override Employee GetValueById(int key)
+        public EmployeeRepository(PayrollContext context):base(context)
         {
-            var item = list.FirstOrDefault(x => x.Id == key);
-            if (item == null)
+            
+        }
+        public override async Task<IEnumerable<Employee>> GetAllValue()
+        {
+            return await _context.Employees
+                .Include(e => e.Department)
+                .Include(e => e.Role)
+                .Include(e => e.Status)
+                .Include(e=>e.UserRole)
+                .ToListAsync();
+        }
+
+        public override async Task<Employee> GetValueById(int key)
+        {
+            var result = await _context.Employees
+                .Include(e => e.Department)
+                .Include(e => e.Role)
+                .Include(e => e.Status)
+                .Include(e => e.UserRole)
+                .FirstOrDefaultAsync(e => e.Id == key);
+
+            if (result == null)
                 throw new NoItemFoundException();
-            return item;
+
+            return result;
         }
     }
 }

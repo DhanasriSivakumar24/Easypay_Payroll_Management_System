@@ -37,9 +37,9 @@ namespace Easypay_App.Services
         }
 
         #region LoginResponseDTO
-        public LoginResponseDTO Login(LoginRequestDTO loginRequest)
+        public async Task<LoginResponseDTO> Login(LoginRequestDTO loginRequest)
         {
-            var User = _userRepository.GetValueById(loginRequest.UserName);
+            var User = await _userRepository.GetValueById(loginRequest.UserName);
             if (User == null)
                 throw new NoItemFoundException();
 
@@ -53,14 +53,14 @@ namespace Easypay_App.Services
             }
 
             // Get role name from UserRoleMaster
-            var role = _userRoleMasterRepo.GetValueById(User.UserRoleId)?.UserRoleName ?? "Unknown";
+            var role =  (await _userRoleMasterRepo.GetValueById(User.UserRoleId))?.UserRoleName ?? "Unknown";
 
             // Return token + username + role
             return new LoginResponseDTO
             {
                 UserName = loginRequest.UserName,
                 Role = role,
-                Token = _tokenService.GenerateToken(new LoginResponseDTO
+                Token = await _tokenService.GenerateToken(new LoginResponseDTO
                 {
                     UserName = loginRequest.UserName,
                     Role = role
@@ -70,7 +70,7 @@ namespace Easypay_App.Services
         #endregion
 
         #region Register
-        public UserAccount Register(RegisterRequestDTO registerRequest)
+        public async Task<UserAccount> Register(RegisterRequestDTO registerRequest)
         {
             try
             {
@@ -88,7 +88,7 @@ namespace Easypay_App.Services
                 var defaultPassword = "#12" + registerRequest.UserName + "@12";
                 user.Password = hmacsha256.ComputeHash(Encoding.UTF8.GetBytes(defaultPassword));
 
-                return _userRepository.AddValue(user);
+                return await _userRepository.AddValue(user);
             }
 
             catch (Exception ex)

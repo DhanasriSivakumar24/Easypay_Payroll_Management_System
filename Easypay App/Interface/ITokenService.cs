@@ -5,6 +5,6 @@ namespace Easypay_App.Interface
 {
     public interface ITokenService
     {
-        public string GenerateToken(LoginResponseDTO login);
+        public Task<string> GenerateToken(LoginResponseDTO login);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Easypay_App.Interface;
+﻿using Easypay_App.Filters;
+using Easypay_App.Interface;
 using Easypay_App.Models.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -8,6 +9,7 @@ namespace Easypay_App.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [CustomExceptionFilter]
     public class EmployeeController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;
@@ -19,11 +21,11 @@ namespace Easypay_App.Controllers
 
         [HttpPost("add")]
         [Authorize(Roles ="Admin, HR Manager")]
-        public ActionResult AddEmployee( EmployeeAddRequestDTO employeeDto)
+        public async Task<ActionResult> AddEmployee( EmployeeAddRequestDTO employeeDto)
         {
             try
             {
-                var result = _employeeService.AddEmployee(employeeDto);
+                var result = await _employeeService.AddEmployee(employeeDto);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -34,11 +36,11 @@ namespace Easypay_App.Controllers
         }
 
         [HttpPut("update/{id}")]
-        public ActionResult UpdateEmployee(int id, EmployeeAddRequestDTO employeeDto)
+        public async Task<ActionResult> UpdateEmployee(int id, EmployeeAddRequestDTO employeeDto)
         {
             try
             {
-                var result = _employeeService.UpdateEmployee(id, employeeDto);
+                var result = await _employeeService.UpdateEmployee(id, employeeDto);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -49,11 +51,11 @@ namespace Easypay_App.Controllers
         }
 
         [HttpDelete("delete/{id}")]
-        public ActionResult DeleteEmployee(int id)
+        public async Task<ActionResult> DeleteEmployee(int id)
         {
             try
             {
-                var result = _employeeService.DeleteEmployee(id);
+                var result = await _employeeService.DeleteEmployee(id);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -65,11 +67,11 @@ namespace Easypay_App.Controllers
 
         [HttpGet("all")]
         [Authorize(Roles = "Admin, HR Manager")]
-        public ActionResult GetAllEmployees()
+        public async Task<ActionResult> GetAllEmployees()
         {
             try
             {
-                var employees = _employeeService.GetAllEmployees();
+                var employees = await _employeeService.GetAllEmployees();
                 return Ok(employees);
             }
             catch (Exception ex)
@@ -80,11 +82,11 @@ namespace Easypay_App.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult GetEmployeeById(int id)
+        public async Task<ActionResult> GetEmployeeById(int id)
         {
             try
             {
-                var employee = _employeeService.GetEmployeeById(id);
+                var employee = await _employeeService.GetEmployeeById(id);
                 return Ok(employee);
             }
             catch (Exception ex)

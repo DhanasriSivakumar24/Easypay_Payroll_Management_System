@@ -5,7 +5,7 @@ namespace Easypay_App.Interface
 {
     public interface IAuthenticationService
     {
-        LoginResponseDTO Login(LoginRequestDTO loginRequest);
-        UserAccount Register(RegisterRequestDTO registerRequest);
+        public Task<LoginResponseDTO> Login(LoginRequestDTO loginRequest);
+        public Task<UserAccount> Register(RegisterRequestDTO registerRequest);
     }
 }

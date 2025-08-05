@@ -4,11 +4,11 @@ namespace Easypay_App.Interface
 {
     public interface ILeaveRequestService
     {
-        LeaveRequestResponseDTO SubmitLeaveRequest(LeaveRequestDTO dto);
-        LeaveRequestResponseDTO ApproveLeave(int id, int managerId, bool isApproved);
-        LeaveRequestResponseDTO RejectLeave(int id, int managerId);
-        LeaveRequestResponseDTO GetLeaveRequestById(int id);
-        IEnumerable<LeaveRequestResponseDTO> GetAllLeaveRequests();
-        LeaveRequestResponseDTO DeleteLeaveRequest(int id);
+        public Task<LeaveRequestResponseDTO> SubmitLeaveRequest(LeaveRequestDTO dto);
+        public Task<LeaveRequestResponseDTO> ApproveLeave(int id, int managerId, bool isApproved);
+        public Task<LeaveRequestResponseDTO> RejectLeave(int id, int managerId);
+        public Task<LeaveRequestResponseDTO> GetLeaveRequestById(int id);
+        public Task<IEnumerable<LeaveRequestResponseDTO>> GetAllLeaveRequests();
+        public Task<LeaveRequestResponseDTO> DeleteLeaveRequest(int id);
     }
 }

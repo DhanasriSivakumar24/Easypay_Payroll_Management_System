@@ -1,4 +1,5 @@
-﻿using Easypay_App.Interface;
+﻿using Easypay_App.Filters;
+using Easypay_App.Interface;
 using Easypay_App.Models.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -8,6 +9,7 @@ namespace Easypay_App.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [CustomExceptionFilter]
     public class PayrollController : ControllerBase
     {
         private readonly IPayrollService _payrollService;
@@ -19,11 +21,11 @@ namespace Easypay_App.Controllers
 
         [HttpPost("generate")]
         [Authorize(Roles = "Admin, HR Manager")]
-        public ActionResult GeneratePayroll([FromBody] PayrollRequestDTO dto)
+        public async Task<ActionResult> GeneratePayroll([FromBody] PayrollRequestDTO dto)
         {
             try
             {
-                var result = _payrollService.GeneratePayroll(dto);
+                var result = await _payrollService.GeneratePayroll(dto);
                 return Ok(result);
             }
             catch(Exception ex)
@@ -35,11 +37,11 @@ namespace Easypay_App.Controllers
 
         [HttpGet("all")]
         [Authorize(Roles = "Admin, HR Manager")]
-        public ActionResult GetAllPayrolls()
+        public async Task<ActionResult> GetAllPayrolls()
         {
             try
             {
-                var result = _payrollService.GetAllPayrolls();
+                var result = await _payrollService.GetAllPayrolls();
                 return Ok(result);
             }
             catch(Exception ex)

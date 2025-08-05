@@ -4,10 +4,10 @@ namespace Easypay_App.Interface
 {
     public interface IBenefitEnrollmentService
     {
-        BenefitEnrollmentAddResponseDTO EnrollBenefit(BenefitEnrollmentAddRequestDTO dto);
-        IEnumerable<BenefitEnrollmentAddResponseDTO> GetAllBenefit();
-        BenefitEnrollmentAddResponseDTO GetBenefitById(int id);
-        BenefitEnrollmentAddResponseDTO UpdateBenefit(int id, BenefitEnrollmentAddRequestDTO dto);
-        BenefitEnrollmentAddResponseDTO DeleteBenefit(int id);
+        public Task<BenefitEnrollmentAddResponseDTO> EnrollBenefit(BenefitEnrollmentAddRequestDTO dto);
+        public Task<IEnumerable<BenefitEnrollmentAddResponseDTO>> GetAllBenefit();
+        public Task<BenefitEnrollmentAddResponseDTO> GetBenefitById(int id);
+        public Task<BenefitEnrollmentAddResponseDTO> UpdateBenefit(int id, BenefitEnrollmentAddRequestDTO dto);
+        public Task<BenefitEnrollmentAddResponseDTO> DeleteBenefit(int id);
     }
 }

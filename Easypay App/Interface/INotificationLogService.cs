@@ -4,7 +4,7 @@ namespace Easypay_App.Interface
 {
     public interface INotificationLogService
     {
-        NotificationLogDTO SendNotification(NotificationLogRequestDTO request);
-        IEnumerable<NotificationLogDTO> GetNotificationsByUser(int userId);
+        public Task<NotificationLogDTO> SendNotification(NotificationLogRequestDTO request);
+        public Task<IEnumerable<NotificationLogDTO>> GetNotificationsByUser(int userId);
     }
 }
