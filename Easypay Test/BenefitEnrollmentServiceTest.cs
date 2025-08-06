@@ -48,7 +48,7 @@ namespace Easypay_Test
 
         #region EnrollBenefit
         [Test]
-        public async Task EnrollBenefit_ShouldReturnResponse()
+        public async Task EnrollBenefit()
         {
             var dto = new BenefitEnrollmentAddRequestDTO
             {
@@ -92,7 +92,7 @@ namespace Easypay_Test
 
         #region GetAll
         [Test]
-        public async Task GetAll_ShouldReturnList()
+        public async Task GetAllEnrollments()
         {
             var entity = new BenefitEnrollment
             {
@@ -115,7 +115,7 @@ namespace Easypay_Test
         }
 
         [Test]
-        public void GetAll_ShouldThrowException()
+        public void GetAll_ThrowException()
         {
             Assert.ThrowsAsync<NoItemFoundException>(() => _service.GetAllBenefit());
         }
@@ -123,7 +123,7 @@ namespace Easypay_Test
 
         #region GetById
         [Test]
-        public async Task GetById_ShouldReturnDTO()
+        public async Task GetById()
         {
             var entity = new BenefitEnrollment
             {
@@ -146,7 +146,7 @@ namespace Easypay_Test
         }
 
         [Test]
-        public void GetById_ShouldThrowException()
+        public void GetById_ThrowException()
         {
             Assert.ThrowsAsync<NoItemFoundException>(() => _service.GetBenefitById(999));
         }
@@ -154,7 +154,7 @@ namespace Easypay_Test
 
         #region Update
         [Test]
-        public async Task Update_ShouldReturnUpdatedDTO()
+        public async Task Update()
         {
             var entity = new BenefitEnrollment
             {
@@ -186,7 +186,7 @@ namespace Easypay_Test
         }
 
         [Test]
-        public void Update_ShouldThrowException()
+        public void Update_ThrowException()
         {
             var dto = new BenefitEnrollmentAddRequestDTO { EmployeeId = 1, BenefitId = 1, StatusId = 1 };
             Assert.ThrowsAsync<NoItemFoundException>(() => _service.UpdateBenefit(999, dto));
@@ -195,7 +195,7 @@ namespace Easypay_Test
 
         #region Delete
         [Test]
-        public async Task Delete_ShouldReturnDeletedItem()
+        public async Task Delete()
         {
             var entity = new BenefitEnrollment
             {
@@ -218,7 +218,7 @@ namespace Easypay_Test
         }
 
         [Test]
-        public void Delete_ShouldThrowException()
+        public void Delete_ThrowException()
         {
             Assert.ThrowsAsync<NoItemFoundException>(() => _service.DeleteBenefit(999));
         }
@@ -227,7 +227,6 @@ namespace Easypay_Test
         [TearDown]
         public void TearDown()
         {
-            _mockMapper = null;
         }
     }
 }

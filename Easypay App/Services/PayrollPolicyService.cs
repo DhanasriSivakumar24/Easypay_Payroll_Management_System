@@ -39,7 +39,7 @@ namespace Easypay_App.Services
         public async Task<IEnumerable<PayrollPolicyAddResponseDTO>> GetAll()
         {
             var policy = await _payrollPolicyRepository.GetAllValue();
-            if (policy == null)
+            if (policy == null || !policy.Any())
                 throw new NoItemFoundException();
             var response = policy.Select(_mapper.Map<PayrollPolicyAddResponseDTO>).ToList();
             return response;
@@ -48,7 +48,7 @@ namespace Easypay_App.Services
         public async Task<PayrollPolicyAddResponseDTO> GetById(int id)
         {
             var policy = await _payrollPolicyRepository.GetValueById(id);
-            if (policy == null)
+            if (policy == null )
                 throw new NoItemFoundException();
             var response =_mapper.Map<PayrollPolicyAddResponseDTO>(policy);
             return response;
