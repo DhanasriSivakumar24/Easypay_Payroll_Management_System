@@ -12,7 +12,7 @@ using Moq;
 
 namespace Easypay_Test
 {
-    public class Tests
+    public class EmployeeServiceTest
     {
         private IRepository<int, Employee> _employeeRepo;
         private IRepository<int, DepartmentMaster> _departmentRepo;

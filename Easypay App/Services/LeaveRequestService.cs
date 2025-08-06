@@ -110,19 +110,23 @@ namespace Easypay_App.Services
         private async Task PopulateNames(LeaveRequestResponseDTO dto, LeaveRequest request)
         {
             var emp = await _employeeRepository.GetValueById(request.EmployeeId);
-            var type = await _leaveTypeRepository.GetValueById(request.LeaveTypeId);
-            var status = await _leaveStatusRepository.GetValueById(request.StatusId);
+            dto.EmployeeName = $"{emp.FirstName} {emp.LastName}";
 
-            Employee? approver = null;
+            var type = await _leaveTypeRepository.GetValueById(request.LeaveTypeId);
+            dto.LeaveTypeName = type.LeaveTypeName;
+
+            var status = await _leaveStatusRepository.GetValueById(request.StatusId);
+            dto.StatusName = status.StatusName;
+
             if (request.ApprovedBy.HasValue)
             {
-                approver = await _employeeRepository.GetValueById(request.ApprovedBy.Value);
+                var approver = await _employeeRepository.GetValueById(request.ApprovedBy.Value);
+                dto.ApprovedManagerName = $"{approver.FirstName} {approver.LastName}";
             }
-
-            dto.EmployeeName = $"{emp.FirstName} {emp.LastName}";
-            dto.LeaveTypeName = type.LeaveTypeName;
-            dto.StatusName = status.StatusName;
-            dto.ApprovedManagerName = approver != null ? $"{approver.FirstName} {approver.LastName}" : "";
-        }
+            else
+            {
+                dto.ApprovedManagerName = "";
+            }
+}
     }
 }
