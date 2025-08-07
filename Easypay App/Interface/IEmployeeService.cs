@@ -9,5 +9,8 @@ namespace Easypay_App.Interface
         public Task<EmployeeAddResponseDTO> DeleteEmployee(int id);
         public Task<IEnumerable<EmployeeAddResponseDTO>> GetAllEmployees();
         public Task<EmployeeAddResponseDTO> GetEmployeeById(int id);
+        public Task<EmployeeAddResponseDTO> ChangeEmployeeUserRole(ChangeUserRoleDTO dto);
+        public Task<PaginatedEmployeeResponseDTO> SearchEmployees(EmployeeSearchRequestDTO criteria);
+
     }
 }

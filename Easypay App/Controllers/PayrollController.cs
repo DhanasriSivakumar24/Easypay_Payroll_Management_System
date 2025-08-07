@@ -21,34 +21,59 @@ namespace Easypay_App.Controllers
 
         [HttpPost("generate")]
         [Authorize(Roles = "Admin, HR Manager")]
-        public async Task<ActionResult> GeneratePayroll([FromBody] PayrollRequestDTO dto)
+        public async Task<ActionResult<PayrollResponseDTO>> GeneratePayroll([FromBody] PayrollRequestDTO dto)
         {
-            try
-            {
-                var result = await _payrollService.GeneratePayroll(dto);
-                return Ok(result);
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                throw new Exception("Unable to Generate Payroll");
-            }
+            var result = await _payrollService.GeneratePayroll(dto);
+            return Ok(result);
         }
 
         [HttpGet("all")]
-        [Authorize(Roles = "Admin, HR Manager")]
-        public async Task<ActionResult> GetAllPayrolls()
+        [Authorize(Roles = "Admin, HR Manager, Payroll Processor")]
+        public async Task<ActionResult<IEnumerable<PayrollResponseDTO>>> GetAllPayrolls()
         {
-            try
-            {
-                var result = await _payrollService.GetAllPayrolls();
-                return Ok(result);
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                throw new Exception("Unable to Get all Payroll");
-            }
+            var result = await _payrollService.GetAllPayrolls();
+            return Ok(result);
         }
+
+        [HttpGet("employee/{empId}")]
+        [Authorize(Roles = "Employee")]
+        public async Task<ActionResult<IEnumerable<PayrollResponseDTO>>> GetPayrollByEmployeeId(int empId)
+        {
+            var result = await _payrollService.GetPayrollByEmployeeId(empId);
+            return Ok(result);
+        }
+
+        [HttpPut("verify/{payrollId}")]
+        [Authorize(Roles = "Payroll Processor")]
+        public async Task<ActionResult<PayrollResponseDTO>> VerifyPayroll(int payrollId)
+        {
+            var result = await _payrollService.VerifyPayroll(payrollId);
+            return Ok(result);
+        }
+
+        [HttpPut("approve/{payrollId}")]
+        [Authorize(Roles = "HR Manager")]
+        public async Task<ActionResult<PayrollResponseDTO>> ApprovePayroll(int payrollId)
+        {
+            var result = await _payrollService.ApprovePayroll(payrollId);
+            return Ok(result);
+        }
+
+        [HttpPut("mark-paid/{payrollId}/{adminId}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<PayrollResponseDTO>> MarkAsPaid(int payrollId, int adminId)
+        {
+            var result = await _payrollService.MarkPayrollAsPaid(payrollId, adminId);
+            return Ok(result);
+        }
+
+        [HttpGet("compliance-report")]
+        [Authorize(Roles = "Admin, HR Manager")]
+        public async Task<ActionResult<IEnumerable<PayrollResponseDTO>>> GenerateComplianceReport([FromQuery] DateTime start, [FromQuery] DateTime end)
+        {
+            var result = await _payrollService.GenerateComplianceReport(start, end);
+            return Ok(result);
+        }
+
     }
 }

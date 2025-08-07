@@ -29,6 +29,51 @@ namespace Easypay_App.Services
             _mapper = mapper;
         }
 
+        public async Task<PayrollResponseDTO> ApprovePayroll(int payrollId)
+        {
+            var payroll = await _payrollRepository.GetValueById(payrollId);
+            if (payroll == null)
+                throw new NoItemFoundException();
+
+            payroll.StatusId = 3; // Approved
+            await _payrollRepository.UpdateValue(payroll.Id, payroll);
+
+            var response = _mapper.Map<PayrollResponseDTO>(payroll);
+            var emp = await _employeeRepository.GetValueById(payroll.EmployeeId);
+            var policy = await _policyRepository.GetValueById(payroll.PolicyId);
+            var status = await _statusRepository.GetValueById(payroll.StatusId);
+
+            response.EmployeeName = $"{emp?.FirstName} {emp?.LastName}";
+            response.PolicyName = policy?.PolicyName ?? "Unknown";
+            response.StatusName = status?.StatusName ?? "Unknown";
+
+            return response;
+        }
+
+        public async Task<IEnumerable<PayrollResponseDTO>> GenerateComplianceReport(DateTime start, DateTime end)
+        {
+            var all = await _payrollRepository.GetAllValue();
+            var filtered = all.Where(p => p.PeriodStart >= start && p.PeriodEnd <= end && p.StatusId == 3); // Only Approved
+
+            var responseList = new List<PayrollResponseDTO>();
+            foreach (var p in filtered)
+            {
+                var dto = _mapper.Map<PayrollResponseDTO>(p);
+                var emp = await _employeeRepository.GetValueById(p.EmployeeId);
+                var policy = await _policyRepository.GetValueById(p.PolicyId);
+                var status = await _statusRepository.GetValueById(p.StatusId);
+
+                dto.EmployeeName = emp != null ? $"{emp.FirstName} {emp.LastName}" : "Unknown";
+                dto.PolicyName = policy?.PolicyName ?? "Unknown";
+                dto.StatusName = status?.StatusName ?? "Unknown";
+
+                responseList.Add(dto);
+            }
+
+            return responseList;
+        }
+
+        #region GeneratePayroll
         public async Task<PayrollResponseDTO> GeneratePayroll(PayrollRequestDTO dto)
         {
             var employee = await _employeeRepository.GetValueById(dto.EmployeeId);
@@ -77,7 +122,9 @@ namespace Easypay_App.Services
             response.StatusName = (await _statusRepository.GetValueById(payroll.StatusId)).StatusName;
             return response;
         }
+        #endregion
 
+        #region GetAllPayrolls
         public async Task<IEnumerable<PayrollResponseDTO>> GetAllPayrolls()
         {
             var all = await _payrollRepository.GetAllValue();
@@ -100,6 +147,74 @@ namespace Easypay_App.Services
             }
 
             return responseList;
+        }
+        #endregion
+
+        public async Task<IEnumerable<PayrollResponseDTO>> GetPayrollByEmployeeId(int empId)
+        {
+            var allPayrolls = await _payrollRepository.GetAllValue();
+            var filtered = allPayrolls.Where(p => p.EmployeeId == empId);
+
+            var responseList = new List<PayrollResponseDTO>();
+            foreach (var p in filtered)
+            {
+                var dto = _mapper.Map<PayrollResponseDTO>(p);
+                var emp = await _employeeRepository.GetValueById(p.EmployeeId);
+                var policy = await _policyRepository.GetValueById(p.PolicyId);
+                var status = await _statusRepository.GetValueById(p.StatusId);
+                dto.EmployeeName = $"{emp?.FirstName} {emp?.LastName}";
+                dto.PolicyName = policy?.PolicyName ?? "Unknown";
+                dto.StatusName = status?.StatusName ?? "Unknown";
+                responseList.Add(dto);
+            }
+
+            return responseList;
+        }
+
+        public async Task<PayrollResponseDTO> MarkPayrollAsPaid(int payrollId, int adminId)
+        {
+            var payroll = await _payrollRepository.GetValueById(payrollId);
+            if (payroll == null)
+                throw new NoItemFoundException();
+
+            payroll.StatusId = 3; // Approved
+            payroll.PaidBy = adminId;
+            payroll.PaidDate = DateTime.Now;
+
+            await _payrollRepository.UpdateValue(payroll.Id, payroll);
+
+            var response = _mapper.Map<PayrollResponseDTO>(payroll);
+            var emp = await _employeeRepository.GetValueById(payroll.EmployeeId);
+            var policy = await _policyRepository.GetValueById(payroll.PolicyId);
+            var status = await _statusRepository.GetValueById(payroll.StatusId);
+
+            response.EmployeeName = $"{emp?.FirstName} {emp?.LastName}";
+            response.PolicyName = policy?.PolicyName ?? "Unknown";
+            response.StatusName = status?.StatusName ?? "Unknown";
+
+            return response;
+        }
+
+        public async Task<PayrollResponseDTO> VerifyPayroll(int payrollId)
+        {
+            var payroll = await _payrollRepository.GetValueById(payrollId);
+            if (payroll == null)
+                throw new NoItemFoundException();
+
+            payroll.StatusId = 2; // Processed
+            payroll.PaidDate = DateTime.Now;
+            await _payrollRepository.UpdateValue(payroll.Id,payroll);
+
+            var response = _mapper.Map<PayrollResponseDTO>(payroll);
+            var emp = await _employeeRepository.GetValueById(payroll.EmployeeId);
+            var policy = await _policyRepository.GetValueById(payroll.PolicyId);
+            var status = await _statusRepository.GetValueById(payroll.StatusId);
+
+            response.EmployeeName = $"{emp?.FirstName} {emp?.LastName}";
+            response.PolicyName = policy?.PolicyName ?? "Unknown";
+            response.StatusName = status?.StatusName ?? "Unknown";
+
+            return response;
         }
     }
 }

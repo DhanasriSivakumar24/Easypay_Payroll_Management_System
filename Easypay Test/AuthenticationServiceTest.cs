@@ -53,18 +53,30 @@ namespace Easypay_Test
         [Test]
         public async Task Register()
         {
+            // Arrange: Insert employee into repo first
+            await _employeeRepo.AddValue(new Employee
+            {
+                Id = 1,
+                FirstName = "Test",
+                LastName = "User",
+                UserRoleId = 3
+            });
+
             var request = new RegisterRequestDTO
             {
                 UserName = "testuser",
-                EmployeeId = 1,
-                RoleId = 3
+                EmployeeId = 1
             };
 
+            // Act
             var result = await _authService.Register(request);
 
+            // Assert
             Assert.That(result, Is.Not.Null);
             Assert.That(result.UserName, Is.EqualTo("testuser"));
             Assert.That(result.UserRoleId, Is.EqualTo(3));
+            Assert.That(result.Password, Is.Not.Null);
+            Assert.That(result.HashKey, Is.Not.Null);
         }
         #endregion
 

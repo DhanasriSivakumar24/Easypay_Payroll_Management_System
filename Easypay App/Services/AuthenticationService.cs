@@ -74,11 +74,15 @@ namespace Easypay_App.Services
         {
             try
             {
+                var employee = await _employeeRepo.GetValueById(registerRequest.EmployeeId);
+                if (employee == null)
+                    throw new NoItemFoundException("Employee not found");
+
                 UserAccount user = new UserAccount
                 {
                     UserName = registerRequest.UserName,
                     EmployeeId = registerRequest.EmployeeId,
-                    UserRoleId = registerRequest.RoleId,
+                    UserRoleId = employee.UserRoleId, 
                     ActiveFlag = true,
                     LastLogin = DateTime.Now
                 };

@@ -1,5 +1,6 @@
 ﻿using Easypay_App.Filters;
 using Easypay_App.Interface;
+using Easypay_App.Models;
 using Easypay_App.Models.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,17 +20,21 @@ namespace Easypay_App.Controllers
         }
 
         [HttpPost("Register")]
-        public async Task<ActionResult<RegisterResponseDTO>> Register(RegisterRequestDTO requestDTO)
+        public async Task<ActionResult<RegisterResponseDTO>> Register(
+                                    [FromBody] RegisterRequestDTO requestDTO, IRepository<int, UserRoleMaster> roleRepo)
         {
             var result = await _authenticationService.Register(requestDTO);
+
+            var role = await roleRepo.GetValueById(result.UserRoleId);
 
             var response = new RegisterResponseDTO
             {
                 UserId = result.Id,
-                UserName = result.UserName
+                UserName = result.UserName,
+                Role = role?.UserRoleName ?? "Unknown"
             };
 
-            return Ok(result);
+            return Ok(response);
         }
 
         [HttpPost("Login")]

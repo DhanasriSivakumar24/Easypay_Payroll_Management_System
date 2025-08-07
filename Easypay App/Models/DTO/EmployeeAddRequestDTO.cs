@@ -10,6 +10,7 @@
         public int StatusId { get; set; }
         public int DepartmentId { get; set; }
         public int RoleId { get; set; }
+        public int UserRoleId { get; set; } = 3;
         public int? ReportingManagerId { get; set; }
         public string Email { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;

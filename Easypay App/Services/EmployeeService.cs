@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Azure;
+using Azure.Core;
 using Easypay_App.Exceptions;
 using Easypay_App.Interface;
 using Easypay_App.Models;
@@ -41,9 +42,7 @@ namespace Easypay_App.Services
             #endregion
 
             var employee = _mapper.Map<Employee>(dto); //mapping dto to employee entity
-            employee.UserRoleId = 3;
             await _employeeRepository.AddValue(employee);//Calls repository layer, which in turn uses DbContext to save the employee to the database
-
             var response = _mapper.Map<EmployeeAddResponseDTO>(employee);
             await PopulateNames(response, employee);
             return response;
@@ -111,6 +110,18 @@ namespace Easypay_App.Services
             await PopulateNames(response, employee);
             return response;
         }
+        public async Task<EmployeeAddResponseDTO> ChangeEmployeeUserRole(ChangeUserRoleDTO dto)
+        {
+            var employee = await _employeeRepository.GetValueById(dto.EmployeeId);
+            if (employee == null) throw new NoItemFoundException();
+
+            employee.UserRoleId = dto.NewUserRoleId;
+            await _employeeRepository.UpdateValue(employee.Id, employee);
+
+            var response = _mapper.Map<EmployeeAddResponseDTO>(employee);
+            await PopulateNames(response, employee);
+            return response;
+        }
 
         private async Task PopulateNames(EmployeeAddResponseDTO dto, Employee emp)
         {
@@ -125,5 +136,149 @@ namespace Easypay_App.Services
             dto.UserRoleName = userRole?.UserRoleName ?? "N/A";
             dto.ReportingManager = emp.ReportingManagerId;
         }
+
+        public async Task<PaginatedEmployeeResponseDTO> SearchEmployees(EmployeeSearchRequestDTO criteria)
+        {
+            var employees = await _employeeRepository.GetAllValue();
+            employees = employees.Where(e => e.StatusId == 1);
+            if (employees.Count() > 0 && criteria.PhoneNumber != null)
+                employees = await SearchEmployeeByPhoneNumber(employees, criteria.PhoneNumber);
+            if (employees.Count() > 0 && criteria.FirstName != null)
+                employees = await SearchEmployeeByFirstname(employees, criteria.FirstName);
+            if (employees.Count() > 0 && criteria.LastName != null)
+                employees = await SearchEmployeeByLastname(employees, criteria.LastName);
+            if (employees.Count() > 0 && criteria.Email != null)
+                employees = await SearchEmployeeByEmail(employees, criteria.Email);
+            if (employees.Count() > 0 && criteria.Departments != null)
+                employees = await SearchEmployeeByDepartment(employees, criteria.Departments);
+            if (employees.Count() > 0 && criteria.RoleId != null)
+                employees = await SearchEmployeeByRole(employees, criteria.RoleId);
+            if (employees.Count() > 0 && criteria.UserRoleId != null)
+                employees = await SearchEmployeeByUserRole(employees, criteria.UserRoleId);
+            if (employees.Count() > 0 && criteria.ReportingManagerId != null)
+                employees = await SearchEmployeeByReportingManagerId(employees, criteria.ReportingManagerId);
+            if (employees.Count() > 0 && criteria.SalaryRange != null)
+                employees = await SearchEmployeeByReportingSalaryRange(employees, criteria.SalaryRange);
+            if (employees.Count() > 0 && criteria.Sort != null)
+                employees = await SearchEmployeeByReportingSort(employees, criteria.Sort);
+            if (employees.Any())
+            {
+                var totalRecords = employees.Count();
+                var result = await PopulateEmployeeDetails(employees);
+
+                result = result.Skip((criteria.PageNumber - 1) * criteria.PageSize).Take(criteria.PageSize).ToList();
+
+                return new PaginatedEmployeeResponseDTO
+                {
+                    Employees = result.ToList(),
+                    TotalNumberOfRecords = totalRecords,
+                    PageNumber = criteria.PageNumber
+                };
+            }
+            throw new Exception("No search result Found");
+        }
+
+        private async Task<List<EmployeeAddResponseDTO>> PopulateEmployeeDetails(IEnumerable<Employee> employees)
+        {
+            var result = new List<EmployeeAddResponseDTO>();
+
+            foreach (var emp in employees)
+            {
+                var dto = _mapper.Map<EmployeeAddResponseDTO>(emp);
+                await PopulateNames(dto, emp);
+                result.Add(dto);
+            }
+
+            return result;
+        }
+
+        private async Task<IEnumerable<Employee>> SearchEmployeeByReportingSort(IEnumerable<Employee> employees, int sort)
+        {
+            switch (sort)
+            {
+                case -3:
+                    employees = employees.OrderByDescending(e => e.Id); break;
+                case -2:
+                    employees = employees.OrderByDescending(e => e.FirstName ); break;
+                case -1:
+                    employees = employees.OrderByDescending(e => e.DepartmentId); break;
+                case 1:
+                    employees = employees.OrderBy(e => e.Id); break;
+                case 2:
+                    employees = employees.OrderBy(e => e.FirstName); break;
+                case 3:
+                    employees = employees.OrderBy(e => e.DepartmentId); break;
+                default:
+                    break;
+            }
+            return employees;
+        }
+
+        private async Task<IEnumerable<Employee>> SearchEmployeeByReportingSalaryRange(IEnumerable<Employee> employees, SearchRange<decimal> salaryRange)
+        {
+            var result = employees.Where(emp => emp.Salary >= salaryRange.MinValue && emp.Salary <= salaryRange.MaxValue).ToList();
+            return result;
+        }
+
+        private async Task<IEnumerable<Employee>> SearchEmployeeByReportingManagerId(IEnumerable<Employee> employees, List<int>? reportingManagerId)
+        {
+            var result = new List<Employee>();
+            foreach (var manager in reportingManagerId)
+                result.AddRange(employees.Where(e => e.ReportingManagerId == manager).ToList());
+            return result;
+        }
+
+        private async Task<IEnumerable<Employee>> SearchEmployeeByUserRole(IEnumerable<Employee> employees, List<int>? userRoleId)
+        {
+            var result = new List<Employee>();
+            foreach (var role in userRoleId)
+                result.AddRange(employees.Where(e => e.UserRoleId == role).ToList());
+            return result;
+        }
+
+        private async Task<IEnumerable<Employee>> SearchEmployeeByRole(IEnumerable<Employee> employees, List<int>? roleId)
+        {
+            var result = new List<Employee>();
+            foreach (var role in roleId)
+                result.AddRange(employees.Where(e => e.RoleId == role).ToList());
+            return result;
+        }
+
+        private async Task<IEnumerable<Employee>> SearchEmployeeByDepartment(IEnumerable<Employee> employees, List<int>? departments)
+        {
+            var result = new List<Employee>();
+            foreach (var dep in departments)
+                result.AddRange(employees.Where(e => e.DepartmentId == dep).ToList());
+            return result;
+        }
+
+        private async Task<IEnumerable<Employee>> SearchEmployeeByEmail(IEnumerable<Employee> employees, string email)
+        {
+            email = email.ToLower();
+            var result = employees.Where(emp =>emp.Email.ToLower().Contains(email)).ToList();
+            return result;
+
+        }
+
+        private async Task<IEnumerable<Employee>> SearchEmployeeByLastname(IEnumerable<Employee> employees, string? lastName)
+        {
+            lastName = lastName.ToLower();
+            var result = employees.Where(emp => emp.LastName.ToLower().Contains(lastName)).ToList();
+            return result;
+        }
+
+        private async Task<IEnumerable<Employee>> SearchEmployeeByFirstname(IEnumerable<Employee> employees, string firstName)
+        {
+            firstName = firstName.ToLower();
+            var result = employees.Where(emp => emp.FirstName.ToLower().Contains(firstName)).ToList();
+            return result;
+        }
+
+        private async Task<IEnumerable<Employee>> SearchEmployeeByPhoneNumber(IEnumerable<Employee> employees, string phoneNumber)
+        {
+            var result = employees.Where(emp => emp.PhoneNumber ==phoneNumber).ToList();
+            return result;
+        }
+
     }
 }

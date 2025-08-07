@@ -65,6 +65,14 @@ namespace Easypay_App.Controllers
             }
         }
 
+        [HttpPut("change-userrole")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> ChangeUserRole([FromBody] ChangeUserRoleDTO dto)
+        {
+            var result = await _employeeService.ChangeEmployeeUserRole(dto);
+            return Ok(result);
+        }
+
         [HttpGet("all")]
         [Authorize(Roles = "Admin, HR Manager")]
         public async Task<ActionResult> GetAllEmployees()
@@ -94,6 +102,14 @@ namespace Easypay_App.Controllers
                 Console.WriteLine(ex.Message);
                 throw new Exception($"Unable to Get Employee {id}");
             }
+        }
+
+        [HttpPost("search")]
+        [Authorize(Roles = "Admin, HR Manager")]
+        public async Task<ActionResult> SearchEmployees([FromBody] EmployeeSearchRequestDTO criteria)
+        {
+            var result = await _employeeService.SearchEmployees(criteria);
+            return Ok(result);
         }
     }
 }
