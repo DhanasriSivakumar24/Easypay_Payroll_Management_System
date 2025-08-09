@@ -67,12 +67,29 @@ namespace Easypay_App.Controllers
             return Ok(result);
         }
 
-        [HttpGet("compliance-report")]
+        [HttpGet("get-approved-payroll")]
         [Authorize(Roles = "Admin, HR Manager")]
-        public async Task<ActionResult<IEnumerable<PayrollResponseDTO>>> GenerateComplianceReport([FromQuery] DateTime start, [FromQuery] DateTime end)
+        public async Task<ActionResult<IEnumerable<PayrollResponseDTO>>> GetApprovedPayrolls([FromQuery] DateTime start, [FromQuery] DateTime end)
         {
             var result = await _payrollService.GenerateComplianceReport(start, end);
             return Ok(result);
+        }
+
+        [HttpGet("compliance-report")]
+        public async Task<ActionResult<ComplianceReportDTO>> GetComplianceReport([FromQuery] DateTime start, [FromQuery] DateTime end)
+        {
+            if (start == default || end == default)
+                return BadRequest("Please provide valid start and end dates.");
+
+            if (end < start)
+                return BadRequest("End date must be after start date.");
+
+            var report = await _payrollService.GenerateComplianceReport(start, end);
+
+            if (report == null || !report.EmployeeDetails.Any())
+                return NotFound("No approved payrolls found for the given period.");
+
+            return Ok(report);
         }
 
     }

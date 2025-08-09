@@ -53,7 +53,7 @@ namespace Easypay_App
             });
 
             builder.Services.AddDbContext<PayrollContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("defaultConnection")));
 
             builder.Services.AddScoped<IEmployeeService, EmployeeService>();
             builder.Services.AddScoped<IPayrollPolicyService,PayrollPolicyService>();
@@ -63,6 +63,7 @@ namespace Easypay_App
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
             builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddScoped<INotificationLogService, NotificationLogService>();
+            builder.Services.AddScoped<IAttendanceService, AttendanceService>();
 
             builder.Services.AddScoped<IRepository<int, Employee>, EmployeeRepository>();
             builder.Services.AddScoped<IRepository<int, DepartmentMaster>, DepartmentRepository>();
@@ -83,6 +84,8 @@ namespace Easypay_App
             builder.Services.AddScoped<IRepository<int, NotificationChannelMaster>, NotificationChannelRepository>();
             builder.Services.AddScoped<IRepository<int, NotificationStatusMaster>, NotificationStatusRepository>();
             builder.Services.AddScoped<IRepository<int, NotificationLog>, NotificationRepository>();
+            builder.Services.AddScoped<IRepository<int, Attendance>, AttendanceRepository>();
+            builder.Services.AddScoped<IRepository<int, AttendanceStatusMaster>, AttendanceMasterRepository>();
 
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

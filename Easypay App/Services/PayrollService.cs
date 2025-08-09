@@ -8,27 +8,48 @@ using EasyPay_App.Repositories;
 
 namespace Easypay_App.Services
 {
-    public class PayrollService:IPayrollService
+    public class PayrollService : IPayrollService
     {
         private readonly IRepository<int, Employee> _employeeRepository;
         private readonly IRepository<int, PayrollPolicyMaster> _policyRepository;
         private readonly IRepository<int, PayrollStatusMaster> _statusRepository;
         private readonly IRepository<int, Payroll> _payrollRepository;
+        private readonly IRepository<int, Attendance> _attendanceRepository;
         private readonly IMapper _mapper;
 
-        public PayrollService(IRepository<int, Employee> employeeRepository,
-                              IRepository<int, PayrollPolicyMaster> policyRepository,
-                              IRepository<int, PayrollStatusMaster> statusRepository,
-                              IRepository<int, Payroll> payrollRepository,
-                              IMapper mapper)
+        public PayrollService(
+            IRepository<int, Employee> employeeRepository,
+            IRepository<int, PayrollPolicyMaster> policyRepository,
+            IRepository<int, PayrollStatusMaster> statusRepository,
+            IRepository<int, Payroll> payrollRepository,
+            IRepository<int, Attendance> attendanceRepository,
+            IMapper mapper)
         {
             _employeeRepository = employeeRepository;
             _policyRepository = policyRepository;
             _statusRepository = statusRepository;
             _payrollRepository = payrollRepository;
+            _attendanceRepository = attendanceRepository;
             _mapper = mapper;
         }
 
+        #region MapPayrollToDTO
+        private async Task<PayrollResponseDTO> MapPayrollToDTO(Payroll payroll)
+        {
+            var dto = _mapper.Map<PayrollResponseDTO>(payroll);
+            var emp = await _employeeRepository.GetValueById(payroll.EmployeeId);
+            var policy = await _policyRepository.GetValueById(payroll.PolicyId);
+            var status = await _statusRepository.GetValueById(payroll.StatusId);
+
+            dto.EmployeeName = emp != null ? $"{emp.FirstName} {emp.LastName}" : "Unknown";
+            dto.PolicyName = policy?.PolicyName ?? "Unknown";
+            dto.StatusName = status?.StatusName ?? "Unknown";
+
+            return dto;
+        }
+        #endregion
+
+        #region ApprovePayroll
         public async Task<PayrollResponseDTO> ApprovePayroll(int payrollId)
         {
             var payroll = await _payrollRepository.GetValueById(payrollId);
@@ -38,42 +59,31 @@ namespace Easypay_App.Services
             payroll.StatusId = 3; // Approved
             await _payrollRepository.UpdateValue(payroll.Id, payroll);
 
-            var response = _mapper.Map<PayrollResponseDTO>(payroll);
-            var emp = await _employeeRepository.GetValueById(payroll.EmployeeId);
-            var policy = await _policyRepository.GetValueById(payroll.PolicyId);
-            var status = await _statusRepository.GetValueById(payroll.StatusId);
-
-            response.EmployeeName = $"{emp?.FirstName} {emp?.LastName}";
-            response.PolicyName = policy?.PolicyName ?? "Unknown";
-            response.StatusName = status?.StatusName ?? "Unknown";
-
-            return response;
+            return await MapPayrollToDTO(payroll);
         }
+        #endregion
 
-        public async Task<IEnumerable<PayrollResponseDTO>> GenerateComplianceReport(DateTime start, DateTime end)
+        #region GetApprovedPayrolls
+        public async Task<IEnumerable<PayrollResponseDTO>> GetApprovedPayrolls(DateTime start, DateTime end)
         {
             var all = await _payrollRepository.GetAllValue();
-            var filtered = all.Where(p => p.PeriodStart >= start && p.PeriodEnd <= end && p.StatusId == 3); // Only Approved
+            var filtered = all.Where(p =>
+                p.PeriodStart >= start &&
+                p.PeriodEnd <= end &&
+                p.StatusId == 3); // Only Approved
 
             var responseList = new List<PayrollResponseDTO>();
             foreach (var p in filtered)
             {
-                var dto = _mapper.Map<PayrollResponseDTO>(p);
-                var emp = await _employeeRepository.GetValueById(p.EmployeeId);
-                var policy = await _policyRepository.GetValueById(p.PolicyId);
-                var status = await _statusRepository.GetValueById(p.StatusId);
-
-                dto.EmployeeName = emp != null ? $"{emp.FirstName} {emp.LastName}" : "Unknown";
-                dto.PolicyName = policy?.PolicyName ?? "Unknown";
-                dto.StatusName = status?.StatusName ?? "Unknown";
-
-                responseList.Add(dto);
+                responseList.Add(await MapPayrollToDTO(p));
             }
 
             return responseList;
         }
+        #endregion
 
         #region GeneratePayroll
+
         public async Task<PayrollResponseDTO> GeneratePayroll(PayrollRequestDTO dto)
         {
             var employee = await _employeeRepository.GetValueById(dto.EmployeeId);
@@ -83,7 +93,22 @@ namespace Easypay_App.Services
 
             decimal gross = employee.Salary;
 
-            // Calculate based on policy percentages
+            //Get attendance for the period
+            var attendanceRecords = (await _attendanceRepository.GetAllValue())
+                .Where(a => a.EmployeeId == dto.EmployeeId &&
+                            a.WorkDate >= dto.PeriodStart &&
+                            a.WorkDate <= dto.PeriodEnd)
+                .ToList();
+
+            int totalWorkingDays = attendanceRecords.Count(a => a.StatusId != 6); // exclude holidays
+            int absentDays = attendanceRecords.Count(a => a.StatusId == 2); // Absent
+            int halfDays = attendanceRecords.Count(a => a.StatusId == 4); // Half-Day
+
+            //Calculate daily pay deduction
+            decimal dailyPay = gross / totalWorkingDays;
+            decimal absenceDeduction = (absentDays * dailyPay) + (halfDays * (dailyPay / 2));
+
+            //Calculate based on policy percentages
             decimal basic = (gross * policy.BasicPercent) / 100;
             decimal hra = (gross * policy.HRAPercent) / 100;
             decimal special = (gross * policy.SpecialPercent) / 100;
@@ -92,9 +117,9 @@ namespace Easypay_App.Services
 
             decimal allowances = hra + special + travel + medical;
             decimal employeePf = (gross * policy.EmployeePercent) / 100;
-            decimal employerPf = (gross * policy.EmployerPercent) / 100;
             decimal gratuity = (gross * policy.GratuityPercent) / 100;
-            decimal deductions = employeePf + gratuity;
+
+            decimal deductions = employeePf + gratuity + absenceDeduction; // Added attendance deduction
             decimal netPay = gross - deductions;
 
             var payroll = new Payroll
@@ -107,10 +132,10 @@ namespace Easypay_App.Services
                 Allowances = allowances,
                 Deductions = deductions,
                 NetPay = netPay,
-                StatusId = 1, // e.g. Pending
+                StatusId = 1,
                 GeneratedDate = DateTime.Now,
                 CreatedAt = DateTime.Now,
-                PaidBy = 1, // Admin
+                PaidBy = 1,
                 PaidDate = DateTime.Now
             };
 
@@ -128,28 +153,18 @@ namespace Easypay_App.Services
         public async Task<IEnumerable<PayrollResponseDTO>> GetAllPayrolls()
         {
             var all = await _payrollRepository.GetAllValue();
-
             var responseList = new List<PayrollResponseDTO>();
 
             foreach (var p in all)
             {
-                var dto = _mapper.Map<PayrollResponseDTO>(p);
-
-                var emp = await _employeeRepository.GetValueById(p.EmployeeId);
-                var policy = await _policyRepository.GetValueById(p.PolicyId);
-                var status = await _statusRepository.GetValueById(p.StatusId);
-
-                dto.EmployeeName = emp != null ? $"{emp.FirstName} {emp.LastName}" : "Unknown";
-                dto.PolicyName = policy?.PolicyName ?? "Unknown";
-                dto.StatusName = status?.StatusName ?? "Unknown";
-
-                responseList.Add(dto);
+                responseList.Add(await MapPayrollToDTO(p));
             }
 
             return responseList;
         }
         #endregion
 
+        #region GetPayrollByEmployeeId
         public async Task<IEnumerable<PayrollResponseDTO>> GetPayrollByEmployeeId(int empId)
         {
             var allPayrolls = await _payrollRepository.GetAllValue();
@@ -158,19 +173,14 @@ namespace Easypay_App.Services
             var responseList = new List<PayrollResponseDTO>();
             foreach (var p in filtered)
             {
-                var dto = _mapper.Map<PayrollResponseDTO>(p);
-                var emp = await _employeeRepository.GetValueById(p.EmployeeId);
-                var policy = await _policyRepository.GetValueById(p.PolicyId);
-                var status = await _statusRepository.GetValueById(p.StatusId);
-                dto.EmployeeName = $"{emp?.FirstName} {emp?.LastName}";
-                dto.PolicyName = policy?.PolicyName ?? "Unknown";
-                dto.StatusName = status?.StatusName ?? "Unknown";
-                responseList.Add(dto);
+                responseList.Add(await MapPayrollToDTO(p));
             }
 
             return responseList;
         }
+        #endregion
 
+        #region MarkPayrollAsPaid
         public async Task<PayrollResponseDTO> MarkPayrollAsPaid(int payrollId, int adminId)
         {
             var payroll = await _payrollRepository.GetValueById(payrollId);
@@ -183,18 +193,60 @@ namespace Easypay_App.Services
 
             await _payrollRepository.UpdateValue(payroll.Id, payroll);
 
-            var response = _mapper.Map<PayrollResponseDTO>(payroll);
-            var emp = await _employeeRepository.GetValueById(payroll.EmployeeId);
-            var policy = await _policyRepository.GetValueById(payroll.PolicyId);
-            var status = await _statusRepository.GetValueById(payroll.StatusId);
-
-            response.EmployeeName = $"{emp?.FirstName} {emp?.LastName}";
-            response.PolicyName = policy?.PolicyName ?? "Unknown";
-            response.StatusName = status?.StatusName ?? "Unknown";
-
-            return response;
+            return await MapPayrollToDTO(payroll);
         }
+        #endregion
 
+        #region GenerateComplianceReport
+        public async Task<ComplianceReportDTO> GenerateComplianceReport(DateTime start, DateTime end)
+        {
+            var allPayrolls = await _payrollRepository.GetAllValue();
+            var filtered = allPayrolls
+                .Where(p => p.PeriodStart >= start && p.PeriodEnd <= end && p.StatusId == 3) // Approved only
+                .ToList();
+
+            var employeeDetails = new List<EmployeeComplianceDetailDTO>();
+
+            decimal totalGrossSalary = 0;
+            decimal totalPFContribution = 0;
+            decimal totalTaxDeducted = 0; // Placeholder until tax logic is added
+
+            foreach (var payroll in filtered)
+            {
+                var emp = await _employeeRepository.GetValueById(payroll.EmployeeId);
+                var policy = await _policyRepository.GetValueById(payroll.PolicyId);
+
+                decimal grossSalary = emp?.Salary ?? 0;
+                decimal employeePF = (grossSalary * (policy?.EmployeePercent ?? 0)) / 100;
+                decimal employerPF = (grossSalary * (policy?.EmployerPercent ?? 0)) / 100;
+                decimal pfTotal = employeePF + employerPF;
+
+                totalGrossSalary += grossSalary;
+                totalPFContribution += pfTotal;
+
+                employeeDetails.Add(new EmployeeComplianceDetailDTO
+                {
+                    EmployeeId = payroll.EmployeeId,
+                    EmployeeName = emp != null ? $"{emp.FirstName} {emp.LastName}" : "Unknown",
+                    GrossSalary = grossSalary,
+                    PFContribution = pfTotal,
+                    TaxDeducted = 0 // Placeholder
+                });
+            }
+
+            return new ComplianceReportDTO
+            {
+                PayrollId = 0, // Not applicable for a period report
+                PayrollMonth = start, // Can be adjusted to reporting period start
+                EmployeeDetails = employeeDetails,
+                TotalGrossSalary = totalGrossSalary,
+                TotalPFContribution = totalPFContribution,
+                TotalTaxDeducted = totalTaxDeducted
+            };
+        }
+        #endregion
+
+        #region VerifyPayroll
         public async Task<PayrollResponseDTO> VerifyPayroll(int payrollId)
         {
             var payroll = await _payrollRepository.GetValueById(payrollId);
@@ -203,18 +255,11 @@ namespace Easypay_App.Services
 
             payroll.StatusId = 2; // Processed
             payroll.PaidDate = DateTime.Now;
-            await _payrollRepository.UpdateValue(payroll.Id,payroll);
+            await _payrollRepository.UpdateValue(payroll.Id, payroll);
 
-            var response = _mapper.Map<PayrollResponseDTO>(payroll);
-            var emp = await _employeeRepository.GetValueById(payroll.EmployeeId);
-            var policy = await _policyRepository.GetValueById(payroll.PolicyId);
-            var status = await _statusRepository.GetValueById(payroll.StatusId);
-
-            response.EmployeeName = $"{emp?.FirstName} {emp?.LastName}";
-            response.PolicyName = policy?.PolicyName ?? "Unknown";
-            response.StatusName = status?.StatusName ?? "Unknown";
-
-            return response;
+            return await MapPayrollToDTO(payroll);
         }
+        #endregion
+
     }
 }

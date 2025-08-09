@@ -38,6 +38,8 @@ namespace Easypay_App.Context
         public DbSet<Payroll> Payrolls { get; set; }
         public DbSet<PayrollDetail> PayrollDetails { get; set; }
         public DbSet<UserAccount> UserAccounts { get; set; }
+        public DbSet<Timesheet> Timesheets { get; set; }
+        public DbSet<TimesheetStatusMaster> TimesheetStatusMasters { get; set; }
 
         #endregion
 
@@ -632,7 +634,61 @@ namespace Easypay_App.Context
                 .OnDelete(DeleteBehavior.Cascade);
             #endregion
 
+            #region Timesheet
+            modelBuilder.Entity<Timesheet>(entity =>
+            {
+                entity.HasKey(e => e.Id);
 
+                entity.Property(e => e.EmployeeId)
+                    .IsRequired();
+
+                entity.Property(e => e.WorkDate)
+                    .HasColumnType("date")
+                    .IsRequired();
+
+                entity.Property(e => e.HoursWorked)
+                    .HasColumnType("decimal(5,2)")
+                    .IsRequired();
+
+                entity.Property(e => e.TaskDescription)
+                    .HasMaxLength(500)
+                    .IsRequired();
+
+                entity.Property(e => e.IsBillable)
+                    .IsRequired();
+
+                entity.Property(e => e.StatusId)
+                    .IsRequired();
+
+                entity.Property(e => e.CreatedAt)
+                    .HasDefaultValueSql("GETDATE()")
+                    .IsRequired();
+
+                entity.HasOne(e => e.Status)
+                      .WithMany(s => s.Timesheets)
+                      .HasForeignKey(e => e.StatusId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+            #endregion
+
+            #region TimesheetMaster
+            
+            modelBuilder.Entity<TimesheetStatusMaster>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.StatusName)
+                      .HasMaxLength(100)
+                      .IsRequired();
+            });
+
+            modelBuilder.Entity<TimesheetStatusMaster>().HasData(
+                new TimesheetStatusMaster { Id = 1, StatusName = "Pending" },
+                new TimesheetStatusMaster { Id = 2, StatusName = "Approved" },
+                new TimesheetStatusMaster { Id = 3, StatusName = "Rejected" },
+                new TimesheetStatusMaster { Id = 4, StatusName = "Submitted" }
+            );
+            #endregion
         }
     }
 }

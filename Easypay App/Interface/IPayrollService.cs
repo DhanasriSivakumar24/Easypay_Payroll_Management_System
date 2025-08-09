@@ -10,6 +10,7 @@ namespace Easypay_App.Interface
         public Task<PayrollResponseDTO> ApprovePayroll(int payrollId);
         public Task<PayrollResponseDTO> MarkPayrollAsPaid(int payrollId, int adminId);
         public Task<IEnumerable<PayrollResponseDTO>> GetPayrollByEmployeeId(int empId);
-        public Task<IEnumerable<PayrollResponseDTO>> GenerateComplianceReport(DateTime start, DateTime end);
+        public Task<IEnumerable<PayrollResponseDTO>> GetApprovedPayrolls(DateTime start, DateTime end);
+        public Task<ComplianceReportDTO> GenerateComplianceReport(DateTime start, DateTime end);
     }
 }
