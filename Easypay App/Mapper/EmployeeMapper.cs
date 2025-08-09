@@ -72,6 +72,14 @@ namespace Easypay_App.Mapper
             CreateMap<NotificationLogRequestDTO, NotificationLog>();
             #endregion
 
+            #region AuditTrail
+
+            CreateMap<AuditTrailRequestDTO, AuditTrail>();
+            CreateMap<AuditTrail, AuditTrailResponseDTO>()
+                .ForMember(dest => dest.ActionName, opt => opt.MapFrom(src => src.Action.ActionName))
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName));
+            #endregion
+
         }
 
     }

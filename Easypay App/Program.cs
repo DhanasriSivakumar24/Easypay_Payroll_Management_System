@@ -99,7 +99,7 @@ namespace Easypay_App
                 });
 
             builder.Services.AddAutoMapper(typeof(EmployeeMapper));
-
+            builder.Logging.AddLog4Net();
 
             var app = builder.Build();
 
