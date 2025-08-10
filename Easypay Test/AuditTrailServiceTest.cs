@@ -8,6 +8,7 @@ using Easypay_App.Repositories;
 using Easypay_App.Services;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using NUnit.Framework;
 
 namespace Easypay_Test
 {
@@ -15,7 +16,7 @@ namespace Easypay_Test
     {
         private IAuditTrailService _service;
         private Mock<IRepository<int, AuditTrail>> _auditRepoMock;
-        private Mock<IRepository<int, UserAccount>> _userRepoMock;
+        private Mock<IRepository<string, UserAccount>> _userRepoMock; // Changed to string
         private Mock<IRepository<int, AuditTrailActionMaster>> _actionRepoMock;
         private Mock<IMapper> _mapperMock;
 
@@ -23,13 +24,13 @@ namespace Easypay_Test
         public void Setup()
         {
             _auditRepoMock = new Mock<IRepository<int, AuditTrail>>();
-            _userRepoMock = new Mock<IRepository<int, UserAccount>>();
+            _userRepoMock = new Mock<IRepository<string, UserAccount>>(); // Changed to string
             _actionRepoMock = new Mock<IRepository<int, AuditTrailActionMaster>>();
             _mapperMock = new Mock<IMapper>();
 
             // Setup mock data for repositories
-            _userRepoMock.Setup(repo => repo.GetValueById(It.IsAny<int>()))
-                .ReturnsAsync((int id) => id == 1 ? new UserAccount { Id = 1, UserName = "admin" } : null);
+            _userRepoMock.Setup(repo => repo.GetValueById(It.IsAny<string>()))
+                .ReturnsAsync((string userName) => userName.ToLower() == "admin" ? new UserAccount { Id = 1, UserName = "admin" } : null);
             _actionRepoMock.Setup(repo => repo.GetValueById(It.IsAny<int>()))
                 .ReturnsAsync((int id) => id == 1 ? new AuditTrailActionMaster { Id = 1, ActionName = "Create" } : null);
 
@@ -48,7 +49,7 @@ namespace Easypay_Test
             // Arrange
             var request = new AuditTrailRequestDTO
             {
-                UserId = 1,
+                UserName = "admin", // Changed to UserName
                 ActionId = 1,
                 EntityName = "Employee",
                 EntityId = 100,
@@ -61,6 +62,7 @@ namespace Easypay_Test
             {
                 Id = 1,
                 UserId = 1,
+                UserName = "admin",
                 ActionId = 1,
                 EntityName = "Employee",
                 EntityId = 100,
@@ -74,8 +76,8 @@ namespace Easypay_Test
             {
                 Id = 1,
                 UserId = 1,
-                ActionId = 1,
                 UserName = "admin",
+                ActionId = 1,
                 ActionName = "Create",
                 EntityName = "Employee",
                 EntityId = 100,
@@ -97,7 +99,6 @@ namespace Easypay_Test
 
             // Assert
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.UserId, Is.EqualTo(1));
             Assert.That(result.ActionId, Is.EqualTo(1));
             Assert.That(result.UserName, Is.EqualTo("admin"));
             Assert.That(result.ActionName, Is.EqualTo("Create"));
@@ -118,6 +119,7 @@ namespace Easypay_Test
                 {
                     Id = 1,
                     UserId = 1,
+                    UserName = "admin",
                     ActionId = 1,
                     EntityName = "Employee",
                     EntityId = 1000,
@@ -134,8 +136,8 @@ namespace Easypay_Test
                 {
                     Id = 1,
                     UserId = 1,
-                    ActionId = 1,
                     UserName = "admin",
+                    ActionId = 1,
                     ActionName = "Create",
                     EntityName = "Employee",
                     EntityId = 1000,
@@ -150,6 +152,8 @@ namespace Easypay_Test
                 .ReturnsAsync(auditTrails);
             _mapperMock.Setup(m => m.Map<AuditTrailResponseDTO>(It.IsAny<AuditTrail>()))
                 .Returns((AuditTrail log) => response.First(r => r.Id == log.Id));
+            _userRepoMock.Setup(repo => repo.GetValueById("admin"))
+                .ReturnsAsync(new UserAccount { Id = 1, UserName = "admin" });
 
             // Act
             var result = await _service.GetAllLogs();
@@ -158,6 +162,7 @@ namespace Easypay_Test
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Count(), Is.EqualTo(1));
             Assert.That(result.First().UserId, Is.EqualTo(1));
+            Assert.That(result.First().UserName, Is.EqualTo("admin"));
             Assert.That(result.First().ActionName, Is.EqualTo("Create"));
         }
         #endregion
@@ -169,13 +174,13 @@ namespace Easypay_Test
             // Arrange
             var auditTrails = new List<AuditTrail>
             {
-                new AuditTrail { Id = 1, UserId = 1, ActionId = 1, EntityName = "Employee", EntityId = 101, OldValue = "{}", NewValue = "{}", TimeStamp = DateTime.Now, IPAddress = "x" },
-                new AuditTrail { Id = 2, UserId = 2, ActionId = 1, EntityName = "Employee", EntityId = 102, OldValue = "{}", NewValue = "{}", TimeStamp = DateTime.Now, IPAddress = "x" }
+                new AuditTrail { Id = 1, UserId = 1, UserName = "admin", ActionId = 1, EntityName = "Employee", EntityId = 101, OldValue = "{}", NewValue = "{}", TimeStamp = DateTime.Now, IPAddress = "x" },
+                new AuditTrail { Id = 2, UserId = 2, UserName = "user", ActionId = 1, EntityName = "Employee", EntityId = 102, OldValue = "{}", NewValue = "{}", TimeStamp = DateTime.Now, IPAddress = "x" }
             };
 
             var response = new List<AuditTrailResponseDTO>
             {
-                new AuditTrailResponseDTO { Id = 1, UserId = 1, ActionId = 1, UserName = "admin", ActionName = "Create" }
+                new AuditTrailResponseDTO { Id = 1, UserId = 1, UserName = "admin", ActionId = 1, ActionName = "Create" }
             };
 
             _auditRepoMock.Setup(repo => repo.GetAllValue())
@@ -185,18 +190,20 @@ namespace Easypay_Test
                 {
                     Id = log.Id,
                     UserId = log.UserId,
+                    UserName = log.UserName,
                     ActionId = log.ActionId,
-                    UserName = log.UserId == 1 ? "admin" : null,
                     ActionName = log.ActionId == 1 ? "Create" : null
                 });
+            _userRepoMock.Setup(repo => repo.GetValueById("admin"))
+                .ReturnsAsync(new UserAccount { Id = 1, UserName = "admin" });
 
             // Act
-            var result = await _service.GetLogsByUser(1);
+            var result = await _service.GetLogsByUser("admin");
 
             // Assert
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Count(), Is.EqualTo(1));
-            Assert.That(result.First().UserId, Is.EqualTo(1));
+            Assert.That(result.First().Id, Is.EqualTo(1));
             Assert.That(result.First().UserName, Is.EqualTo("admin"));
         }
         #endregion
@@ -208,13 +215,13 @@ namespace Easypay_Test
             // Arrange
             var auditTrails = new List<AuditTrail>
             {
-                new AuditTrail { Id = 1, UserId = 1, ActionId = 1, EntityName = "X", EntityId = 1, OldValue = "", NewValue = "", TimeStamp = DateTime.Now, IPAddress = "" },
-                new AuditTrail { Id = 2, UserId = 2, ActionId = 2, EntityName = "X", EntityId = 2, OldValue = "", NewValue = "", TimeStamp = DateTime.Now, IPAddress = "" }
+                new AuditTrail { Id = 1, UserId = 1, UserName = "admin", ActionId = 1, EntityName = "X", EntityId = 1, OldValue = "", NewValue = "", TimeStamp = DateTime.Now, IPAddress = "" },
+                new AuditTrail { Id = 2, UserId = 2, UserName = "user", ActionId = 2, EntityName = "X", EntityId = 2, OldValue = "", NewValue = "", TimeStamp = DateTime.Now, IPAddress = "" }
             };
 
             var response = new List<AuditTrailResponseDTO>
             {
-                new AuditTrailResponseDTO { Id = 1, UserId = 1, ActionId = 1, UserName = "admin", ActionName = "Create" }
+                new AuditTrailResponseDTO { Id = 1, UserId = 1, UserName = "admin", ActionId = 1, ActionName = "Create" }
             };
 
             _auditRepoMock.Setup(repo => repo.GetAllValue())
@@ -224,10 +231,12 @@ namespace Easypay_Test
                 {
                     Id = log.Id,
                     UserId = log.UserId,
+                    UserName = log.UserName,
                     ActionId = log.ActionId,
-                    UserName = log.UserId == 1 ? "admin" : null,
                     ActionName = log.ActionId == 1 ? "Create" : null
                 });
+            _userRepoMock.Setup(repo => repo.GetValueById("admin"))
+                .ReturnsAsync(new UserAccount { Id = 1, UserName = "admin" });
 
             // Act
             var result = await _service.GetLogsByAction(1);
@@ -236,6 +245,7 @@ namespace Easypay_Test
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Count(), Is.EqualTo(1));
             Assert.That(result.First().ActionId, Is.EqualTo(1));
+            Assert.That(result.First().UserName, Is.EqualTo("admin"));
             Assert.That(result.First().ActionName, Is.EqualTo("Create"));
         }
         #endregion
@@ -249,6 +259,7 @@ namespace Easypay_Test
             {
                 Id = 1,
                 UserId = 1,
+                UserName = "admin",
                 ActionId = 1,
                 EntityName = "Employee",
                 EntityId = 123,
@@ -262,8 +273,8 @@ namespace Easypay_Test
             {
                 Id = 1,
                 UserId = 1,
-                ActionId = 1,
                 UserName = "admin",
+                ActionId = 1,
                 ActionName = "Create",
                 EntityName = "Employee",
                 EntityId = 123,
@@ -277,6 +288,8 @@ namespace Easypay_Test
                 .ReturnsAsync(auditTrail);
             _mapperMock.Setup(m => m.Map<AuditTrailResponseDTO>(It.IsAny<AuditTrail>()))
                 .Returns(response);
+            _userRepoMock.Setup(repo => repo.GetValueById("admin"))
+                .ReturnsAsync(new UserAccount { Id = 1, UserName = "admin" });
 
             // Act
             var result = await _service.GetLogById(1);

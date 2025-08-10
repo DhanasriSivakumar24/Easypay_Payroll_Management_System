@@ -3,19 +3,20 @@ using Easypay_App.Exceptions;
 using Easypay_App.Interface;
 using Easypay_App.Models;
 using Easypay_App.Models.DTO;
+using log4net;
 
 namespace Easypay_App.Services
 {
     public class AuditTrailService : IAuditTrailService
     {
         private readonly IRepository<int, AuditTrail> _auditRepo;
-        private IRepository<int, UserAccount> _userRepo;
+        private IRepository<string, UserAccount> _userRepo;
         private readonly IRepository<int, AuditTrailActionMaster> _actionRepo;
         private readonly IMapper _mapper;
 
         public AuditTrailService(
             IRepository<int, AuditTrail> auditRepo,
-            IRepository<int, UserAccount> userRepo,
+            IRepository<string, UserAccount> userRepo,
             IRepository<int, AuditTrailActionMaster> actionRepo,
             IMapper mapper)
         {
@@ -27,16 +28,33 @@ namespace Easypay_App.Services
 
         public async Task<AuditTrailResponseDTO> LogAction(AuditTrailRequestDTO dto)
         {
-            var audit = _mapper.Map<AuditTrail>(dto);
-            audit.TimeStamp = DateTime.Now;
+            try 
+            {
+                var user = await _userRepo.GetValueById(dto.UserName); // Get user by username
+                if (user == null)
+                    throw new NoItemFoundException($"User with UserName {dto.UserName} not found");
 
-            var added = await _auditRepo.AddValue(audit);
+                var action = await _actionRepo.GetValueById(dto.ActionId);
+                if (action == null)
+                    throw new NoItemFoundException($"Action with ID {dto.ActionId} not found");
 
-            var result = _mapper.Map<AuditTrailResponseDTO>(added);
-            result.UserName = (await _userRepo.GetValueById(dto.UserId))?.UserName ?? "Unknown";
-            result.ActionName = (await _actionRepo.GetValueById(dto.ActionId))?.ActionName ?? "Unknown";
+                var audit = _mapper.Map<AuditTrail>(dto);
+                audit.UserId = user.Id;      
+                audit.UserName = user.UserName; 
+                audit.TimeStamp = DateTime.Now;
 
-            return result;
+                var added = await _auditRepo.AddValue(audit);
+
+                var result = _mapper.Map<AuditTrailResponseDTO>(added);
+                result.UserName = user.UserName;
+                result.ActionName = action.ActionName;
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error in LogAction: {ex.Message} ");
+            }
         }
 
         public async Task<IEnumerable<AuditTrailResponseDTO>> GetAllLogs()
@@ -45,9 +63,9 @@ namespace Easypay_App.Services
             return await AuditResponseDTO(logs);
         }
 
-        public async Task<IEnumerable<AuditTrailResponseDTO>> GetLogsByUser(int userId)
+        public async Task<IEnumerable<AuditTrailResponseDTO>> GetLogsByUser(string userName)
         {
-            var logs = (await _auditRepo.GetAllValue()).Where(x => x.UserId == userId);
+            var logs = (await _auditRepo.GetAllValue()).Where(x => x.UserName == userName);
             return await AuditResponseDTO(logs);
         }
 
@@ -63,7 +81,7 @@ namespace Easypay_App.Services
             foreach (var log in logs)
             {
                 var dto = _mapper.Map<AuditTrailResponseDTO>(log);
-                dto.UserName = (await _userRepo.GetValueById(log.UserId))?.UserName ?? "Unknown";
+                dto.UserName = (await _userRepo.GetValueById(log.UserId.ToString()))?.UserName ?? log.UserName ?? "Unknown";
                 dto.ActionName = (await _actionRepo.GetValueById(log.ActionId))?.ActionName ?? "Unknown";
                 result.Add(dto);
             }

@@ -19,8 +19,8 @@
         public DateTime ApprovedDate { get; set; }
         public int? ApprovedBy { get; set; }
         public Employee? ApprovedById { get; set; }
-        public DateTime PaidDate { get; set; }
-        public int PaidBy { get; set; }
+        public DateTime? PaidDate { get; set; }
+        public int? PaidBy { get; set; }
         public UserRoleMaster? PaidById { get; set; }
         public DateTime CreatedAt { get; set; }
         public ICollection<PayrollDetail>? PayrollDetails { get; set; }

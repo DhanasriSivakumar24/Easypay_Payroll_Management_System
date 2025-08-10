@@ -4,6 +4,7 @@
     {
         public int Id { get; set; }
         public int UserId { get; set; }
+        public string UserName { get; set; } = string.Empty;
         public UserAccount? User { get; set; } 
         public int ActionId { get; set; }
         public AuditTrailActionMaster? Action { get; set; }
@@ -18,10 +19,11 @@
             
         }
 
-        public AuditTrail(int id, int userId, UserAccount? user, int actionId, AuditTrailActionMaster? action, string entityName, int entityId, string oldValue, string newValue, DateTime timeStamp, string iPAddress)
+        public AuditTrail(int id, int userId, string userName, UserAccount? user, int actionId, AuditTrailActionMaster? action, string entityName, int entityId, string oldValue, string newValue, DateTime timeStamp, string iPAddress)
         {
             Id = id;
             UserId = userId;
+            UserName = userName;
             User = user;
             ActionId = actionId;
             Action = action;

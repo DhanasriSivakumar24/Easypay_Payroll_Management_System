@@ -57,6 +57,7 @@ namespace Easypay_App.Services
                 throw new NoItemFoundException();
 
             payroll.StatusId = 3; // Approved
+            payroll.ApprovedDate = DateTime.Now;
             await _payrollRepository.UpdateValue(payroll.Id, payroll);
 
             return await MapPayrollToDTO(payroll);
@@ -68,9 +69,9 @@ namespace Easypay_App.Services
         {
             var all = await _payrollRepository.GetAllValue();
             var filtered = all.Where(p =>
-                p.PeriodStart >= start &&
-                p.PeriodEnd <= end &&
-                p.StatusId == 3); // Only Approved
+                p.PeriodStart <= end &&
+                p.PeriodEnd >= start &&
+                (p.StatusId == 3 || p.StatusId == 5)); // Only Approved
 
             var responseList = new List<PayrollResponseDTO>();
             foreach (var p in filtered)
@@ -88,6 +89,7 @@ namespace Easypay_App.Services
         {
             var employee = await _employeeRepository.GetValueById(dto.EmployeeId);
             var policy = await _policyRepository.GetValueById(dto.PolicyId);
+
             if (employee == null || policy == null)
                 throw new NoItemFoundException();
 
@@ -113,7 +115,7 @@ namespace Easypay_App.Services
                 timesheetPenalty = (expectedHours - totalHoursWorked) * hourlyRate;
             }
 
-            // ===== Policy-based calculations =====
+            // ===== Policy-based calculations
             decimal basic = (gross * policy.BasicPercent) / 100;
             decimal hra = (gross * policy.HRAPercent) / 100;
             decimal special = (gross * policy.SpecialPercent) / 100;
@@ -121,13 +123,18 @@ namespace Easypay_App.Services
             decimal medical = (gross * policy.MedicalPercent) / 100;
 
             decimal allowances = hra + special + travel + medical;
+
+            // Deductions
             decimal employeePf = (gross * policy.EmployeePercent) / 100;
-            decimal gratuity = (gross * policy.GratuityPercent) / 100;
 
-            decimal deductions = employeePf + gratuity + timesheetPenalty;
-            decimal netPay = gross - deductions;
+            decimal deductions = employeePf + timesheetPenalty;
 
-            // ===== Save payroll =====
+            decimal netPay = gross + allowances - deductions;
+
+            // Prevent negative net pay
+            if (netPay < 0)
+                netPay = 0;
+
             var payroll = new Payroll
             {
                 EmployeeId = dto.EmployeeId,
@@ -138,19 +145,29 @@ namespace Easypay_App.Services
                 Allowances = allowances,
                 Deductions = deductions,
                 NetPay = netPay,
-                StatusId = 1,
+                StatusId = 1, // Pending
                 GeneratedDate = DateTime.Now,
                 CreatedAt = DateTime.Now,
-                PaidBy = 1,
-                PaidDate = DateTime.Now
+                PaidBy = null,  
+                PaidDate = null
             };
 
-            await _payrollRepository.AddValue(payroll);
+            try
+            {
+                await _payrollRepository.AddValue(payroll);
+            }
+            catch (Exception ex)
+            {
+                // Here you can log or inspect the exact error
+                var errorMsg = ex.InnerException?.Message ?? ex.Message;
+                throw new Exception($"Error saving payroll: {errorMsg}");
+            }
 
             var response = _mapper.Map<PayrollResponseDTO>(payroll);
             response.EmployeeName = $"{employee.FirstName} {employee.LastName}";
             response.PolicyName = policy.PolicyName;
-            response.StatusName = (await _statusRepository.GetValueById(payroll.StatusId)).StatusName;
+            response.StatusName = (await _statusRepository.GetValueById(payroll.StatusId))?.StatusName ?? "Unknown";
+
             return response;
         }
         #endregion
@@ -193,7 +210,7 @@ namespace Easypay_App.Services
             if (payroll == null)
                 throw new NoItemFoundException();
 
-            payroll.StatusId = 3; // Approved
+            payroll.StatusId = 5; // Approved
             payroll.PaidBy = adminId;
             payroll.PaidDate = DateTime.Now;
 
@@ -208,21 +225,25 @@ namespace Easypay_App.Services
         {
             var allPayrolls = await _payrollRepository.GetAllValue();
             var filtered = allPayrolls
-                .Where(p => p.PeriodStart >= start && p.PeriodEnd <= end && p.StatusId == 3) // Approved only
+                .Where(p =>
+                p.PeriodStart <= end &&
+                p.PeriodEnd >= start &&
+                (p.StatusId == 3 || p.StatusId == 5)) // Approved and paid
                 .ToList();
 
             var employeeDetails = new List<EmployeeComplianceDetailDTO>();
 
             decimal totalGrossSalary = 0;
             decimal totalPFContribution = 0;
-            decimal totalTaxDeducted = 0; // Placeholder until tax logic is added
 
             foreach (var payroll in filtered)
             {
                 var emp = await _employeeRepository.GetValueById(payroll.EmployeeId);
                 var policy = await _policyRepository.GetValueById(payroll.PolicyId);
 
-                decimal grossSalary = emp?.Salary ?? 0;
+                decimal grossSalary = payroll.BasicPay + payroll.Allowances; // we are using the payroll data
+                decimal deductions = payroll.Deductions;
+                decimal netPay = payroll.NetPay;
                 decimal employeePF = (grossSalary * (policy?.EmployeePercent ?? 0)) / 100;
                 decimal employerPF = (grossSalary * (policy?.EmployerPercent ?? 0)) / 100;
                 decimal pfTotal = employeePF + employerPF;
@@ -235,8 +256,7 @@ namespace Easypay_App.Services
                     EmployeeId = payroll.EmployeeId,
                     EmployeeName = emp != null ? $"{emp.FirstName} {emp.LastName}" : "Unknown",
                     GrossSalary = grossSalary,
-                    PFContribution = pfTotal,
-                    TaxDeducted = 0 // Placeholder
+                    PFContribution = pfTotal
                 });
             }
 
@@ -246,8 +266,7 @@ namespace Easypay_App.Services
                 PayrollMonth = start, // Can be adjusted to reporting period start
                 EmployeeDetails = employeeDetails,
                 TotalGrossSalary = totalGrossSalary,
-                TotalPFContribution = totalPFContribution,
-                TotalTaxDeducted = totalTaxDeducted
+                TotalPFContribution = totalPFContribution
             };
         }
         #endregion

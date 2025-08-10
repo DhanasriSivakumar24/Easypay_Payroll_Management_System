@@ -2,7 +2,7 @@
 {
     public class AuditTrailRequestDTO
     {
-        public int UserId { get; set; }
+        public string UserName { get; set; } = string.Empty; 
         public int ActionId { get; set; }
         public string EntityName { get; set; } = string.Empty;
         public int EntityId { get; set; }

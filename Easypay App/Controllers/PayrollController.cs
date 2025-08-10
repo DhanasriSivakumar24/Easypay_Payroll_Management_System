@@ -71,7 +71,7 @@ namespace Easypay_App.Controllers
         [Authorize(Roles = "Admin, HR Manager")]
         public async Task<ActionResult<IEnumerable<PayrollResponseDTO>>> GetApprovedPayrolls([FromQuery] DateTime start, [FromQuery] DateTime end)
         {
-            var result = await _payrollService.GenerateComplianceReport(start, end);
+            var result = await _payrollService.GetApprovedPayrolls(start, end);
             return Ok(result);
         }
 

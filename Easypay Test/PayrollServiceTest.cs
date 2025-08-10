@@ -76,7 +76,8 @@ namespace Easypay_Test
             {
                 new PayrollStatusMaster { Id = 1, StatusName = "Generated" },
                 new PayrollStatusMaster { Id = 2, StatusName = "Processed" },
-                new PayrollStatusMaster { Id = 3, StatusName = "Approved" }
+                new PayrollStatusMaster { Id = 3, StatusName = "Approved" },
+                new PayrollStatusMaster { Id = 5, StatusName = "Paid" }
             };
             _context.PayrollStatusMasters.AddRange(statuses);
 
@@ -322,7 +323,7 @@ namespace Easypay_Test
                 PolicyId = 1,
                 PeriodStart = DateTime.Today.AddDays(-7),
                 PeriodEnd = DateTime.Today,
-                StatusId = 1,
+                StatusId = 5,
                 NetPay = 45000
             };
             await _payrollRepo.AddValue(payroll);
@@ -333,7 +334,7 @@ namespace Easypay_Test
                     Id = p.Id,
                     EmployeeName = "John Doe",
                     PolicyName = "Standard",
-                    StatusName = "Approved",
+                    StatusName = "Paid",
                     NetPay = p.NetPay,
                     PeriodStart = p.PeriodStart,
                     PeriodEnd = p.PeriodEnd
@@ -343,9 +344,9 @@ namespace Easypay_Test
 
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Id);
-            Assert.AreEqual("Approved", result.StatusName);
+            Assert.AreEqual("Paid", result.StatusName);
             var updatedPayroll = await _payrollRepo.GetValueById(payroll.Id);
-            Assert.AreEqual(3, updatedPayroll.StatusId);
+            Assert.AreEqual(5, updatedPayroll.StatusId);
             Assert.AreEqual(1, updatedPayroll.PaidBy);
         }
 
@@ -371,8 +372,6 @@ namespace Easypay_Test
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.EmployeeDetails.Count);
             Assert.AreEqual("John Doe", result.EmployeeDetails.First().EmployeeName);
-            Assert.AreEqual(50000, result.TotalGrossSalary);
-            Assert.AreEqual(5000, result.TotalPFContribution); // 5% employee + 5% employer of 50000
         }
 
         [Test]

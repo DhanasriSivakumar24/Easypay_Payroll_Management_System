@@ -64,6 +64,7 @@ namespace Easypay_App
             builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddScoped<INotificationLogService, NotificationLogService>();
             builder.Services.AddScoped<ITimesheetService, TimesheetService>();
+            builder.Services.AddScoped<IAuditTrailService,AuditTrailService>();
 
             builder.Services.AddScoped<IRepository<int, Employee>, EmployeeRepository>();
             builder.Services.AddScoped<IRepository<int, DepartmentMaster>, DepartmentRepository>();
@@ -86,6 +87,8 @@ namespace Easypay_App
             builder.Services.AddScoped<IRepository<int, NotificationLog>, NotificationRepository>();
             builder.Services.AddScoped<IRepository<int, Timesheet>, TimesheetRepository>();
             builder.Services.AddScoped<IRepository<int, TimesheetStatusMaster>, TimesheetStatusRepository>();
+            builder.Services.AddScoped<IRepository<int, AuditTrailActionMaster>, AuditTrailActionRepository>();
+            builder.Services.AddScoped<IRepository<int, AuditTrail>, AuditTrailRepository>();
 
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
