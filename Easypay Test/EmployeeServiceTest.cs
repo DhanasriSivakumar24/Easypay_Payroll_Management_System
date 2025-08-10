@@ -9,9 +9,15 @@ using Easypay_App.Services;
 using EasyPay_App.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Easypay_Test
 {
+    [TestFixture]
     public class EmployeeServiceTest
     {
         private IRepository<int, Employee> _employeeRepo;
@@ -21,6 +27,7 @@ namespace Easypay_Test
         private IRepository<int, UserRoleMaster> _userRoleRepo;
         private Mock<IMapper> _mockMapper;
         private EmployeeService _service;
+        private PayrollContext _context;
 
         [SetUp]
         public void Setup()
@@ -29,27 +36,75 @@ namespace Easypay_Test
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
 
-            var context = new PayrollContext(options);
+            _context = new PayrollContext(options);
 
-            _employeeRepo = new EmployeeRepository(context);
-            _departmentRepo = new DepartmentRepository(context);
-            _roleRepo = new RoleRepository(context);
-            _statusRepo = new EmployeeStatusRepository(context);
-            _userRoleRepo = new UserRoleRepository(context);
-
-            _departmentRepo.AddValue(new DepartmentMaster { Id = 1, DepartmentName = "HR" });
-            _roleRepo.AddValue(new RoleMaster { Id = 1, RoleName = "Manager" });
-            _statusRepo.AddValue(new EmployeeStatusMaster { Id = 1, StatusName = "Active" });
-            _userRoleRepo.AddValue(new UserRoleMaster { Id = 1, UserRoleName = "Admin" });
-            _userRoleRepo.AddValue(new UserRoleMaster { Id = 3, UserRoleName = "Employee" });
+            _employeeRepo = new EmployeeRepository(_context);
+            _departmentRepo = new DepartmentRepository(_context);
+            _roleRepo = new RoleRepository(_context);
+            _statusRepo = new EmployeeStatusRepository(_context);
+            _userRoleRepo = new UserRoleRepository(_context);
 
             _mockMapper = new Mock<IMapper>();
             _service = new EmployeeService(_employeeRepo, _departmentRepo, _roleRepo, _statusRepo, _userRoleRepo, _mockMapper.Object);
+
+            // Seed data
+            var departments = new List<DepartmentMaster>
+            {
+                new DepartmentMaster { Id = 1, DepartmentName = "HR" },
+                new DepartmentMaster { Id = 2, DepartmentName = "IT" }
+            };
+            var roles = new List<RoleMaster>
+            {
+                new RoleMaster { Id = 1, RoleName = "Manager" },
+                new RoleMaster { Id = 2, RoleName = "Developer" }
+            };
+            var statuses = new List<EmployeeStatusMaster>
+            {
+                new EmployeeStatusMaster { Id = 1, StatusName = "Active" },
+                new EmployeeStatusMaster { Id = 2, StatusName = "Inactive" }
+            };
+            var userRoles = new List<UserRoleMaster>
+            {
+                new UserRoleMaster { Id = 1, UserRoleName = "Admin" },
+                new UserRoleMaster { Id = 2, UserRoleName = "Employee" }
+            };
+
+            _context.DepartmentMasters.AddRange(departments);
+            _context.RoleMasters.AddRange(roles);
+            _context.EmployeeStatusMasters.AddRange(statuses);
+            _context.UserRoleMasters.AddRange(userRoles);
+            _context.SaveChanges();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _context.Database.EnsureDeleted();
+            _context.Dispose();
+        }
+
+        private void SetupMapperForEmployee(Employee employee)
+        {
+            _mockMapper.Setup(m => m.Map<EmployeeAddResponseDTO>(It.Is<Employee>(e => e.Id == employee.Id)))
+                .Returns(new EmployeeAddResponseDTO
+                {
+                    Id = employee.Id,
+                    FirstName = employee.FirstName,
+                    LastName = employee.LastName,
+                    Email = employee.Email,
+                    PhoneNumber = employee.PhoneNumber,
+                    DepartmentName = employee.DepartmentId == 1 ? "HR" : "IT",
+                    RoleName = employee.RoleId == 1 ? "Manager" : "Developer",
+                    StatusName = employee.StatusId == 1 ? "Active" : "Inactive",
+                    UserRoleName = employee.UserRoleId == 1 ? "Admin" : "Employee",
+                    Salary = employee.Salary,
+                    ReportingManager = employee.ReportingManagerId
+                });
         }
 
         #region AddEmployee
         [Test]
-        public async Task AddEmployee()
+        public async Task AddEmployee_ShouldReturnResponse_WhenValid()
         {
             var dto = new EmployeeAddRequestDTO
             {
@@ -60,10 +115,12 @@ namespace Easypay_Test
                 DepartmentId = 1,
                 RoleId = 1,
                 StatusId = 1,
-                Salary = 35000
+                Salary = 35000,
+                ReportingManagerId = null,
+                UserRoleId = 2
             };
 
-            _mockMapper.Setup(m => m.Map<Employee>(dto)).Returns(new Employee
+            var employee = new Employee
             {
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
@@ -73,120 +130,32 @@ namespace Easypay_Test
                 RoleId = dto.RoleId,
                 StatusId = dto.StatusId,
                 Salary = dto.Salary,
-                UserRoleId = 3
-            });
+                ReportingManagerId = dto.ReportingManagerId,
+                UserRoleId = dto.UserRoleId
+            };
 
-            _mockMapper.Setup(m => m.Map<EmployeeAddResponseDTO>(It.IsAny<Employee>()))
-                .Returns((Employee e) => new EmployeeAddResponseDTO
-                {
-                    Id = e.Id,
-                    FirstName = e.FirstName,
-                    LastName = e.LastName,
-                    Email = e.Email,
-                    PhoneNumber = e.PhoneNumber,
-                    DepartmentName = "HR",
-                    RoleName = "Manager",
-                    StatusName = "Active",
-                    UserRoleName = "Employee"
-                });
+            _mockMapper.Setup(m => m.Map<Employee>(dto)).Returns(employee);
+            SetupMapperForEmployee(employee);
 
             var result = await _service.AddEmployee(dto);
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Email, Is.EqualTo("jane@test.com"));
-        }
-        #endregion
-
-        #region GetEmployeeById
-        [Test]
-        public async Task GetEmployeeById()
-        {
-            var employee = new Employee
-            {
-                Id = 1,
-                FirstName = "John",
-                LastName = "Doe",
-                Email = "john@test.com",
-                PhoneNumber = "9999999999",
-                DepartmentId = 1,
-                RoleId = 1,
-                StatusId = 1,
-                UserRoleId = 1,
-                Salary = 30000
-            };
-
-            await _employeeRepo.AddValue(employee);
-
-            _mockMapper.Setup(m => m.Map<EmployeeAddResponseDTO>(employee)).Returns(new EmployeeAddResponseDTO
-            {
-                Id = employee.Id,
-                FirstName = employee.FirstName,
-                LastName = employee.LastName,
-                Email = employee.Email,
-                PhoneNumber = employee.PhoneNumber,
-                DepartmentName = "HR",
-                RoleName = "Manager",
-                StatusName = "Active",
-                UserRoleName = "Admin"
-            });
-
-            var result = await _service.GetEmployeeById(1);
-
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result.Id, Is.EqualTo(1));
-        }
-
-        [Test]
-        public void GetEmployeeById_ThrowException()
-        {
-            Assert.ThrowsAsync<NoItemFoundException>(() => _service.GetEmployeeById(999));
-        }
-        #endregion
-
-        #region DeleteEmployee
-        [Test]
-        public async Task DeleteEmployee()
-        {
-            var employee = new Employee
-            {
-                Id = 1,
-                FirstName = "John",
-                LastName = "Doe",
-                Email = "john@test.com",
-                PhoneNumber = "9999999999",
-                DepartmentId = 1,
-                RoleId = 1,
-                StatusId = 1,
-                UserRoleId = 3
-            };
-
-            await _employeeRepo.AddValue(employee);
-
-            _mockMapper.Setup(m => m.Map<EmployeeAddResponseDTO>(employee)).Returns(new EmployeeAddResponseDTO
-            {
-                Id = employee.Id,
-                Email = employee.Email,
-                UserRoleName = "Employee"
-            });
-
-            var result = await _service.DeleteEmployee(1);
-
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result.Id, Is.EqualTo(1));
-        }
-
-        [Test]
-        public void DeleteEmployee_ThrowException()
-        {
-            Assert.ThrowsAsync<NoItemFoundException>(() => _service.DeleteEmployee(999));
+            Assert.That(result.FirstName, Is.EqualTo("Jane"));
+            Assert.That(result.LastName, Is.EqualTo("Smith"));
+            Assert.That(result.DepartmentName, Is.EqualTo("HR"));
+            Assert.That(result.RoleName, Is.EqualTo("Manager"));
+            Assert.That(result.StatusName, Is.EqualTo("Active"));
+            Assert.That(result.UserRoleName, Is.EqualTo("Employee"));
+            Assert.That(result.Salary, Is.EqualTo(35000));
         }
         #endregion
 
         #region UpdateEmployee
         [Test]
-        public async Task UpdateEmployee()
+        public async Task UpdateEmployee_ShouldReturnResponse_WhenValid()
         {
-            var existing = new Employee
+            var employee = new Employee
             {
                 Id = 1,
                 FirstName = "Old",
@@ -197,9 +166,9 @@ namespace Easypay_Test
                 RoleId = 1,
                 StatusId = 1,
                 Salary = 25000,
-                UserRoleId = 3
+                UserRoleId = 2
             };
-            await _employeeRepo.AddValue(existing);
+            await _employeeRepo.AddValue(employee);
 
             var dto = new EmployeeAddRequestDTO
             {
@@ -207,34 +176,46 @@ namespace Easypay_Test
                 LastName = "User",
                 Email = "updated@email.com",
                 PhoneNumber = "9999999999",
-                DepartmentId = 1,
-                RoleId = 1,
+                DepartmentId = 2,
+                RoleId = 2,
                 StatusId = 1,
-                Salary = 40000
+                Salary = 40000,
+                ReportingManagerId = 1,
+                UserRoleId = 1
             };
 
-            _mockMapper.Setup(m => m.Map<EmployeeAddResponseDTO>(It.IsAny<Employee>()))
-                .Returns((Employee e) => new EmployeeAddResponseDTO
-                {
-                    Id = e.Id,
-                    FirstName = e.FirstName,
-                    LastName = e.LastName,
-                    Email = e.Email,
-                    PhoneNumber = e.PhoneNumber,
-                    DepartmentName = "HR",
-                    RoleName = "Manager",
-                    StatusName = "Active",
-                    UserRoleName = "Employee"
-                });
+            var updatedEmployee = new Employee
+            {
+                Id = 1,
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                Email = dto.Email,
+                PhoneNumber = dto.PhoneNumber,
+                DepartmentId = dto.DepartmentId,
+                RoleId = dto.RoleId,
+                StatusId = dto.StatusId,
+                Salary = dto.Salary,
+                ReportingManagerId = dto.ReportingManagerId,
+                UserRoleId = dto.UserRoleId
+            };
+
+            SetupMapperForEmployee(updatedEmployee);
 
             var result = await _service.UpdateEmployee(1, dto);
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.FirstName, Is.EqualTo("Updated"));
+            Assert.That(result.LastName, Is.EqualTo("User"));
+            Assert.That(result.Email, Is.EqualTo("updated@email.com"));
+            Assert.That(result.DepartmentName, Is.EqualTo("IT"));
+            Assert.That(result.RoleName, Is.EqualTo("Developer"));
+            Assert.That(result.UserRoleName, Is.EqualTo("Admin"));
+            Assert.That(result.ReportingManager, Is.EqualTo(1));
+            Assert.That(result.Salary, Is.EqualTo(40000));
         }
 
         [Test]
-        public void UpdateEmployee_ThrowException()
+        public void UpdateEmployee_ShouldThrowException_WhenEmployeeNotFound()
         {
             var dto = new EmployeeAddRequestDTO
             {
@@ -254,43 +235,111 @@ namespace Easypay_Test
 
         #region GetAllEmployees
         [Test]
-        public async Task GetAllEmployees()
+        public async Task GetAllEmployees_ShouldReturnList_WhenFound()
         {
-            var emp1 = new Employee { Id = 1, FirstName = "Alice", LastName = "Brown", Email = "alice@email.com", PhoneNumber = "1111111111", DepartmentId = 1, RoleId = 1, StatusId = 1, UserRoleId = 3 };
-            var emp2 = new Employee { Id = 2, FirstName = "Bob", LastName = "Smith", Email = "bob@email.com", PhoneNumber = "2222222222", DepartmentId = 1, RoleId = 1, StatusId = 1, UserRoleId = 3 };
-
-            await _employeeRepo.AddValue(emp1);
-            await _employeeRepo.AddValue(emp2);
-
-            _mockMapper.Setup(m => m.Map<EmployeeAddResponseDTO>(It.IsAny<Employee>()))
-                .Returns((Employee e) => new EmployeeAddResponseDTO
-                {
-                    Id = e.Id,
-                    FirstName = e.FirstName,
-                    LastName = e.LastName,
-                    Email = e.Email,
-                    PhoneNumber = e.PhoneNumber,
-                    DepartmentName = "HR",
-                    RoleName = "Manager",
-                    StatusName = "Active",
-                    UserRoleName = "Employee"
-                });
+            var employees = new List<Employee>
+            {
+                new Employee { Id = 1, FirstName = "Alice", LastName = "Brown", Email = "alice@email.com", PhoneNumber = "1111111111", DepartmentId = 1, RoleId = 1, StatusId = 1, UserRoleId = 2, Salary = 30000 },
+                new Employee { Id = 2, FirstName = "Bob", LastName = "Smith", Email = "bob@email.com", PhoneNumber = "2222222222", DepartmentId = 2, RoleId = 2, StatusId = 1, UserRoleId = 1, Salary = 40000 }
+            };
+            foreach (var emp in employees)
+            {
+                await _employeeRepo.AddValue(emp);
+                SetupMapperForEmployee(emp);
+            }
 
             var result = await _service.GetAllEmployees();
 
+            Assert.That(result, Is.Not.Null);
             Assert.That(result.Count(), Is.EqualTo(2));
+            Assert.That(result.Any(r => r.FirstName == "Alice" && r.DepartmentName == "HR"), Is.True);
+            Assert.That(result.Any(r => r.FirstName == "Bob" && r.DepartmentName == "IT"), Is.True);
         }
 
         [Test]
-        public void GetAllEmployees_ThrowException()
+        public void GetAllEmployees_ShouldThrowException_WhenNoneFound()
         {
             Assert.ThrowsAsync<NoItemFoundException>(() => _service.GetAllEmployees());
         }
         #endregion
 
-        #region ChangeUserRole
+        #region GetEmployeeById
         [Test]
-        public async Task ChangeEmployeeUserRole()
+        public async Task GetEmployeeById_ShouldReturnResponse_WhenValid()
+        {
+            var employee = new Employee
+            {
+                Id = 1,
+                FirstName = "John",
+                LastName = "Doe",
+                Email = "john@test.com",
+                PhoneNumber = "9999999999",
+                DepartmentId = 1,
+                RoleId = 1,
+                StatusId = 1,
+                UserRoleId = 1,
+                Salary = 30000
+            };
+            await _employeeRepo.AddValue(employee);
+            SetupMapperForEmployee(employee);
+
+            var result = await _service.GetEmployeeById(1);
+
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Id, Is.EqualTo(1));
+            Assert.That(result.Email, Is.EqualTo("john@test.com"));
+            Assert.That(result.DepartmentName, Is.EqualTo("HR"));
+            Assert.That(result.RoleName, Is.EqualTo("Manager"));
+            Assert.That(result.StatusName, Is.EqualTo("Active"));
+            Assert.That(result.UserRoleName, Is.EqualTo("Admin"));
+            Assert.That(result.Salary, Is.EqualTo(30000));
+        }
+
+        [Test]
+        public void GetEmployeeById_ShouldThrowException_WhenEmployeeNotFound()
+        {
+            Assert.ThrowsAsync<NoItemFoundException>(() => _service.GetEmployeeById(999));
+        }
+        #endregion
+
+        #region DeleteEmployee
+        [Test]
+        public async Task DeleteEmployee_ShouldReturnResponse_WhenValid()
+        {
+            var employee = new Employee
+            {
+                Id = 1,
+                FirstName = "John",
+                LastName = "Doe",
+                Email = "john@test.com",
+                PhoneNumber = "9999999999",
+                DepartmentId = 1,
+                RoleId = 1,
+                StatusId = 1,
+                UserRoleId = 2,
+                Salary = 30000
+            };
+            await _employeeRepo.AddValue(employee);
+            SetupMapperForEmployee(employee);
+
+            var result = await _service.DeleteEmployee(1);
+
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Id, Is.EqualTo(1));
+            Assert.That(result.Email, Is.EqualTo("john@test.com"));
+            Assert.That(result.UserRoleName, Is.EqualTo("Employee"));
+        }
+
+        [Test]
+        public void DeleteEmployee_ShouldThrowException_WhenEmployeeNotFound()
+        {
+            Assert.ThrowsAsync<NoItemFoundException>(() => _service.DeleteEmployee(999));
+        }
+        #endregion
+
+        #region ChangeEmployeeUserRole
+        [Test]
+        public async Task ChangeEmployeeUserRole_ShouldReturnResponse_WhenValid()
         {
             var employee = new Employee
             {
@@ -303,7 +352,7 @@ namespace Easypay_Test
                 RoleId = 1,
                 StatusId = 1,
                 Salary = 42000,
-                UserRoleId = 3
+                UserRoleId = 2
             };
             await _employeeRepo.AddValue(employee);
 
@@ -313,20 +362,174 @@ namespace Easypay_Test
                 NewUserRoleId = 1
             };
 
-            _mockMapper.Setup(m => m.Map<EmployeeAddResponseDTO>(It.IsAny<Employee>())).Returns((Employee e) => new EmployeeAddResponseDTO
+            SetupMapperForEmployee(new Employee
             {
-                Id = e.Id,
-                Email = e.Email,
-                UserRoleName = "Admin"
+                Id = 1,
+                FirstName = employee.FirstName,
+                LastName = employee.LastName,
+                Email = employee.Email,
+                PhoneNumber = employee.PhoneNumber,
+                DepartmentId = employee.DepartmentId,
+                RoleId = employee.RoleId,
+                StatusId = employee.StatusId,
+                Salary = employee.Salary,
+                UserRoleId = 1
             });
 
             var result = await _service.ChangeEmployeeUserRole(dto);
 
+            Assert.That(result, Is.Not.Null);
             Assert.That(result.UserRoleName, Is.EqualTo("Admin"));
+            var updatedEmployee = await _employeeRepo.GetValueById(1);
+            Assert.That(updatedEmployee.UserRoleId, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void ChangeEmployeeUserRole_ShouldThrowException_WhenEmployeeNotFound()
+        {
+            var dto = new ChangeUserRoleDTO
+            {
+                EmployeeId = 999,
+                NewUserRoleId = 1
+            };
+
+            Assert.ThrowsAsync<NoItemFoundException>(() => _service.ChangeEmployeeUserRole(dto));
         }
         #endregion
 
-        [TearDown]
-        public void TearDown() { }
+        #region SearchEmployees
+        [Test]
+        public async Task SearchEmployees_ShouldReturnPaginatedResponse_WhenFoundByFirstName()
+        {
+            var employees = new List<Employee>
+            {
+                new Employee { Id = 1, FirstName = "Alice", LastName = "Brown", Email = "alice@email.com", PhoneNumber = "1111111111", DepartmentId = 1, RoleId = 1, StatusId = 1, UserRoleId = 2, Salary = 30000 },
+                new Employee { Id = 2, FirstName = "Bob", LastName = "Smith", Email = "bob@email.com", PhoneNumber = "2222222222", DepartmentId = 2, RoleId = 2, StatusId = 1, UserRoleId = 1, Salary = 40000 }
+            };
+            foreach (var emp in employees)
+            {
+                await _employeeRepo.AddValue(emp);
+                SetupMapperForEmployee(emp);
+            }
+
+            var criteria = new EmployeeSearchRequestDTO
+            {
+                FirstName = "Alice",
+                PageNumber = 1,
+                PageSize = 10
+            };
+
+            var result = await _service.SearchEmployees(criteria);
+
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Employees.Count, Is.EqualTo(1));
+            Assert.That(result.TotalNumberOfRecords, Is.EqualTo(1));
+            Assert.That(result.Employees.First().FirstName, Is.EqualTo("Alice"));
+            Assert.That(result.Employees.First().DepartmentName, Is.EqualTo("HR"));
+        }
+
+        [Test]
+        public async Task SearchEmployees_ShouldReturnPaginatedResponse_WhenFoundByDepartment()
+        {
+            var employees = new List<Employee>
+            {
+                new Employee { Id = 1, FirstName = "Alice", LastName = "Brown", Email = "alice@email.com", PhoneNumber = "1111111111", DepartmentId = 1, RoleId = 1, StatusId = 1, UserRoleId = 2, Salary = 30000 },
+                new Employee { Id = 2, FirstName = "Bob", LastName = "Smith", Email = "bob@email.com", PhoneNumber = "2222222222", DepartmentId = 2, RoleId = 2, StatusId = 1, UserRoleId = 1, Salary = 40000 }
+            };
+            foreach (var emp in employees)
+            {
+                await _employeeRepo.AddValue(emp);
+                SetupMapperForEmployee(emp);
+            }
+
+            var criteria = new EmployeeSearchRequestDTO
+            {
+                Departments = new List<int> { 1 },
+                PageNumber = 1,
+                PageSize = 10
+            };
+
+            var result = await _service.SearchEmployees(criteria);
+
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Employees.Count, Is.EqualTo(1));
+            Assert.That(result.TotalNumberOfRecords, Is.EqualTo(1));
+            Assert.That(result.Employees.First().FirstName, Is.EqualTo("Alice"));
+            Assert.That(result.Employees.First().DepartmentName, Is.EqualTo("HR"));
+        }
+
+        [Test]
+        public async Task SearchEmployees_ShouldReturnPaginatedResponse_WhenSorted()
+        {
+            var employees = new List<Employee>
+            {
+                new Employee { Id = 1, FirstName = "Bob", LastName = "Smith", Email = "bob@email.com", PhoneNumber = "2222222222", DepartmentId = 2, RoleId = 2, StatusId = 1, UserRoleId = 1, Salary = 40000 },
+                new Employee { Id = 2, FirstName = "Alice", LastName = "Brown", Email = "alice@email.com", PhoneNumber = "1111111111", DepartmentId = 1, RoleId = 1, StatusId = 1, UserRoleId = 2, Salary = 30000 }
+            };
+            foreach (var emp in employees)
+            {
+                await _employeeRepo.AddValue(emp);
+                SetupMapperForEmployee(emp);
+            }
+
+            var criteria = new EmployeeSearchRequestDTO
+            {
+                Sort = 2, // Sort by FirstName ascending
+                PageNumber = 1,
+                PageSize = 10
+            };
+
+            var result = await _service.SearchEmployees(criteria);
+
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Employees.Count, Is.EqualTo(2));
+            Assert.That(result.TotalNumberOfRecords, Is.EqualTo(2));
+            Assert.That(result.Employees.First().FirstName, Is.EqualTo("Alice"));
+            Assert.That(result.Employees.Last().FirstName, Is.EqualTo("Bob"));
+        }
+
+        [Test]
+        public async Task SearchEmployees_ShouldReturnPaginatedResponse_WhenFilteredBySalaryRange()
+        {
+            var employees = new List<Employee>
+            {
+                new Employee { Id = 1, FirstName = "Alice", LastName = "Brown", Email = "alice@email.com", PhoneNumber = "1111111111", DepartmentId = 1, RoleId = 1, StatusId = 1, UserRoleId = 2, Salary = 30000 },
+                new Employee { Id = 2, FirstName = "Bob", LastName = "Smith", Email = "bob@email.com", PhoneNumber = "2222222222", DepartmentId = 2, RoleId = 2, StatusId = 1, UserRoleId = 1, Salary = 50000 }
+            };
+            foreach (var emp in employees)
+            {
+                await _employeeRepo.AddValue(emp);
+                SetupMapperForEmployee(emp);
+            }
+
+            var criteria = new EmployeeSearchRequestDTO
+            {
+                SalaryRange = new SearchRange<decimal> { MinValue = 20000, MaxValue = 35000 },
+                PageNumber = 1,
+                PageSize = 10
+            };
+
+            var result = await _service.SearchEmployees(criteria);
+
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Employees.Count, Is.EqualTo(1));
+            Assert.That(result.TotalNumberOfRecords, Is.EqualTo(1));
+            Assert.That(result.Employees.First().FirstName, Is.EqualTo("Alice"));
+        }
+
+        [Test]
+        public void SearchEmployees_ShouldThrowException_WhenNoResultsFound()
+        {
+            var criteria = new EmployeeSearchRequestDTO
+            {
+                FirstName = "NonExistent",
+                PageNumber = 1,
+                PageSize = 10
+            };
+
+            var exception = Assert.ThrowsAsync<Exception>(() => _service.SearchEmployees(criteria));
+            Assert.That(exception.Message, Is.EqualTo("No search result Found"));
+        }
+        #endregion
     }
 }

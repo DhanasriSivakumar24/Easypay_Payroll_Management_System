@@ -24,7 +24,7 @@
         public string PanNumber { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public ICollection<Attendance>? Attendances { get; set; }
+        public ICollection<Timesheet>? Timesheets { get; set; }
         public ICollection<BenefitEnrollment>? BenefitEnrollments { get; set; }
         public ICollection<Payroll>? Payrolls { get; set; }
         public UserAccount? UserAccount { get; set; }
@@ -35,7 +35,7 @@
             
         }
 
-        public Employee(int id, string firstName, string lastName, DateTime dateOfBirth, string gender, DateTime joinDate, int statusId, EmployeeStatusMaster status, int departmentId, DepartmentMaster department, int roleId, RoleMaster role, int userRoleId, UserRoleMaster? userRole, int? reportingManagerId, Employee? reportingManager, string email, string phoneNumber, string address, string panNumber, DateTime createdAt, DateTime updatedAt, ICollection<Attendance>? attendances, ICollection<BenefitEnrollment>? benefitEnrollments, ICollection<Payroll>? payrolls, UserAccount? userAccount, decimal salary)
+        public Employee(int id, string firstName, string lastName, DateTime dateOfBirth, string gender, DateTime joinDate, int statusId, EmployeeStatusMaster status, int departmentId, DepartmentMaster department, int roleId, RoleMaster role, int userRoleId, UserRoleMaster? userRole, int? reportingManagerId, Employee? reportingManager, string email, string phoneNumber, string address, string panNumber, DateTime createdAt, DateTime updatedAt, ICollection<Timesheet>? timesheets, ICollection<BenefitEnrollment>? benefitEnrollments, ICollection<Payroll>? payrolls, UserAccount? userAccount, decimal salary)
         {
             Id = id;
             FirstName = firstName;
@@ -59,7 +59,7 @@
             PanNumber = panNumber;
             CreatedAt = createdAt;
             UpdatedAt = updatedAt;
-            Attendances = attendances;
+            Timesheets = timesheets;
             BenefitEnrollments = benefitEnrollments;
             Payrolls = payrolls;
             UserAccount = userAccount;

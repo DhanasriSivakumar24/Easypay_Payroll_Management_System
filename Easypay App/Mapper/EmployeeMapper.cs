@@ -80,18 +80,11 @@ namespace Easypay_App.Mapper
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName));
             #endregion
 
-            #region Attendance
-
-            CreateMap<Attendance, AttendanceResponseDTO>()
-                .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src =>
-                    src.Employee != null ? $"{src.Employee.FirstName} {src.Employee.LastName}" : "Unknown"))
-                .ForMember(dest => dest.InTime, opt => opt.MapFrom(src => src.InTime.ToString("HH:mm")))
-                .ForMember(dest => dest.OutTime, opt => opt.MapFrom(src => src.OutTime.ToString("HH:mm")))
-                .ForMember(dest => dest.TotalHours, opt => opt.MapFrom(src =>
-                    $"{src.TotalHours.Hours}h {src.TotalHours.Minutes}m"))
-                .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src =>
-                    src.Status != null ? src.Status.StatusName : "Unknown"));
-
+            #region Timesheet
+            CreateMap<Timesheet, TimesheetResponseDTO>()
+                    .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => src.Employee != null ? src.Employee.FirstName + " " + src.Employee.LastName : "Unknown"))
+                    .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.Status != null ? src.Status.StatusName : "Unknown"))
+                    .ReverseMap();
             #endregion
         }
 

@@ -12,7 +12,6 @@ namespace Easypay_App.Context
         #region DbSets
 
         // Master Tables
-        public DbSet<AttendanceStatusMaster> AttendanceStatusMasters { get; set; }
         public DbSet<AuditTrailActionMaster> AuditTrailActionMasters { get; set; }
         public DbSet<BenefitMaster> BenefitMasters { get; set; }
         public DbSet<BenefitStatusMaster> BenefitStatusMasters { get; set; }
@@ -29,7 +28,6 @@ namespace Easypay_App.Context
         public DbSet<UserRoleMaster> UserRoleMasters { get; set; }
 
         // Transactional Tables
-        public DbSet<Attendance> Attendances { get; set; }
         public DbSet<AuditTrail> AuditTrails { get; set; }
         public DbSet<BenefitEnrollment> BenefitEnrollments { get; set; }
         public DbSet<Employee> Employees { get; set; }
@@ -45,22 +43,6 @@ namespace Easypay_App.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            #region AttendanceStatusMaster
-            modelBuilder.Entity<AttendanceStatusMaster>()
-                .HasKey(e => e.Id)
-                .HasName("PK_Attendance_Status_Master");
-
-            modelBuilder.Entity<AttendanceStatusMaster>()
-                .HasData(
-                new AttendanceStatusMaster() { Id = 1, StatusName = "Present" },
-                new AttendanceStatusMaster() { Id = 2, StatusName = "Absent" },
-                new AttendanceStatusMaster() { Id = 3, StatusName = "Leave" },
-                new AttendanceStatusMaster() { Id = 4, StatusName = "Half-Day" },
-                new AttendanceStatusMaster() { Id = 5, StatusName = "Work From Home" },
-                new AttendanceStatusMaster() { Id = 6, StatusName = "Holiday" }
-            );
-            #endregion
-
             #region AuditTrailActionMaster
             modelBuilder.Entity<AuditTrailActionMaster>()
                 .HasKey(e => e.Id)
@@ -289,23 +271,6 @@ namespace Easypay_App.Context
             );
             #endregion
 
-            #region Attendance
-            modelBuilder.Entity<Attendance>().HasKey(a => a.Id).HasName("PK_Attendance");
-            modelBuilder.Entity<Attendance>()
-                .HasOne(a => a.Employee)
-                .WithMany(e => e.Attendances)
-                .HasForeignKey(a => a.EmployeeId)
-                .HasConstraintName("FK_Employee_Id")
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Attendance>()
-                .HasOne(a => a.Status)
-                .WithMany(s => s.Attendances)
-                .HasForeignKey(a => a.StatusId)
-                .HasConstraintName("FK_Attendance_AttendanceStatus")
-                .OnDelete(DeleteBehavior.Restrict);
-            #endregion
-
             #region AuditTrail
             modelBuilder.Entity<AuditTrail>().HasKey(a => a.Id).HasName("PK_AuditTrail");
             modelBuilder.Entity<AuditTrail>()
@@ -391,12 +356,12 @@ namespace Easypay_App.Context
                 .HasConstraintName("FK_Employee_ReportingManager")
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Attendance relationship (if needed for clarity)
+            // Timesheet relationship (if needed for clarity)
             modelBuilder.Entity<Employee>()
-                .HasMany(e => e.Attendances)
+                .HasMany(e => e.Timesheets)
                 .WithOne(a => a.Employee)
                 .HasForeignKey(a => a.EmployeeId)
-                .HasConstraintName("FK_Attendance_Employee")
+                .HasConstraintName("FK_Employee_Timesheet")
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Benefit Enrollment relationship

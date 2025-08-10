@@ -14,7 +14,7 @@ namespace Easypay_App.Services
         private readonly IRepository<int, PayrollPolicyMaster> _policyRepository;
         private readonly IRepository<int, PayrollStatusMaster> _statusRepository;
         private readonly IRepository<int, Payroll> _payrollRepository;
-        private readonly IRepository<int, Attendance> _attendanceRepository;
+        private readonly IRepository<int, Timesheet> _timesheetRepository;
         private readonly IMapper _mapper;
 
         public PayrollService(
@@ -22,14 +22,14 @@ namespace Easypay_App.Services
             IRepository<int, PayrollPolicyMaster> policyRepository,
             IRepository<int, PayrollStatusMaster> statusRepository,
             IRepository<int, Payroll> payrollRepository,
-            IRepository<int, Attendance> attendanceRepository,
+            IRepository<int, Timesheet> timesheetRepository,
             IMapper mapper)
         {
             _employeeRepository = employeeRepository;
             _policyRepository = policyRepository;
             _statusRepository = statusRepository;
             _payrollRepository = payrollRepository;
-            _attendanceRepository = attendanceRepository;
+            _timesheetRepository = timesheetRepository;
             _mapper = mapper;
         }
 
@@ -93,22 +93,27 @@ namespace Easypay_App.Services
 
             decimal gross = employee.Salary;
 
-            //Get attendance for the period
-            var attendanceRecords = (await _attendanceRepository.GetAllValue())
-                .Where(a => a.EmployeeId == dto.EmployeeId &&
-                            a.WorkDate >= dto.PeriodStart &&
-                            a.WorkDate <= dto.PeriodEnd)
+            // ===== Timesheet-based calculations =====
+            var timesheets = (await _timesheetRepository.GetAllValue())
+                .Where(t => t.EmployeeId == dto.EmployeeId &&
+                            t.WorkDate >= dto.PeriodStart &&
+                            t.WorkDate <= dto.PeriodEnd)
                 .ToList();
 
-            int totalWorkingDays = attendanceRecords.Count(a => a.StatusId != 6); // exclude holidays
-            int absentDays = attendanceRecords.Count(a => a.StatusId == 2); // Absent
-            int halfDays = attendanceRecords.Count(a => a.StatusId == 4); // Half-Day
+            decimal totalHoursWorked = timesheets.Sum(t => t.HoursWorked);
 
-            //Calculate daily pay deduction
-            decimal dailyPay = gross / totalWorkingDays;
-            decimal absenceDeduction = (absentDays * dailyPay) + (halfDays * (dailyPay / 2));
+            // Assume 8 hours per working day in the period
+            int totalWorkingDays = (dto.PeriodEnd - dto.PeriodStart).Days + 1;
+            decimal expectedHours = totalWorkingDays * 8;
 
-            //Calculate based on policy percentages
+            decimal timesheetPenalty = 0;
+            if (totalHoursWorked < expectedHours)
+            {
+                decimal hourlyRate = gross / (expectedHours > 0 ? expectedHours : 1);
+                timesheetPenalty = (expectedHours - totalHoursWorked) * hourlyRate;
+            }
+
+            // ===== Policy-based calculations =====
             decimal basic = (gross * policy.BasicPercent) / 100;
             decimal hra = (gross * policy.HRAPercent) / 100;
             decimal special = (gross * policy.SpecialPercent) / 100;
@@ -119,9 +124,10 @@ namespace Easypay_App.Services
             decimal employeePf = (gross * policy.EmployeePercent) / 100;
             decimal gratuity = (gross * policy.GratuityPercent) / 100;
 
-            decimal deductions = employeePf + gratuity + absenceDeduction; // Added attendance deduction
+            decimal deductions = employeePf + gratuity + timesheetPenalty;
             decimal netPay = gross - deductions;
 
+            // ===== Save payroll =====
             var payroll = new Payroll
             {
                 EmployeeId = dto.EmployeeId,
