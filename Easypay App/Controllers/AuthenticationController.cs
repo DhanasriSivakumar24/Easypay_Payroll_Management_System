@@ -2,6 +2,7 @@
 using Easypay_App.Interface;
 using Easypay_App.Models;
 using Easypay_App.Models.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,6 +23,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpPost("Register")]
+        [Authorize(Roles = "Admin, HR Manager")]
         public async Task<ActionResult<RegisterResponseDTO>> Register(
                                     [FromBody] RegisterRequestDTO requestDTO, IRepository<int, UserRoleMaster> roleRepo)
         {

@@ -22,8 +22,8 @@
         public string PhoneNumber { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
         public string PanNumber { get; set; } = string.Empty;
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime UpdatedAt { get; set; } = DateTime.Now;
         public ICollection<Timesheet>? Timesheets { get; set; }
         public ICollection<BenefitEnrollment>? BenefitEnrollments { get; set; }
         public ICollection<Payroll>? Payrolls { get; set; }

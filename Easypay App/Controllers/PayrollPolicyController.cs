@@ -69,6 +69,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin, HR Manager")]
         public async Task<ActionResult> GetPolicyById(int id)
         {
             try

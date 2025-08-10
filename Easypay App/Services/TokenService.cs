@@ -18,7 +18,6 @@ namespace Easypay_App.Services
         }
         public async Task<string> GenerateToken(LoginResponseDTO login)
         {
-
             //Payload for the token
             var claims = new List<Claim>
             {

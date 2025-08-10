@@ -40,7 +40,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpGet("user/{userId}")]
-        [Authorize(Roles = "Admin, HR Manager")]
+        [Authorize(Roles = "Admin, HR Manager, Employee")]
         public async Task<ActionResult<IEnumerable<NotificationLogDTO>>> GetByUser(int userId)
         {
             try

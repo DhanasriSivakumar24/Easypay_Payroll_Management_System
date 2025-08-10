@@ -76,6 +76,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpGet("compliance-report")]
+        [Authorize(Roles = "Admin, HR Manager")]
         public async Task<ActionResult<ComplianceReportDTO>> GetComplianceReport([FromQuery] DateTime start, [FromQuery] DateTime end)
         {
             if (start == default || end == default)

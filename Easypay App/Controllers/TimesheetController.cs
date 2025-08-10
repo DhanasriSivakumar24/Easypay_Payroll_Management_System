@@ -1,5 +1,6 @@
 ﻿using Easypay_App.Interface;
 using Easypay_App.Models.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,6 +18,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Employee, HR Manager")]
         public async Task<IActionResult> AddTimesheet([FromBody] TimesheetRequestDTO dto)
         {
             var result = await _timesheetService.AddTimesheet(dto);
@@ -24,6 +26,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpGet("employee/{employeeId}")]
+        [Authorize(Roles = "Admin, HR Manager, Employee")]
         public async Task<IActionResult> GetByEmployee(int employeeId)
         {
             var result = await _timesheetService.GetTimesheetsByEmployee(employeeId);
@@ -31,6 +34,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpPut("{id}/approve")]
+        [Authorize(Roles = "Admin, HR Manager")]
         public async Task<IActionResult> Approve(int id)
         {
             await _timesheetService.ApproveTimesheet(id);
@@ -38,6 +42,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpPut("{id}/reject")]
+        [Authorize(Roles = "Admin, HR Manager")]
         public async Task<IActionResult> Reject(int id)
         {
             await _timesheetService.RejectTimesheet(id);

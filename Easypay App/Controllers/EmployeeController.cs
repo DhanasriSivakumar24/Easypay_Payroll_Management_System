@@ -36,6 +36,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpPut("update/{id}")]
+        [Authorize(Roles = "Admin, HR Manager")]
         public async Task<ActionResult> UpdateEmployee(int id, EmployeeAddRequestDTO employeeDto)
         {
             try
@@ -51,6 +52,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpDelete("delete/{id}")]
+        [Authorize(Roles = "Admin, HR Manager")]
         public async Task<ActionResult> DeleteEmployee(int id)
         {
             try
@@ -90,6 +92,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin, HR Manager, Employee")]
         public async Task<ActionResult> GetEmployeeById(int id)
         {
             try

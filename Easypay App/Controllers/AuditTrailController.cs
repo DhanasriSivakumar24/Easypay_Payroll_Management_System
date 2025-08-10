@@ -1,5 +1,6 @@
 ﻿using Easypay_App.Interface;
 using Easypay_App.Models.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,6 +18,7 @@ namespace Easypay_App.Controllers
         }
 
         #region Add Audit Trail
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult AddAuditTrail([FromBody] AuditTrailRequestDTO request)
         {
@@ -29,6 +31,7 @@ namespace Easypay_App.Controllers
         #endregion
 
         #region Get All
+        [Authorize(Roles = "Admin, HR Manager")]
         [HttpGet]
         public IActionResult GetAllAuditTrails()
         {
@@ -38,6 +41,7 @@ namespace Easypay_App.Controllers
         #endregion
 
         #region Get By Id
+        [Authorize(Roles = "Admin, HR Manager")]
         [HttpGet("{id}")]
         public IActionResult GetAuditTrailById(int id)
         {
@@ -50,6 +54,7 @@ namespace Easypay_App.Controllers
         #endregion
 
         #region Get By User
+        [Authorize(Roles = "Admin, HR Manager")]
         [HttpGet("user/{userId}")]
         public IActionResult GetAuditTrailsByUser(int userId)
         {

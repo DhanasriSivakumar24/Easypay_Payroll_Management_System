@@ -21,7 +21,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpGet("all")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, HR Manager, Manager")]
         public async Task<ActionResult> GetAllRequest()
         {
             try
@@ -37,6 +37,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpPost("submit")]
+        [Authorize(Roles = "Employee")]
         public async Task<ActionResult> SubmitLeave([FromBody] LeaveRequestDTO requestDTO)
         {
             try
@@ -52,6 +53,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpDelete("delete/{id}")]
+        [Authorize(Roles = "Admin, HR Manager, Employee")]
         public async Task<ActionResult> Delete(int id)
         {
             try
@@ -67,6 +69,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin, HR Manager, Manager, Employee")]
         public async Task<ActionResult> GetLeaveRequestById(int id)
         {
             try
@@ -83,8 +86,8 @@ namespace Easypay_App.Controllers
 
         // Approve leave request
         [HttpPut("approve/{id}")]
-        [Authorize(Roles ="Admin")]
-        public async Task<ActionResult> ApproveLeave(int id, int managerId)
+        [Authorize(Roles = "Admin, HR Manager, Manager")]
+        public async Task<ActionResult> ApproveLeave(int id, [FromQuery] int managerId)
         {
             try
             {
@@ -100,8 +103,8 @@ namespace Easypay_App.Controllers
 
         // Reject leave request
         [HttpPut("reject/{id}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> RejectLeave(int id, int managerId)
+        [Authorize(Roles = "Admin, HR Manager, Manager")]
+        public async Task<ActionResult> RejectLeave(int id, [FromQuery] int managerId)
         {
             try
             {
