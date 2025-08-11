@@ -71,7 +71,7 @@ namespace Easypay_App.Services
             var filtered = all.Where(p =>
                 p.PeriodStart <= end &&
                 p.PeriodEnd >= start &&
-                (p.StatusId == 3 || p.StatusId == 5)); // Only Approved
+                (p.StatusId == 3 || p.StatusId == 5)); // Approved and Paid
 
             var responseList = new List<PayrollResponseDTO>();
             foreach (var p in filtered)
@@ -95,7 +95,7 @@ namespace Easypay_App.Services
 
             decimal gross = employee.Salary;
 
-            // ===== Timesheet-based calculations =====
+            // Timesheet Based cal
             var timesheets = (await _timesheetRepository.GetAllValue())
                 .Where(t => t.EmployeeId == dto.EmployeeId &&
                             t.WorkDate >= dto.PeriodStart &&
@@ -115,7 +115,7 @@ namespace Easypay_App.Services
                 timesheetPenalty = (expectedHours - totalHoursWorked) * hourlyRate;
             }
 
-            // ===== Policy-based calculations
+            //Policy-based calculations
             decimal basic = (gross * policy.BasicPercent) / 100;
             decimal hra = (gross * policy.HRAPercent) / 100;
             decimal special = (gross * policy.SpecialPercent) / 100;
@@ -131,7 +131,7 @@ namespace Easypay_App.Services
 
             decimal netPay = gross + allowances - deductions;
 
-            // Prevent negative net pay
+            // Preventing -ve net pay
             if (netPay < 0)
                 netPay = 0;
 
@@ -158,9 +158,7 @@ namespace Easypay_App.Services
             }
             catch (Exception ex)
             {
-                // Here you can log or inspect the exact error
-                var errorMsg = ex.InnerException?.Message ?? ex.Message;
-                throw new Exception($"Error saving payroll: {errorMsg}");
+                throw new Exception($"Error saving payroll: {ex}");
             }
 
             var response = _mapper.Map<PayrollResponseDTO>(payroll);
@@ -210,7 +208,7 @@ namespace Easypay_App.Services
             if (payroll == null)
                 throw new NoItemFoundException();
 
-            payroll.StatusId = 5; // Approved
+            payroll.StatusId = 5; // Paid
             payroll.PaidBy = adminId;
             payroll.PaidDate = DateTime.Now;
 
@@ -262,8 +260,8 @@ namespace Easypay_App.Services
 
             return new ComplianceReportDTO
             {
-                PayrollId = 0, // Not applicable for a period report
-                PayrollMonth = start, // Can be adjusted to reporting period start
+                PayrollId = 0, // NA for a period report
+                PayrollMonth = start, // adjusted acc. to reporting period start
                 EmployeeDetails = employeeDetails,
                 TotalGrossSalary = totalGrossSalary,
                 TotalPFContribution = totalPFContribution

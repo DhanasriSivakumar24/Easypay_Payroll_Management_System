@@ -31,14 +31,6 @@ namespace Easypay_App.Controllers
         }
 
         [Authorize(Roles = "Admin, HR Manager")]
-        [HttpGet]
-        public async Task<IActionResult> GetAllAuditTrails()
-        {
-            var logs = await _auditTrailService.GetAllLogs();
-            return Ok(logs);
-        }
-
-        [Authorize(Roles = "Admin, HR Manager")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAuditTrailById(int id)
         {

@@ -55,6 +55,7 @@ namespace Easypay_App
             builder.Services.AddDbContext<PayrollContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("defaultConnection")));
 
+            #region Service Injection
             builder.Services.AddScoped<IEmployeeService, EmployeeService>();
             builder.Services.AddScoped<IPayrollPolicyService,PayrollPolicyService>();
             builder.Services.AddScoped<IBenefitEnrollmentService, BenefitEnrollmentService>();
@@ -65,7 +66,9 @@ namespace Easypay_App
             builder.Services.AddScoped<INotificationLogService, NotificationLogService>();
             builder.Services.AddScoped<ITimesheetService, TimesheetService>();
             builder.Services.AddScoped<IAuditTrailService,AuditTrailService>();
+            #endregion
 
+            #region Repository Injection
             builder.Services.AddScoped<IRepository<int, Employee>, EmployeeRepository>();
             builder.Services.AddScoped<IRepository<int, DepartmentMaster>, DepartmentRepository>();
             builder.Services.AddScoped<IRepository<int, RoleMaster>, RoleRepository>();
@@ -89,7 +92,7 @@ namespace Easypay_App
             builder.Services.AddScoped<IRepository<int, TimesheetStatusMaster>, TimesheetStatusRepository>();
             builder.Services.AddScoped<IRepository<int, AuditTrailActionMaster>, AuditTrailActionRepository>();
             builder.Services.AddScoped<IRepository<int, AuditTrail>, AuditTrailRepository>();
-
+            #endregion
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options=>
