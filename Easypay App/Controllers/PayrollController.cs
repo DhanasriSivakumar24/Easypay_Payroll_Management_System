@@ -2,6 +2,7 @@
 using Easypay_App.Interface;
 using Easypay_App.Models.DTO;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +11,7 @@ namespace Easypay_App.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [CustomExceptionFilter]
+    [EnableCors("DefaultCORS")]
     public class PayrollController : ControllerBase
     {
         private readonly IPayrollService _payrollService;

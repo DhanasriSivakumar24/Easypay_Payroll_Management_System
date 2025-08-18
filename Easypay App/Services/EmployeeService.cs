@@ -46,7 +46,6 @@ namespace Easypay_App.Services
             var existing = await _employeeRepository.GetValueById(id);
             if (existing == null) throw new NoItemFoundException();
 
-            // Map updated values
             existing.FirstName = dto.FirstName;
             existing.LastName = dto.LastName;
             existing.Email = dto.Email;
@@ -56,7 +55,7 @@ namespace Easypay_App.Services
             existing.StatusId = dto.StatusId;
             existing.ReportingManagerId = dto.ReportingManagerId;
             existing.Salary = dto.Salary;
-            existing.UserRoleId = dto.UserRoleId; // Added to update UserRoleId
+            existing.UserRoleId = dto.UserRoleId; 
 
             await _employeeRepository.UpdateValue(existing.Id, existing);
 

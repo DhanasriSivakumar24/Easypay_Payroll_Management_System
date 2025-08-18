@@ -7,6 +7,7 @@ using Easypay_App.Models.DTO;
 using Easypay_App.Repositories;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -39,33 +40,42 @@ namespace Easypay_App.Services
         #region LoginResponseDTO
         public async Task<LoginResponseDTO> Login(LoginRequestDTO loginRequest)
         {
-            var User = await _userRepository.GetValueById(loginRequest.UserName);
-            if (User == null)
-                throw new NoItemFoundException();
-
-            // Use the stored hash key to recreate HMAC
-            HMACSHA256 hmacsha256 = new HMACSHA256(User.HashKey);
-            var userPass = hmacsha256.ComputeHash(Encoding.UTF8.GetBytes(loginRequest.Password));
-            for (int i = 0; i < userPass.Length; i++)
+            try
             {
-                if (userPass[i] != User.Password[i])
+                var User = await _userRepository.GetValueById(loginRequest.UserName);
+                if (User == null)
                     throw new NoItemFoundException();
-            }
 
-            // Get role name from UserRoleMaster
-            var role =  (await _userRoleMasterRepo.GetValueById(User.UserRoleId))?.UserRoleName ?? "Unknown";
-
-            // Return token + username + role
-            return new LoginResponseDTO
-            {
-                UserName = loginRequest.UserName,
-                Role = role,
-                Token = await _tokenService.GenerateToken(new LoginResponseDTO
+                // Use the stored hash key to recreate HMAC
+                HMACSHA256 hmacsha256 = new HMACSHA256(User.HashKey);
+                var userPass = hmacsha256.ComputeHash(Encoding.UTF8.GetBytes(loginRequest.Password));
+                for (int i = 0; i < userPass.Length; i++)
                 {
+                    if (userPass[i] != User.Password[i])
+                        throw new NoItemFoundException();
+                }
+
+                // Get role name from UserRoleMaster
+                var role = (await _userRoleMasterRepo.GetValueById(User.UserRoleId))?.UserRoleName ?? "Unknown";
+
+                // Return token + username + role
+                return new LoginResponseDTO
+                {
+                    EmployeeId = User.EmployeeId,
                     UserName = loginRequest.UserName,
-                    Role = role
-                })
-            };
+                    Role = role,
+                    Token = await _tokenService.GenerateToken(new LoginResponseDTO
+                    {
+                        EmployeeId = User.EmployeeId,
+                        UserName = loginRequest.UserName,
+                        Role = role
+                    })
+                };
+            }
+            catch (Exception)
+            {
+                throw new Exception("Unable to Login");
+            }
         }
         #endregion
 

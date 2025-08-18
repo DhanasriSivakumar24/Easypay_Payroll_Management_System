@@ -14,7 +14,7 @@ using System.Text;
 
 namespace Easypay_App
 {
-    public class Program 
+    public class Program
     {
         public static void Main(string[] args)
         {
@@ -106,6 +106,12 @@ namespace Easypay_App
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Tokens:JWT"]))
                     };
                 });
+            builder.Services.AddCors(options => options.AddPolicy("DefaultCORS", options =>
+            {
+                options.AllowAnyMethod()//methods, get put , post
+                .AllowAnyHeader() // and header, authentication, any format
+                .AllowAnyOrigin(); // from any origin
+            }));
 
             builder.Services.AddAutoMapper(typeof(EmployeeMapper));
             builder.Logging.AddLog4Net();
@@ -118,6 +124,8 @@ namespace Easypay_App
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseCors("DefaultCORS");
 
             app.UseAuthentication();
 
