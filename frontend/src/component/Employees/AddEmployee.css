@@ -1,0 +1,87 @@
+/* AddEmployee.css */
+
+.add-employee-container {
+  max-width: 900px;
+  margin: 40px auto;
+}
+
+.add-employee-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  padding: 30px 40px;
+  transition: all 0.3s ease;
+}
+
+.add-employee-card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Headings */
+.add-employee-card h4 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 25px;
+  color: #1f2a56;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 5px;
+}
+
+/* Form Labels */
+.add-employee-card label.form-label {
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+/* Inputs & Selects */
+.add-employee-card input.form-control,
+.add-employee-card select.form-select {
+  border-radius: 8px;
+  padding: 10px 15px;
+  border: 1px solid #d1d7e0;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+.add-employee-card input.form-control:focus,
+.add-employee-card select.form-select:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 6px rgba(74, 144, 226, 0.3);
+  outline: none;
+}
+
+/* Buttons */
+.add-employee-card button.btn-primary {
+  background-color: #4a90e2;
+  border-color: #4a90e2;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.add-employee-card button.btn-primary:hover {
+  background-color: #3578c6;
+  border-color: #3578c6;
+  box-shadow: 0 4px 12px rgba(53, 120, 198, 0.3);
+}
+
+/* Row spacing */
+.row.g-3 {
+  margin-bottom: 15px;
+}
+
+/* Reporting Manager, Address, PAN, Salary spacing */
+.mb-3 {
+  margin-bottom: 15px;
+}
+
+/* Optional: responsive tweaks */
+@media (max-width: 768px) {
+  .add-employee-card {
+    padding: 20px;
+  }
+  .add-employee-card h4 {
+    font-size: 1.5rem;
+  }
+}
