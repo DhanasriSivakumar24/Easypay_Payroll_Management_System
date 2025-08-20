@@ -41,21 +41,26 @@ namespace Easypay_App.Services
             return response;
         }
 
-        public async Task<EmployeeAddResponseDTO> UpdateEmployee(int id, EmployeeAddRequestDTO dto)
+        public async Task<EmployeeAddResponseDTO> UpdateEmployee(int id, EmployeeUpdateRequestDTO dto)
         {
             var existing = await _employeeRepository.GetValueById(id);
             if (existing == null) throw new NoItemFoundException();
 
-            existing.FirstName = dto.FirstName;
-            existing.LastName = dto.LastName;
-            existing.Email = dto.Email;
-            existing.PhoneNumber = dto.PhoneNumber;
-            existing.DepartmentId = dto.DepartmentId;
-            existing.RoleId = dto.RoleId;
-            existing.StatusId = dto.StatusId;
-            existing.ReportingManagerId = dto.ReportingManagerId;
-            existing.Salary = dto.Salary;
-            existing.UserRoleId = dto.UserRoleId; 
+            if (dto.FirstName != null) existing.FirstName = dto.FirstName;
+            if (dto.LastName != null) existing.LastName = dto.LastName;
+            if (dto.Email != null) existing.Email = dto.Email;
+            if (dto.PhoneNumber != null) existing.PhoneNumber = dto.PhoneNumber;
+            if (dto.DepartmentId.HasValue) existing.DepartmentId = dto.DepartmentId.Value;
+            if (dto.RoleId.HasValue) existing.RoleId = dto.RoleId.Value;
+            if (dto.StatusId.HasValue) existing.StatusId = dto.StatusId.Value;
+            if (dto.ReportingManagerId.HasValue) existing.ReportingManagerId = dto.ReportingManagerId.Value;
+            if (dto.Salary.HasValue) existing.Salary = dto.Salary.Value;
+            if (dto.UserRoleId.HasValue) existing.UserRoleId = dto.UserRoleId.Value;
+            if (dto.DateOfBirth.HasValue) existing.DateOfBirth = dto.DateOfBirth.Value;
+            if (dto.JoinDate.HasValue) existing.JoinDate = dto.JoinDate.Value;
+            if (dto.Address != null) existing.Address = dto.Address;
+            if (dto.PanNumber != null) existing.PanNumber = dto.PanNumber;
+            if (dto.Gender != null) existing.Gender = dto.Gender;
 
             await _employeeRepository.UpdateValue(existing.Id, existing);
 
@@ -63,6 +68,7 @@ namespace Easypay_App.Services
             await PopulateNames(response, existing);
             return response;
         }
+
 
         public async Task<IEnumerable<EmployeeAddResponseDTO>> GetAllEmployees()
         {

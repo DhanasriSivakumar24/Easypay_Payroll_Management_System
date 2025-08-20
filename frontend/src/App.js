@@ -11,6 +11,7 @@ import AllEmployees from './component/Employees/AllEmployees';
 import Dashboard from './component/Dashboard/Dashboard';
 import AdminDashboard from './component/Dashboard/AdminDashboard';
 import AddEmployee from './component/Employees/AddEmployee';
+import UpdateEmployeeDetail from './component/Employees/UpdateEmployee';
 
 function App() {
   return (
@@ -20,10 +21,11 @@ function App() {
                 <Route path= '/' element= {<Home/>}/>
                 <Route path= '/login' element = {<Login/>}/>
                 <Route path="/dashboard" element={<AdminDashboard/>} />
-                <Route path="/add-employee" element={<AddEmployee />} />
+                <Route path="/employees/add-employee" element={<AddEmployee />} />
+                <Route path="/employees/update-employee/:id" element={<UpdateEmployeeDetail />} />
                 <Route path= '/home' element = {<Home/>}/>
-                <Route path= '/employee/SearchEmployee' element ={<Employees/>}/>
-                <Route path='/employee/personal-info' element={<PersonalInfo/>}/>
+                <Route path= '/employees/SearchEmployee' element ={<Employees/>}/>
+                <Route path='/employees/personal-info' element={<PersonalInfo/>}/>
                 <Route path='/employees' element={<AllEmployees/>} />
             </Routes>
       </BrowserRouter>{/* //routing related things should be here in the broweseroute */}

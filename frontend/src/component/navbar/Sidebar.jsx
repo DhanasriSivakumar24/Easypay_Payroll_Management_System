@@ -31,7 +31,7 @@ const Sidebar = ({ role, userName, onLogout }) => {
         {items.map((item) => (
           <li
             key={item.name}
-            className={location.pathname === item.path ? "active" : ""}
+            className={location.pathname.startsWith(item.path) ? "active" : ""}
             onClick={() => navigate(item.path)}
           >
             {item.name}

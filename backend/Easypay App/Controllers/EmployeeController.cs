@@ -39,18 +39,10 @@ namespace Easypay_App.Controllers
 
         [HttpPut("update/{id}")]
         [Authorize(Roles = "Admin, HR Manager")]
-        public async Task<ActionResult> UpdateEmployee(int id, EmployeeAddRequestDTO employeeDto)
+        public async Task<ActionResult> UpdateEmployee(int id, [FromBody] EmployeeUpdateRequestDTO dto)
         {
-            try
-            {
-                var result = await _employeeService.UpdateEmployee(id, employeeDto);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                throw new Exception($"Unable to Update Employee for Id: {id}");
-            }
+            var result = await _employeeService.UpdateEmployee(id, dto);
+            return Ok(result);
         }
 
         [HttpDelete("delete/{id}")]

@@ -1,18 +1,63 @@
-.employee-row:hover {
-  background-color: #f9f9f9;
-  transition: 0.2s;
+/* Card container */
+.card {
+  border-radius: 12px;
+  border: none;
+  overflow: hidden;
 }
 
-.table th {
+/* Table header */
+.table thead {
+  background-color: #f8f9fa; /* subtle gray */
+}
+
+.table thead th {
   font-weight: 600;
-  color: #333;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6; /* thin bottom border */
+  padding: 12px;
 }
 
-.table td {
+/* Table rows */
+.table tbody tr {
+  border-bottom: 1px solid #e9ecef;
+  transition: background-color 0.2s ease-in-out;
+}
+
+/* Table cells */
+.table td,
+.table th {
   vertical-align: middle;
+  padding: 12px;
+  font-size: 14px;
 }
 
+/* Status badges */
 .badge {
-  font-size: 0.85rem;
-  padding: 0.4em 0.7em;
+  border-radius: 50px !important;
+  font-size: 13px;
+  padding: 6px 12px;
+  font-weight: 500;
+}
+
+.bg-success-subtle {
+  background-color: #d1f2e8 !important;
+  color: #0f5132 !important;
+}
+
+.bg-danger-subtle {
+  background-color: #f8d7da !important;
+  color: #842029 !important;
+}
+
+/* Action buttons */
+.btn-outline-warning,
+.btn-outline-primary {
+  border-radius: 8px;
+  font-size: 13px;
+  padding: 5px 12px;
+}
+
+.table-section table th {
+  background-color: #f1f2f6;
+  color: #2f3640;
 }
