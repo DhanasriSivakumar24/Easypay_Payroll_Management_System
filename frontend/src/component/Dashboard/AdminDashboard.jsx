@@ -58,7 +58,7 @@ const AdminDashboard = () => {
   // Quick action cards data
   const quickActions = [
     { title: "Add Employee", desc: "Quickly add a new employee", path: "/employees/add-employee" },
-    { title: "Update Employee", desc: "Edit existing employee details", path: "/employees/update-employee" },
+    { title: "Update Employee", desc: "Edit existing employee details", path: "/employees" },
     { title: "Approve Leave", desc: "Approve pending leave requests", path: "/leaves" },
     { title: "Generate Payroll", desc: "Process payroll for employees", path: "/payroll" },
     { title: "Enroll Benefits", desc: "Add employee benefits", path: "/policies" },
