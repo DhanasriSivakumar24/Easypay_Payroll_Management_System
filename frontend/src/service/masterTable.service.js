@@ -10,3 +10,8 @@ export function GetRoles() {
   const url = baseUrl +'MasterData/roles'; 
   return axios.get(url);
 }
+
+export function GetLeaveType() {
+  const url = baseUrl +'MasterData/leave-type'; 
+  return axios.get(url);
+}

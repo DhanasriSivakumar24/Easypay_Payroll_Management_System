@@ -135,6 +135,22 @@ namespace Easypay_App.Services
             dto.StatusName = status?.StatusName ?? "N/A";
             dto.UserRoleName = userRole?.UserRoleName ?? "N/A";
             dto.ReportingManager = emp.ReportingManagerId;
+            if (emp.ReportingManagerId.HasValue)
+            {
+                var manager = await _employeeRepository.GetValueById(emp.ReportingManagerId.Value);
+                if (manager != null)
+                {
+                    dto.ReportingManagerName = $"{manager.FirstName} {manager.LastName}";
+                }
+                else
+                {
+                    dto.ReportingManagerName = "N/A";
+                }
+            }
+            else
+            {
+                dto.ReportingManagerName = "N/A";
+            }
         }
 
         public async Task<PaginatedEmployeeResponseDTO> SearchEmployees(EmployeeSearchRequestDTO criteria)

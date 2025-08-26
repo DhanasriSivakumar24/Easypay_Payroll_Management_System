@@ -36,3 +36,8 @@ export function RejectLeaveRequest(leaveId, managerId) {
   const url = baseUrl + `LeaveRequest/reject/${leaveId}?managerId=${managerId}`;
   return axios.put(url);
 }
+
+export function GetLeaveRequestsByEmployee(employeeId) {
+  const url = baseUrl + `LeaveRequest/Employee/${employeeId}`;
+  return axios.get(url);
+}

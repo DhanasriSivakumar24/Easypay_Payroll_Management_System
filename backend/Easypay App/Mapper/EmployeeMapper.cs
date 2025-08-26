@@ -22,8 +22,12 @@ namespace Easypay_App.Mapper
                 .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.Role != null ? src.Role.RoleName : string.Empty))
                 .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.Status != null ? src.Status.StatusName : string.Empty))
                 .ForMember(dest => dest.ReportingManager, opt => opt.MapFrom(src => src.ReportingManagerId))
-                .ForMember(dest => dest.Salary, opt => opt.MapFrom(src => src.Salary))
-                .ForMember(dest => dest.UserRoleName, opt => opt.MapFrom(src => src.UserRole.UserRoleName));
+                .ForMember(dest => dest.ReportingManagerName, opt => opt.MapFrom(src =>
+                    src.ReportingManager != null
+                        ? $"{src.ReportingManager.FirstName} {src.ReportingManager.LastName}"
+                        : string.Empty))
+                .ForMember(dest => dest.UserRoleName, opt => opt.MapFrom(src => src.UserRole != null ? src.UserRole.UserRoleName : string.Empty))
+                .ForMember(dest => dest.Salary, opt => opt.MapFrom(src => src.Salary));
 
             #endregion
 
@@ -49,6 +53,8 @@ namespace Easypay_App.Mapper
                 .ForMember(dest => dest.LeaveTypeName, opt => opt.MapFrom(src => src.LeaveType.LeaveTypeName))
                 .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.Status.StatusName))
                 .ForMember(dest => dest.ApprovedManagerName, opt => opt.MapFrom(src => src.ApprovedManager != null ? src.ApprovedManager.FirstName + " " + src.ApprovedManager.LastName : ""))
+                .ForMember(dest => dest.ActionedAt, opt => opt.MapFrom(src => src.ActionedAt))
+                .ForMember(dest => dest.RequestedAt, opt => opt.MapFrom(src => src.RequestedAt))
                 .ForMember(dest => dest.Reason, opt => opt.MapFrom(src => src.Reason));
             #endregion
 

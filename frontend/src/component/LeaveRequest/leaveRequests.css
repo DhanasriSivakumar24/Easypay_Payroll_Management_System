@@ -1,0 +1,105 @@
+.leave-requests-container {
+  max-width: 1300px;
+  margin: 20px auto;
+  padding: 20px;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.leave-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.apply-leave-btn {
+  background: #4a90e2;
+  border: none;
+  padding: 10px 18px;
+  color: #fff;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.apply-leave-btn:hover {
+  background: #3578c6;
+}
+
+.leave-history-card {
+  width: 100%;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  padding: 20px;
+  overflow-x: auto;
+}
+
+.leave-history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.leave-history-header h4 {
+  margin: 0;
+  color: #1f2a56;
+  font-size: 20px;
+}
+
+.sort-button {
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  background-color: #f0f0f0;
+}
+
+.sort-button:hover {
+  background-color: #e0e0e0;
+}
+
+.leave-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1000px; 
+}
+
+.leave-history-table th,
+.leave-history-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+.leave-history-table th {
+  background: #f9f9f9;
+  font-weight: 600;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-badge.approved {
+  background-color: #d4f6e0;
+  color: #1a7f37;
+}
+
+.status-badge.rejected {
+  background-color: #fde2e2;
+  color: #d93025;
+}
+
+.status-badge.pending {
+  background-color: #fff4cc;
+  color: #a97800;
+}

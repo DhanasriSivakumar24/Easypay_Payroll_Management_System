@@ -119,5 +119,22 @@ namespace Easypay_App.Controllers
                 throw new Exception($"Unable to Reject Leave Request for Id: {id}");
             }
         }
+
+        [HttpGet("Employee/{employeeId}")]
+        [Authorize(Roles = "Employee")]
+        public async Task<ActionResult> GetLeaveRequestsByEmployee(int employeeId)
+        {
+            try
+            {
+                var result = await _leaveRequestService.GetLeaveRequestsByEmployee(employeeId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw new Exception($"Unable to Get Leave Requests for EmployeeId: {employeeId}");
+            }
+        }
+
     }
 }

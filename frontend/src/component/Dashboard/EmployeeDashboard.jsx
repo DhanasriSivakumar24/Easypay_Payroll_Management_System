@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { GetLeaveRequestById } from "../../service/leave.service"; 
+import { GetLeaveRequestsByEmployee } from "../../service/leave.service"; 
 import { GetPayrollByEmployeeId } from "../../service/payroll.service"; 
 import Sidebar from "../navbar/Sidebar";
 import "./employeeDashboard.css";
@@ -8,6 +8,8 @@ import "./employeeDashboard.css";
 const EmployeeDashboard = () => {
   const navigate = useNavigate();
   const [employeeName, setEmployeeName] = useState("");
+  const [employeeId, setEmployeeId] = useState(null);
+  const [role, setRole] = useState("");
   const [totalLeaves, setTotalLeaves] = useState(0);
   const [pendingLeaves, setPendingLeaves] = useState(0);
   const [latestPayroll, setLatestPayroll] = useState(null);
@@ -17,32 +19,45 @@ const EmployeeDashboard = () => {
 
   useEffect(() => {
     const username = sessionStorage.getItem("username") || "Employee";
+    const empId = sessionStorage.getItem("employeeId");
+    const userRole = sessionStorage.getItem("role");
+
     setEmployeeName(username);
+    setEmployeeId(empId);
+    setRole(userRole);
+
+    if (!empId || userRole !== "Employee") {
+      // Not an employee → redirect to login
+      navigate("/login");
+      return;
+    }
 
     const loadDashboardData = async () => {
       try {
-        // Leaves for this employee
-        const leavesRes = await GetLeaveRequestById();
-        const leavesData = leavesRes.data;
+        // ✅ Leaves for this employee
+        const leavesRes = await GetLeaveRequestsByEmployee(empId); 
+        const leavesData = leavesRes?.data || [];
         setTotalLeaves(leavesData.length);
-        setPendingLeaves(leavesData.filter(l => l.statusName.toLowerCase() === "pending").length);
+        setPendingLeaves(
+          leavesData.filter((l) => l.statusName?.toLowerCase() === "pending").length
+        );
         setRecentLeaves(leavesData.slice(-5).reverse());
 
-        // Payrolls for this employee
-        const payrollsRes = await GetPayrollByEmployeeId();
-        const payrollsData = payrollsRes.data;
+        // ✅ Payrolls for this employee
+        const payrollsRes = await GetPayrollByEmployeeId(empId); 
+        const payrollsData = payrollsRes?.data || [];
         const latest = payrollsData.sort((a, b) => b.id - a.id)[0];
-        setLatestPayroll(latest);
+        setLatestPayroll(latest || null);
         setRecentPayrolls(payrollsData.slice(-5).reverse());
       } catch (err) {
-        console.error(err);
+        console.error("Error loading dashboard:", err);
       } finally {
         setLoading(false);
       }
     };
 
     loadDashboardData();
-  }, []);
+  }, [navigate]);
 
   const handleLogout = () => {
     sessionStorage.clear();
@@ -53,8 +68,8 @@ const EmployeeDashboard = () => {
 
   // Quick actions for employees
   const quickActions = [
-    { title: "Apply Leave", desc: "Request for leave easily", path: "/leaves/apply" },
-    { title: "View My Leaves", desc: "Check your leave history", path: "/leaves/my-leaves" },
+    { title: "Apply Leave", desc: "Request for leave easily", path: "/leave-requests/leaves/apply" },
+    { title: "View My Leaves", desc: "Check your leave history", path: "/leave-requests" },
     { title: "View Payrolls", desc: "Check your salary slips", path: "/payroll/my-payrolls" },
     { title: "View Benefits", desc: "See your enrolled benefits", path: "/policies/my-policies" },
   ];
@@ -106,6 +121,7 @@ const EmployeeDashboard = () => {
 
         {/* Tables */}
         <div className="tables">
+          {/* Recent Leaves */}
           <div className="table-section">
             <h2>Recent Leave Requests</h2>
             <table>
@@ -119,19 +135,24 @@ const EmployeeDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {recentLeaves.map((leave, index) => (
-                  <tr key={leave.id}>
-                    <td>{index + 1}</td>
-                    <td>{leave.leaveTypeName}</td>
-                    <td>{leave.statusName}</td>
-                    <td>{new Date(leave.startDate).toLocaleDateString()}</td>
-                    <td>{new Date(leave.endDate).toLocaleDateString()}</td>
-                  </tr>
-                ))}
+                {recentLeaves.length > 0 ? (
+                  recentLeaves.map((leave, index) => (
+                    <tr key={leave.id}>
+                      <td>{index + 1}</td>
+                      <td>{leave.leaveTypeName}</td>
+                      <td>{leave.statusName}</td>
+                      <td>{new Date(leave.startDate).toLocaleDateString()}</td>
+                      <td>{new Date(leave.endDate).toLocaleDateString()}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr><td colSpan="5">No leave requests found</td></tr>
+                )}
               </tbody>
             </table>
           </div>
 
+          {/* Recent Payrolls */}
           <div className="table-section">
             <h2>Recent Payrolls</h2>
             <table>
@@ -146,16 +167,20 @@ const EmployeeDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {recentPayrolls.map((payroll, index) => (
-                  <tr key={payroll.id}>
-                    <td>{index + 1}</td>
-                    <td>{payroll.statusName}</td>
-                    <td>{payroll.basicPay}</td>
-                    <td>{payroll.allowances}</td>
-                    <td>{payroll.deductions}</td>
-                    <td>{payroll.netPay}</td>
-                  </tr>
-                ))}
+                {recentPayrolls.length > 0 ? (
+                  recentPayrolls.map((payroll, index) => (
+                    <tr key={payroll.id}>
+                      <td>{index + 1}</td>
+                      <td>{payroll.statusName}</td>
+                      <td>{payroll.basicPay}</td>
+                      <td>{payroll.allowances}</td>
+                      <td>{payroll.deductions}</td>
+                      <td>{payroll.netPay}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr><td colSpan="6">No payroll records found</td></tr>
+                )}
               </tbody>
             </table>
           </div>

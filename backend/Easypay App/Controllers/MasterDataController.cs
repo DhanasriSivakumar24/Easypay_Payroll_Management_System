@@ -20,5 +20,8 @@ namespace Easypay_App.Controllers
 
         [HttpGet("roles")]
         public ActionResult GetRoles() => Ok(_context.RoleMasters.ToList());
+
+        [HttpGet("leave-type")]
+        public ActionResult GetLeaveType() => Ok(_context.LeaveTypeMasters.ToList());
     }
 }

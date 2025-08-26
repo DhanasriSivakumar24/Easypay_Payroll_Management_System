@@ -10,5 +10,7 @@ namespace Easypay_App.Interface
         public Task<LeaveRequestResponseDTO> GetLeaveRequestById(int id);
         public Task<IEnumerable<LeaveRequestResponseDTO>> GetAllLeaveRequests();
         public Task<LeaveRequestResponseDTO> DeleteLeaveRequest(int id);
+        public Task<IEnumerable<LeaveRequestResponseDTO>> GetLeaveRequestsByEmployee(int employeeId);
+
     }
 }

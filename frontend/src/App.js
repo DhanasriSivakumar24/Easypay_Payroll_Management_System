@@ -12,6 +12,8 @@ import AddEmployee from './component/Employees/AddEmployee';
 import UpdateEmployeeDetail from './component/Employees/UpdateEmployee';
 import ProtectedRoute from './component/ProtectedRoute';
 import EmployeeDashboard from './component/Dashboard/EmployeeDashboard';
+import ApplyLeave from './component/LeaveRequest/ApplyLeave';
+import LeaveRequests from './component/LeaveRequest/LeaveRequests';
 
 function App() {
   return (
@@ -27,9 +29,11 @@ function App() {
                 <Route path='/employees' element={<ProtectedRoute><AllEmployees/></ProtectedRoute>} />
                 
                 <Route path="/employee-dashboard" element={<ProtectedRoute><EmployeeDashboard /></ProtectedRoute>}/>
+                <Route path="/leave-requests/leaves/apply" element={<ApplyLeave />} />
+                <Route path="/leave-requests" element={<LeaveRequests />} />
+                <Route path='/personal-info' element={<ProtectedRoute><PersonalInfo/></ProtectedRoute>}/>
                 <Route path= '/home' element = {<Home/>}/>
                 <Route path= '/employees/SearchEmployee' element ={<Employees/>}/>
-                <Route path='/employees/personal-info' element={<PersonalInfo/>}/>
             </Routes>
       </BrowserRouter>{/* //routing related things should be here in the broweseroute */}
     </div>

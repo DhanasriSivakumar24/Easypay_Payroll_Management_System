@@ -3,6 +3,7 @@ using Easypay_App.Exceptions;
 using Easypay_App.Interface;
 using Easypay_App.Models;
 using Easypay_App.Models.DTO;
+using Microsoft.EntityFrameworkCore;
 
 namespace Easypay_App.Services
 {
@@ -127,6 +128,22 @@ namespace Easypay_App.Services
             {
                 dto.ApprovedManagerName = "";
             }
-}
+        }
+        public async Task<IEnumerable<LeaveRequestResponseDTO>> GetLeaveRequestsByEmployee(int employeeId)
+        {
+            var all = await _leaveRequestRepository.GetAllValue();
+            var employeeRequests = all.Where(lr => lr.EmployeeId == employeeId).ToList();
+
+            var responseList = new List<LeaveRequestResponseDTO>();
+
+            foreach (var req in employeeRequests)
+            {
+                var dto = _mapper.Map<LeaveRequestResponseDTO>(req);
+                await PopulateNames(dto, req);
+                responseList.Add(dto);
+            }
+
+            return responseList;
+        }
     }
 }
