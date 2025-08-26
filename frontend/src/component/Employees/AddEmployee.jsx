@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import AdminLayout from "../navbar/AdminLayout";
 import DepartmentRoleDropdown from "./DepartmentRoleDropdown";
 import { AddEmployeeAPI, GetAllEmployees } from "../../service/employee.service";
 import './AddEmployee.css';
 import { useNavigate } from "react-router-dom";
+import AdminLayout from "../navbar/AdminLayout";
 
 const AddEmployee = () => {
   const [employee, setEmployee] = useState({

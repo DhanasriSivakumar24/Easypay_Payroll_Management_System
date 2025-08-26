@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import AdminLayout from "../navbar/AdminLayout";
 import DepartmentRoleDropdown from "./DepartmentRoleDropdown";
 import {
   GetEmployeeById,
   UpdateEmployee,
 } from "../../service/employee.service";
 import "./AddEmployee.css";
+import AdminLayout from "../navbar/AdminLayout";
 
 const UpdateEmployeeDetail = () => {
   const { id } = useParams();

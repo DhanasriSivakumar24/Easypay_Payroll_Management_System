@@ -211,7 +211,7 @@
   color: #e84118; /* red */
 }
 /* Quick Actions Full Width */
-.quick-actions-container {
+.admin-dashboard .quick-actions-container {
   display: flex;
   justify-content: space-between; /* evenly distribute cards across the full width */
   gap: 15px;
@@ -219,7 +219,7 @@
   flex-wrap: wrap; /* wrap on smaller screens */
 }
 
-.quick-action-card {
+.admin-dashboard .quick-action-card {
   flex: 1; /* each card takes equal space */
   min-width: 160px; /* prevent too small on very narrow screens */
   color: #fff;
@@ -230,25 +230,25 @@
   padding: 20px 10px;
 }
 
-.quick-action-card:hover {
+.admin-dashboard .quick-action-card:hover {
   transform: translateY(-5px);
 }
 
 /* Unique colors for each card */
-.quick-action-card:nth-child(1) { background-color: #3498db; }  /* Add Employee - Blue */
-.quick-action-card:nth-child(2) { background-color: #1abc9c; }  /* Update Employee - Teal */
-.quick-action-card:nth-child(3) { background-color: #e67e22; }  /* Approve Leave - Orange */
-.quick-action-card:nth-child(4) { background-color: #9b59b6; }  /* Generate Payroll - Purple */
-.quick-action-card:nth-child(5) { background-color: #e74c3c; }  /* Enroll Benefits - Red */
+.admin-dashboard .quick-action-card:nth-child(1) { background-color: #3498db; }  /* Add Employee - Blue */
+.admin-dashboard .quick-action-card:nth-child(2) { background-color: #1abc9c; }  /* Update Employee - Teal */
+.admin-dashboard .quick-action-card:nth-child(3) { background-color: #e67e22; }  /* Approve Leave - Orange */
+.admin-dashboard .quick-action-card:nth-child(4) { background-color: #9b59b6; }  /* Generate Payroll - Purple */
+.admin-dashboard .quick-action-card:nth-child(5) { background-color: #e74c3c; }  /* Enroll Benefits - Red */
 
 /* Card content */
-.quick-action-card h5 {
+.admin-dashboard .quick-action-card h5 {
   font-size: 16px;
   font-weight: bold;
   margin-bottom: 10px;
 }
 
-.quick-action-card p {
+.admin-dashboard .quick-action-card p {
   font-size: 14px;
   line-height: 1.3;
 }

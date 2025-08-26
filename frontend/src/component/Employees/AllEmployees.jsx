@@ -47,7 +47,7 @@ const AllEmployees = () => {
 
   return (
     <AdminLayout>
-      <div className="container mt-4">
+    <div className="container mt-4">
         {/* Only Add Employee Card */}
         <div className="row mb-4">
           <div className="col-md-3">

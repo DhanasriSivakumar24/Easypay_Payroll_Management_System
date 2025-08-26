@@ -1,13 +1,19 @@
-import { Navigate,  useLocation } from "react-router-dom";
+import { Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
-const ProtectedRoute = ({children})=>{
+const ProtectedRoute = ({ children }) => {
+  const { username, role } = useSelector((state) => state.auth);
 
-    const token = sessionStorage.getItem("token")
-    const location = useLocation();
-    if(token)
-        return children;
-    return <Navigate to="/login" replace state = {{from:location}}/>
+  // Check if user is logged in
+  if (!username) {
+    console.log("User not logged in, redirecting to /login");
+    return <Navigate to="/login" replace />;
+  }
 
-}
+  // Trace the role (log it for now)
+  console.log("User role:", role);
+
+  return children; // Allow access if logged in
+};
 
 export default ProtectedRoute;

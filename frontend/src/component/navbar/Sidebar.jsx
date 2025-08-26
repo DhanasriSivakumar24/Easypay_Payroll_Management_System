@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import './Sidebar.css';
+import "./Sidebar.css";
 
 const Sidebar = ({ role, userName, onLogout }) => {
   const location = useLocation();
@@ -8,17 +8,39 @@ const Sidebar = ({ role, userName, onLogout }) => {
 
   const menuItems = {
     admin: [
-      { name: "Dashboard", path: "/dashboard" },
-      { name: "Employees", path: "/employees" },
-      { name: "Leave Requests", path: "/leaves" },
-      { name: "Payroll", path: "/payroll" },
-      { name: "Policies", path: "/policies" },
+      { name: "Dashboard", path: "/admin-dashboard" },
+      { name: "User Management", path: "/user-management" },
+      { name: "Employee Management", path: "/employees" },
+      { name: "Payroll Policies", path: "/payroll-policies" },
+      { name: "Compliance Reports", path: "/compliance" },
+      { name: "Notifications", path: "/notifications" },
       { name: "Audit Trail", path: "/audit" },
+    ],
+    payrollprocessor: [
+      { name: "Dashboard", path: "/processor-dashboard" },
+      { name: "Payroll Processing", path: "/payroll-processing" },
+      { name: "Payroll Verification", path: "/payroll-verification" },
+      { name: "Benefits", path: "/benefits" },
+      { name: "Audit Trail", path: "/audit" },
+      { name: "Notifications", path: "/notifications" },
+    ],
+    employee: [
+      { name: "Dashboard", path: "/employee-dashboard" },
+      { name: "My Pay Stubs", path: "/paystubs" },
+      { name: "Personal Info", path: "/personal-info" },
+      { name: "Time Sheets", path: "/timesheets" },
+      { name: "Leave Requests", path: "/leave-requests" },
+      { name: "Notifications", path: "/notifications" },
+    ],
+    manager: [
+      { name: "Dashboard", path: "/manager-dashboard" },
+      { name: "Team Payroll", path: "/team-payroll" },
+      { name: "Leave Approvals", path: "/leave-approvals" },
       { name: "Notifications", path: "/notifications" },
     ],
   };
 
-  const items = menuItems[role.toLowerCase()] || [{ name: "Dashboard", path: "/dashboard" }];
+  const items = menuItems[role?.toLowerCase()] || [{ name: "Dashboard", path: "/dashboard" }];
 
   return (
     <aside className="sidebar">
@@ -39,7 +61,9 @@ const Sidebar = ({ role, userName, onLogout }) => {
         ))}
       </ul>
 
-      <button className="logout-btn" onClick={onLogout}>Logout</button>
+      <button className="logout-btn" onClick={onLogout}>
+        Logout
+      </button>
     </aside>
   );
 };

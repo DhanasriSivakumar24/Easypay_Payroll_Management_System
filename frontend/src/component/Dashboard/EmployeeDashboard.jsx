@@ -1,108 +1,91 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../../authSlicer";   //  redux logout
-import { GetAllEmployees } from "../../service/employee.service";
-import { GetAllLeaveRequests } from "../../service/leave.service";
-import { GetAllPayrolls } from "../../service/payroll.service";
-import Sidebar from "../navbar/Sidebar"; 
-import './adminDashboard.css';
+import { GetLeaveRequestById } from "../../service/leave.service"; 
+import { GetPayrollByEmployeeId } from "../../service/payroll.service"; 
+import Sidebar from "../navbar/Sidebar";
+import "./employeeDashboard.css";
 
-const AdminDashboard = () => {
+const EmployeeDashboard = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  // Getting username & role from Redux
-  const { username, role } = useSelector((state) => state.auth);
-
-  const [totalEmployees, setTotalEmployees] = useState(0);
+  const [employeeName, setEmployeeName] = useState("");
+  const [totalLeaves, setTotalLeaves] = useState(0);
   const [pendingLeaves, setPendingLeaves] = useState(0);
   const [latestPayroll, setLatestPayroll] = useState(null);
-  const [totalDeductions, setTotalDeductions] = useState(0);
   const [recentLeaves, setRecentLeaves] = useState([]);
   const [recentPayrolls, setRecentPayrolls] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Employees
-    GetAllEmployees()
-      .then((res) => {
-        if (res.data) {
-          setTotalEmployees(res.data.length);
-        }
-      })
-      .catch((err) => console.error("Error fetching employees:", err));
+    const username = sessionStorage.getItem("username") || "Employee";
+    setEmployeeName(username);
 
-    // Leaves
-    GetAllLeaveRequests()
-      .then((res) => {
-        if (res.data) {
-          const leavesData = res.data;
-          setPendingLeaves(leavesData.filter(l => l.statusName.toLowerCase() === "pending").length);
-          setRecentLeaves(leavesData.slice(-5).reverse());
-        }
-      })
-      .catch((err) => console.error("Error fetching leaves:", err));
+    const loadDashboardData = async () => {
+      try {
+        // Leaves for this employee
+        const leavesRes = await GetLeaveRequestById();
+        const leavesData = leavesRes.data;
+        setTotalLeaves(leavesData.length);
+        setPendingLeaves(leavesData.filter(l => l.statusName.toLowerCase() === "pending").length);
+        setRecentLeaves(leavesData.slice(-5).reverse());
 
-    // Payrolls
-    GetAllPayrolls()
-      .then((res) => {
-        if (res.data) {
-          const payrollsData = res.data;
-          const latest = payrollsData.sort((a, b) => b.id - a.id)[0];
-          setLatestPayroll(latest);
-          if (latest && latest.deductions !== undefined) setTotalDeductions(latest.deductions);
-          setRecentPayrolls(payrollsData.slice(-5).reverse());
-        }
-      })
-      .catch((err) => console.error("Error fetching payrolls:", err))
-      .finally(() => setLoading(false));
+        // Payrolls for this employee
+        const payrollsRes = await GetPayrollByEmployeeId();
+        const payrollsData = payrollsRes.data;
+        const latest = payrollsData.sort((a, b) => b.id - a.id)[0];
+        setLatestPayroll(latest);
+        setRecentPayrolls(payrollsData.slice(-5).reverse());
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDashboardData();
   }, []);
 
   const handleLogout = () => {
-    sessionStorage.clear(); 
-    dispatch(logout());     
-    navigate("/login");
+    sessionStorage.clear();
+    window.location.href = "/login";
   };
 
   if (loading) return <p>Loading dashboard...</p>;
 
-  // Quick action cards
+  // Quick actions for employees
   const quickActions = [
-    { title: "Add Employee", desc: "Quickly add a new employee", path: "/employees/add-employee" },
-    { title: "Update Employee", desc: "Edit existing employee details", path: "/employees" },
-    { title: "Approve Leave", desc: "Approve pending leave requests", path: "/leaves" },
-    { title: "Generate Payroll", desc: "Process payroll for employees", path: "/payroll" },
-    { title: "Enroll Benefits", desc: "Add employee benefits", path: "/policies" },
+    { title: "Apply Leave", desc: "Request for leave easily", path: "/leaves/apply" },
+    { title: "View My Leaves", desc: "Check your leave history", path: "/leaves/my-leaves" },
+    { title: "View Payrolls", desc: "Check your salary slips", path: "/payroll/my-payrolls" },
+    { title: "View Benefits", desc: "See your enrolled benefits", path: "/policies/my-policies" },
   ];
 
   return (
-    <div className="admin-dashboard">
-      <Sidebar role={role || "Admin"} userName={username || "Admin"} onLogout={handleLogout} />
+    <div className="employee-dashboard">
+      <Sidebar role="Employee" userName={employeeName} onLogout={handleLogout} />
 
       <main className="main-content">
         <div className="topbar">
-          <h1>Welcome back, {username || "Admin"} 👋</h1>
+          <h1>Welcome, {employeeName} 👋</h1>
           <button className="logout-btn" onClick={handleLogout}>Logout</button>
         </div>
 
-        {/* Cards */}
+        {/* Stats Cards */}
         <div className="cards">
-          <div className="card employees">
-            <h3>Total Employees 👥</h3>
-            <p>{totalEmployees}</p>
-          </div>
           <div className="card leaves">
+            <h3>Total Leaves 🗂</h3>
+            <p>{totalLeaves}</p>
+          </div>
+          <div className="card pending">
             <h3>Pending Leaves 📥</h3>
             <p>{pendingLeaves}</p>
           </div>
           <div className="card payroll">
             <h3>Latest Payroll 💵</h3>
-            <p>{latestPayroll ? `#${latestPayroll.id} (${latestPayroll.statusName})` : "No payroll"}</p>
-          </div>
-          <div className="card deductions">
-            <h3>Total Deductions 📈</h3>
-            <p>{totalDeductions}</p>
+            <p>
+              {latestPayroll 
+                ? `Net Pay: ${latestPayroll.netPay}` 
+                : "No payroll yet"}
+            </p>
           </div>
         </div>
 
@@ -129,7 +112,6 @@ const AdminDashboard = () => {
               <thead>
                 <tr>
                   <th>S.No</th>
-                  <th>Employee</th>
                   <th>Type</th>
                   <th>Status</th>
                   <th>Start Date</th>
@@ -140,7 +122,6 @@ const AdminDashboard = () => {
                 {recentLeaves.map((leave, index) => (
                   <tr key={leave.id}>
                     <td>{index + 1}</td>
-                    <td>{leave.employeeName}</td>
                     <td>{leave.leaveTypeName}</td>
                     <td>{leave.statusName}</td>
                     <td>{new Date(leave.startDate).toLocaleDateString()}</td>
@@ -157,7 +138,6 @@ const AdminDashboard = () => {
               <thead>
                 <tr>
                   <th>S.No</th>
-                  <th>Employee</th>
                   <th>Status</th>
                   <th>Basic Pay</th>
                   <th>Allowances</th>
@@ -169,7 +149,6 @@ const AdminDashboard = () => {
                 {recentPayrolls.map((payroll, index) => (
                   <tr key={payroll.id}>
                     <td>{index + 1}</td>
-                    <td>{payroll.employeeName}</td>
                     <td>{payroll.statusName}</td>
                     <td>{payroll.basicPay}</td>
                     <td>{payroll.allowances}</td>
@@ -186,4 +165,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default EmployeeDashboard;

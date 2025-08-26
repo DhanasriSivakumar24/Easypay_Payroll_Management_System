@@ -1,0 +1,156 @@
+/* Employee Dashboard Styles */
+
+.employee-dashboard {
+  display: flex;
+  min-height: 100vh;
+  background: #f9fafc;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* Topbar */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.topbar h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.logout-btn {
+  background: #ff4d4f;
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.logout-btn:hover {
+  background: #d9363e;
+}
+
+/* Cards */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  color: #555;
+}
+
+.card p {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #222;
+}
+
+/* Quick Actions */
+.employee-dashboard .quick-actions-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 40px;
+}
+
+.employee-dashboard .quick-action-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  padding: 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.employee-dashboard .quick-action-card:hover {
+  background: #f0f9ff;
+  border-color: #38bdf8;
+  transform: translateY(-3px);
+}
+
+.employee-dashboard .quick-action-card h5 {
+  font-size: 1rem;
+  margin-bottom: 6px;
+  color: #111827;
+}
+
+.employee-dashboard .quick-action-card p {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+/* Tables */
+.tables {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 25px;
+}
+
+.table-section {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.table-section h2 {
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  color: #374151;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background: #f3f4f6;
+}
+
+thead th {
+  text-align: left;
+  padding: 10px;
+  font-size: 0.95rem;
+  color: #4b5563;
+}
+
+tbody td {
+  padding: 10px;
+  font-size: 0.9rem;
+  color: #111827;
+  border-top: 1px solid #e5e7eb;
+}
+
+tbody tr:hover {
+  background: #f9fafb;
+}
