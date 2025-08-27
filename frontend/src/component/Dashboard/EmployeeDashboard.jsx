@@ -129,9 +129,9 @@ const EmployeeDashboard = () => {
                 <tr>
                   <th>S.No</th>
                   <th>Type</th>
-                  <th>Status</th>
                   <th>Start Date</th>
                   <th>End Date</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -140,9 +140,9 @@ const EmployeeDashboard = () => {
                     <tr key={leave.id}>
                       <td>{index + 1}</td>
                       <td>{leave.leaveTypeName}</td>
-                      <td>{leave.statusName}</td>
                       <td>{new Date(leave.startDate).toLocaleDateString()}</td>
                       <td>{new Date(leave.endDate).toLocaleDateString()}</td>
+                      <td>{leave.statusName}</td>
                     </tr>
                   ))
                 ) : (

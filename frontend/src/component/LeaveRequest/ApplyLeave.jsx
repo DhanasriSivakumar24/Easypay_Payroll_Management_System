@@ -1,23 +1,28 @@
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { GetLeaveType } from "../../service/masterTable.service";
 import { SubmitLeaveRequest } from "../../service/leave.service";
 import "./applyLeave.css";
 import EmployeeLayout from "../navbar/EmployeeLayout";
 
 const ApplyLeave = () => {
+  const { employeeId } = useSelector((state) => state.auth);
   const [leaveTypes, setLeaveTypes] = useState([]);
   const [form, setForm] = useState({
     leaveTypeId: "",
     startDate: "",
     endDate: "",
     reason: "",
-    attachment: null
+    attachment: null,
   });
   const [days, setDays] = useState(0);
   const [statusMsg, setStatusMsg] = useState("");
 
+  // fetch leave types
   useEffect(() => {
-    GetLeaveType().then(res => setLeaveTypes(res.data));
+    GetLeaveType()
+      .then((res) => setLeaveTypes(res.data))
+      .catch((err) => console.error("Failed to load leave types", err));
   }, []);
 
   // auto-calc days
@@ -41,9 +46,36 @@ const ApplyLeave = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await SubmitLeaveRequest(form);
+      const payload = {
+        employeeId: employeeId || sessionStorage.getItem("employeeId"),
+        leaveTypeId: Number(form.leaveTypeId),
+        startDate: form.startDate,
+        endDate: form.endDate,
+        reason: form.reason,
+      };
+
+      let dataToSend = payload;
+
+      // if attachment exists, switch to FormData
+      if (form.attachment) {
+        const fd = new FormData();
+        Object.entries(payload).forEach(([k, v]) => fd.append(k, v));
+        fd.append("attachment", form.attachment);
+        dataToSend = fd;
+      }
+
+      await SubmitLeaveRequest(dataToSend);
       setStatusMsg("✅ Leave applied successfully!");
+      setForm({
+        leaveTypeId: "",
+        startDate: "",
+        endDate: "",
+        reason: "",
+        attachment: null,
+      });
+      setDays(0);
     } catch (err) {
+      console.error("Apply leave failed:", err.response?.data || err.message);
       setStatusMsg("❌ Failed to apply leave");
     }
   };
@@ -63,7 +95,9 @@ const ApplyLeave = () => {
           >
             <option value="">-- Select Leave Type --</option>
             {leaveTypes.map((lt) => (
-              <option key={lt.id} value={lt.id}>{lt.leaveTypeName}</option>
+              <option key={lt.id} value={lt.id}>
+                {lt.leaveTypeName}
+              </option>
             ))}
           </select>
 
@@ -71,11 +105,21 @@ const ApplyLeave = () => {
           <div className="date-row">
             <div>
               <label>Start Date</label>
-              <input type="date" value={form.startDate} onChange={(e) => handleChange("startDate", e.target.value)} required />
+              <input
+                type="date"
+                value={form.startDate}
+                onChange={(e) => handleChange("startDate", e.target.value)}
+                required
+              />
             </div>
             <div>
               <label>End Date</label>
-              <input type="date" value={form.endDate} onChange={(e) => handleChange("endDate", e.target.value)} required />
+              <input
+                type="date"
+                value={form.endDate}
+                onChange={(e) => handleChange("endDate", e.target.value)}
+                required
+              />
             </div>
           </div>
 
@@ -95,7 +139,9 @@ const ApplyLeave = () => {
           <input type="file" onChange={handleFile} />
 
           {/* Submit */}
-          <button type="submit" className="submit-btn">Submit Request</button>
+          <button type="submit" className="submit-btn">
+            Submit Request
+          </button>
         </form>
 
         {statusMsg && <p className="status-msg">{statusMsg}</p>}
