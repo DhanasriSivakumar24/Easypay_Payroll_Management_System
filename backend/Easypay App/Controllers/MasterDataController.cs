@@ -23,5 +23,8 @@ namespace Easypay_App.Controllers
 
         [HttpGet("leave-type")]
         public ActionResult GetLeaveType() => Ok(_context.LeaveTypeMasters.ToList());
+
+        [HttpGet("timesheet-type")]
+        public ActionResult GetTimesheetType() => Ok(_context.TimesheetStatusMasters.ToList());
     }
 }

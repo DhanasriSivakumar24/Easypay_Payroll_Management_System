@@ -14,6 +14,8 @@ import ProtectedRoute from './component/ProtectedRoute';
 import EmployeeDashboard from './component/Dashboard/EmployeeDashboard';
 import ApplyLeave from './component/LeaveRequest/ApplyLeave';
 import LeaveRequests from './component/LeaveRequest/LeaveRequests';
+import ApplyTimesheet from './component/Timesheet/ApplyTimesheet';
+import TimesheetHistory from './component/Timesheet/TimesheetHistory';
 
 function App() {
   return (
@@ -32,6 +34,8 @@ function App() {
                 <Route path="/leave-requests/leaves/apply" element={<ApplyLeave />} />
                 <Route path="/leave-requests" element={<LeaveRequests />} />
                 <Route path='/personal-info' element={<ProtectedRoute><PersonalInfo/></ProtectedRoute>}/>
+                <Route path='/timesheets' element={<ProtectedRoute><TimesheetHistory/></ProtectedRoute>}/>
+                <Route path='/timesheets/submit-timesheet' element={<ProtectedRoute><ApplyTimesheet/></ProtectedRoute>}/>
                 <Route path= '/home' element = {<Home/>}/>
                 <Route path= '/employees/SearchEmployee' element ={<Employees/>}/>
             </Routes>

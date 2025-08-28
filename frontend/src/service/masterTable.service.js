@@ -15,3 +15,8 @@ export function GetLeaveType() {
   const url = baseUrl +'MasterData/leave-type'; 
   return axios.get(url);
 }
+
+export function GetTimesheetType() {
+  const url = baseUrl +'MasterData/timesheet-type'; 
+  return axios.get(url);
+}

@@ -4,6 +4,7 @@ import { GetLeaveType } from "../../service/masterTable.service";
 import { SubmitLeaveRequest } from "../../service/leave.service";
 import "./applyLeave.css";
 import EmployeeLayout from "../navbar/EmployeeLayout";
+import { useNavigate } from "react-router-dom";
 
 const ApplyLeave = () => {
   const { employeeId } = useSelector((state) => state.auth);
@@ -17,6 +18,7 @@ const ApplyLeave = () => {
   });
   const [days, setDays] = useState(0);
   const [statusMsg, setStatusMsg] = useState("");
+  const navigate = useNavigate();
 
   // fetch leave types
   useEffect(() => {
@@ -42,6 +44,16 @@ const ApplyLeave = () => {
   const handleFile = (e) => {
     setForm({ ...form, attachment: e.target.files[0] });
   };
+  
+  const handleCancel = () => {
+    setForm({
+      leaveTypes: "",
+      startDate: "",
+      endDate: "",
+      reason: "",
+    });
+    navigate("/leave-requests");
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -65,7 +77,7 @@ const ApplyLeave = () => {
       }
 
       await SubmitLeaveRequest(dataToSend);
-      setStatusMsg("✅ Leave applied successfully!");
+      setStatusMsg(" Leave applied successfully!");
       setForm({
         leaveTypeId: "",
         startDate: "",
@@ -76,7 +88,7 @@ const ApplyLeave = () => {
       setDays(0);
     } catch (err) {
       console.error("Apply leave failed:", err.response?.data || err.message);
-      setStatusMsg("❌ Failed to apply leave");
+      setStatusMsg(" Failed to apply leave");
     }
   };
 
@@ -139,9 +151,18 @@ const ApplyLeave = () => {
           <input type="file" onChange={handleFile} />
 
           {/* Submit */}
-          <button type="submit" className="submit-btn">
-            Submit Request
-          </button>
+          <div className="btn-row">
+            <button type="submit" className="btn btn-primary w-50">
+               Submit
+            </button>
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="btn btn-secondary w-50"
+            >
+               Cancel
+            </button>
+          </div>
         </form>
 
         {statusMsg && <p className="status-msg">{statusMsg}</p>}
