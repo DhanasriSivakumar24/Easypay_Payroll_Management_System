@@ -26,5 +26,14 @@ namespace Easypay_App.Controllers
 
         [HttpGet("timesheet-type")]
         public ActionResult GetTimesheetType() => Ok(_context.TimesheetStatusMasters.ToList());
+
+        [HttpGet("notification-status")]
+        public ActionResult GetNotificationType() => Ok(_context.NotificationStatusMasters.ToList());
+
+        [HttpGet("notification-channel")]
+        public ActionResult GetNotificationChannelType() => Ok(_context.NotificationChannelMasters.ToList());
+
+        [HttpGet("user-roles")]
+        public ActionResult GetUserRolese() => Ok(_context.UserRoleMasters.ToList());
     }
 }

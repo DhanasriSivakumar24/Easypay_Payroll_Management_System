@@ -13,7 +13,7 @@ const Sidebar = ({ role, userName, onLogout }) => {
       { name: "Employee Management", path: "/employees" },
       { name: "Payroll Policies", path: "/payroll-policies" },
       { name: "Compliance Reports", path: "/compliance" },
-      { name: "Notifications", path: "/notifications" },
+      { name: "Notifications", path: "/notifications/admin-notifications" },
       { name: "Audit Trail", path: "/audit" },
     ],
     payrollprocessor: [
@@ -30,7 +30,7 @@ const Sidebar = ({ role, userName, onLogout }) => {
       { name: "Personal Info", path: "/personal-info" },
       { name: "Time Sheets", path: "/timesheets" },
       { name: "Leave Requests", path: "/leave-requests" },
-      { name: "Notifications", path: "/notifications" },
+      { name: "Notifications", path: "/notifications/view-notifications" },
     ],
     manager: [
       { name: "Dashboard", path: "/manager-dashboard" },
