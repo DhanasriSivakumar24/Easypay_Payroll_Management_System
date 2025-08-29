@@ -1,0 +1,109 @@
+.payroll-container {
+  max-width: 1300px;
+  margin: 20px auto;
+  padding: 20px;
+  font-family: "Segoe UI", sans-serif;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.search-input {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  width: 280px;
+}
+
+.payroll-card {
+  overflow-x: auto;
+}
+
+.payroll-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1000px;
+}
+
+.payroll-table th,
+.payroll-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+.payroll-table th {
+  background: #f9f9f9;
+  font-weight: 600;
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-badge.pending { background: #fff3cd; color: #a97800; }
+.status-badge.processed { background: #e7f0ff; color: #1f57d6; }
+.status-badge.approved { background: #d4f6e0; color: #1a7f37; }
+.status-badge.paid { background: #d1e7ff; color: #0a58ca; }
+.status-badge.unknown { background: #f0f0f0; color: #555; }
+
+/* Action buttons */
+.btn-verify,
+.btn-approve,
+.btn-paid {
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  margin-right: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-verify { background: #e7f0ff; color: #1f57d6; }
+.btn-approve { background: #d4f6e0; color: #1a7f37; }
+.btn-paid { background: #d1e7ff; color: #0a58ca; }
+
+.btn-verify:hover { background: #d0e0ff; }
+.btn-approve:hover { background: #bce9d0; }
+.btn-paid:hover { background: #b9d8ff; }
+
+.no-data {
+  text-align: center;
+  padding: 20px;
+  color: #888;
+}
+
+.add-btn {
+  background: #4a90e2;
+  border: none;
+  padding: 10px 18px;
+  color: #fff;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.add-btn:hover {
+  background: #3578c6;
+}

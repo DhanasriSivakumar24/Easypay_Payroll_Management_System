@@ -53,7 +53,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpGet("employee/{empId}")]
-        [Authorize(Roles = "Employee")]
+        [Authorize(Roles = "Admin, HR Manager, Payroll Processor,Employee")]
         public async Task<ActionResult<IEnumerable<PayrollResponseDTO>>> GetPayrollByEmployeeId(int empId)
         {
             var result = await _payrollService.GetPayrollByEmployeeId(empId);
@@ -61,7 +61,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpPut("verify/{payrollId}")]
-        [Authorize(Roles = "Payroll Processor")]
+        [Authorize(Roles = "Admin, Payroll Processor")]
         public async Task<ActionResult<PayrollResponseDTO>> VerifyPayroll(int payrollId)
         {
             var oldPayroll = await _payrollService.GetPayrollById(payrollId);
@@ -81,7 +81,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpPut("approve/{payrollId}")]
-        [Authorize(Roles = "HR Manager")]
+        [Authorize(Roles = "Admin, HR Manager")]
         public async Task<ActionResult<PayrollResponseDTO>> ApprovePayroll(int payrollId)
         {
             var oldPayroll = await _payrollService.GetPayrollById(payrollId);

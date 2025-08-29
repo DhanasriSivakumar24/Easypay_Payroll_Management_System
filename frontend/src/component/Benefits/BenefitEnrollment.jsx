@@ -127,7 +127,7 @@ const BenefitEnrollment = () => {
             {/* Form Actions */}
             <div className="form-actions">
               <button type="submit" className="btn btn-primary w-50">Enroll Benefit</button>
-              <button type="button" className="btn btn-secondary w-50" onClick={() => navigate("/benefits")}>Cancel</button>
+              <button type="button" className="btn btn-secondary w-50" onClick={() => navigate("/benefits-management")}>Cancel</button>
             </div>
           </form>
         </div>

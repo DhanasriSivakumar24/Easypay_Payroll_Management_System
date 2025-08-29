@@ -12,7 +12,7 @@ const Sidebar = ({ role, userName, onLogout }) => {
       { name: "User Management", path: "/user-management" },
       { name: "Employee Management", path: "/employees" },      
       { name: "Benefits Management" , path: "/benefits-management"},
-      { name: "Payroll Policies", path: "/payroll-policies" },
+      { name: "Payroll Policies", path: "/payrolls" },
       { name: "Compliance Reports", path: "/compliance" },
       { name: "Notifications", path: "/notifications/admin-notifications" },
       { name: "Audit Trail", path: "/audit" },

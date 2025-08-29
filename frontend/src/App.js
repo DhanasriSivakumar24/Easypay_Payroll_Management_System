@@ -22,6 +22,8 @@ import BenefitEnrollment from './component/Benefits/BenefitEnrollment';
 import AllBenefitEnrollments from './component/Benefits/AllBenefitEnrollments';
 import ViewBenefitEnrollment from './component/Benefits/ViewBenefitEnrollment';
 import SendNotification from './component/Notification/SendNotification';
+import AllPayrolls from './component/Payroll/AllPayrolls';
+import GeneratePayrollPage from './component/Payroll/GeneratePayroll';
 
 function App() {
   return (
@@ -41,7 +43,8 @@ function App() {
                 <Route path='/benefits-management/enroll' element={<ProtectedRoute><BenefitEnrollment/></ProtectedRoute>} />
                 <Route path="/benefits/view/:id" element ={<ProtectedRoute><ViewBenefitEnrollment/></ProtectedRoute>}/>
                 <Route path='/notifications/admin-notifications' element={<ProtectedRoute><SendNotification/></ProtectedRoute>}/>
-
+                <Route path='/payrolls' element={<ProtectedRoute><AllPayrolls/></ProtectedRoute>}/>
+                <Route path='/payrolls/generate-payroll' element={<ProtectedRoute><GeneratePayrollPage/></ProtectedRoute>}/>
                 
                 
                 <Route path="/employee-dashboard" element={<ProtectedRoute><EmployeeDashboard /></ProtectedRoute>}/>

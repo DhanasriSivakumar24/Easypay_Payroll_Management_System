@@ -95,7 +95,6 @@ namespace Easypay_App.Services
         #endregion
 
         #region GeneratePayroll
-
         public async Task<PayrollResponseDTO> GeneratePayroll(PayrollRequestDTO dto)
         {
             var employee = await _employeeRepository.GetValueById(dto.EmployeeId);
@@ -104,18 +103,37 @@ namespace Easypay_App.Services
             if (employee == null || policy == null)
                 throw new NoItemFoundException();
 
+            // Check full-month period (1st → last day of month)
+            if (dto.PeriodStart.Day != 1 || dto.PeriodEnd.Day != DateTime.DaysInMonth(dto.PeriodEnd.Year, dto.PeriodEnd.Month))
+                throw new InvalidOperationException("Payroll must cover a full month (1st to last day).");
+
+            // Preventing duplicate payrolls
+            var existingPayrolls = await _payrollRepository.GetAllValue();
+            bool exists = existingPayrolls.Any(p =>
+                p.EmployeeId == dto.EmployeeId &&
+                p.PeriodStart.Month == dto.PeriodStart.Month &&
+                p.PeriodStart.Year == dto.PeriodStart.Year);
+
+            if (exists)
+                throw new InvalidOperationException("Payroll already generated for this employee for the selected month.");
+
+            // Policy validation
+            if (policy.BasicPercent + policy.HRAPercent + policy.SpecialPercent +
+                policy.TravelPercent + policy.MedicalPercent > 100)
+                throw new InvalidOperationException("Invalid payroll policy: total percentages exceed 100%.");
+
             decimal gross = employee.Salary;
 
-            // Timesheet Based cal
             var timesheets = (await _timesheetRepository.GetAllValue())
                 .Where(t => t.EmployeeId == dto.EmployeeId &&
                             t.WorkDate >= dto.PeriodStart &&
                             t.WorkDate <= dto.PeriodEnd)
                 .ToList();
 
-            decimal totalHoursWorked = timesheets.Sum(t => t.HoursWorked);
+            if (!timesheets.Any())
+                throw new InvalidOperationException("No timesheets found for this employee in the selected period.");
 
-            // Assume 8 hours per working day in the period
+            decimal totalHoursWorked = timesheets.Sum(t => t.HoursWorked);
             int totalWorkingDays = (dto.PeriodEnd - dto.PeriodStart).Days + 1;
             decimal expectedHours = totalWorkingDays * 8;
 
@@ -126,25 +144,19 @@ namespace Easypay_App.Services
                 timesheetPenalty = (expectedHours - totalHoursWorked) * hourlyRate;
             }
 
-            //Policy-based calculations
             decimal basic = (gross * policy.BasicPercent) / 100;
             decimal hra = (gross * policy.HRAPercent) / 100;
             decimal special = (gross * policy.SpecialPercent) / 100;
             decimal travel = (gross * policy.TravelPercent) / 100;
             decimal medical = (gross * policy.MedicalPercent) / 100;
-
             decimal allowances = hra + special + travel + medical;
 
             // Deductions
             decimal employeePf = (gross * policy.EmployeePercent) / 100;
-
             decimal deductions = employeePf + timesheetPenalty;
 
             decimal netPay = gross + allowances - deductions;
-
-            // Preventing -ve net pay
-            if (netPay < 0)
-                netPay = 0;
+            if (netPay < 0) netPay = 0;
 
             var payroll = new Payroll
             {
@@ -159,23 +171,16 @@ namespace Easypay_App.Services
                 StatusId = 1, // Pending
                 GeneratedDate = DateTime.Now,
                 CreatedAt = DateTime.Now,
-                PaidBy = null,  
+                PaidBy = null,
                 PaidDate = null
             };
 
-            try
-            {
-                await _payrollRepository.AddValue(payroll);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Error saving payroll: {ex}");
-            }
+            await _payrollRepository.AddValue(payroll);
 
             var response = _mapper.Map<PayrollResponseDTO>(payroll);
             response.EmployeeName = $"{employee.FirstName} {employee.LastName}";
             response.PolicyName = policy.PolicyName;
-            response.StatusName = (await _statusRepository.GetValueById(payroll.StatusId))?.StatusName ?? "Unknown";
+            response.StatusName = (await _statusRepository.GetValueById(payroll.StatusId))?.StatusName ?? "Pending";
 
             return response;
         }

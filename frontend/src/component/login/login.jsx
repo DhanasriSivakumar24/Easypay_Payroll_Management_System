@@ -11,7 +11,7 @@ const Login = () => {
   const [user, setUser] = useState(new LoginModel());
   const [error, setError] = useState(new LoginErrorModel());
   const navigate = useNavigate();
-  const dispatch = useDispatch(); // ✅ redux dispatcher
+  const dispatch = useDispatch(); // redux dispatcher
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,7 +29,6 @@ const Login = () => {
       .then((res) => {
         const data = res.data;
 
-        // ✅ Save to Redux
         dispatch(
           login({
             username: data.userName,
@@ -39,7 +38,7 @@ const Login = () => {
           })
         );
 
-        // ✅ Optional: still keep in sessionStorage if you want persistence
+        // Optional
         sessionStorage.setItem("token", data.token);
         sessionStorage.setItem("username", data.userName);
         sessionStorage.setItem("employeeId", data.employeeId);

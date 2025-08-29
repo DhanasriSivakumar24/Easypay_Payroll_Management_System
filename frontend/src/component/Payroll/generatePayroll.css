@@ -1,0 +1,74 @@
+.generate-payroll-container {
+  max-width: 600px;
+  margin: 30px auto;
+  padding: 25px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+  font-family: "Segoe UI", sans-serif;
+}
+
+.generate-payroll-container h2 {
+  margin-bottom: 20px;
+  font-weight: 600;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 6px;
+  color: #1f2a56;
+}
+
+.generate-form .form-group {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.generate-form label {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.generate-form select,
+.generate-form input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d7e0;
+  font-size: 14px;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+.generate-form select:focus,
+.generate-form input:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 6px rgba(74, 144, 226, 0.3);
+  outline: none;
+}
+
+/* Buttons (reuse AddEmployee styles) */
+.btn.btn-primary {
+  background-color: #4a90e2;
+  border-color: #4a90e2;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn.btn-primary:hover {
+  background-color: #3578c6;
+  border-color: #3578c6;
+  box-shadow: 0 4px 12px rgba(53, 120, 198, 0.3);
+}
+
+/* Flex spacing */
+.d-flex {
+  display: flex;
+}
+
+.gap-2 {
+  gap: 10px;
+}
+
+.mt-3 {
+  margin-top: 15px;
+}
