@@ -40,7 +40,6 @@ const AllBenefitEnrollments = () => {
   return (
     <AdminLayout>
       <div className="benefit-enroll-container">
-        {/* Heading + Add button */}
         <div className="header-row">
           <h2> Benefit Enrollments</h2>
           <div className="actions">
@@ -60,12 +59,11 @@ const AllBenefitEnrollments = () => {
           </div>
         </div>
 
-        {/* Table Card */}
         <div className="enroll-card">
           <table className="enroll-table">
             <thead>
               <tr>
-                <th>ID</th>
+                <th>S.No</th>
                 <th>Employee</th>
                 <th>Benefit</th>
                 <th>Start Date</th>
@@ -77,8 +75,8 @@ const AllBenefitEnrollments = () => {
             <tbody>
               {filteredEnrollments.length > 0 ? (
                 filteredEnrollments.map((e, idx) => (
-                  <tr key={idx}>
-                    <td>{e.id}</td>
+                  <tr key={e.idx}>
+                    <td>{idx + 1}</td>
                     <td>{e.employeeName}</td>
                     <td>{e.benefitName}</td>
                     <td>{new Date(e.startDate).toISOString().split("T")[0]}</td>

@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../../authSlicer";   //  redux logout
+import { logout } from "../../authSlicer";
 import { GetAllEmployees } from "../../service/employee.service";
 import { GetAllLeaveRequests } from "../../service/leave.service";
 import { GetAllPayrolls } from "../../service/payroll.service";
+import { GetAllAuditTrail } from "../../service/audit.service"; 
 import Sidebar from "../navbar/Sidebar"; 
 import './adminDashboard.css';
 
@@ -20,38 +21,41 @@ const AdminDashboard = () => {
   const [totalDeductions, setTotalDeductions] = useState(0);
   const [recentLeaves, setRecentLeaves] = useState([]);
   const [recentPayrolls, setRecentPayrolls] = useState([]);
+  const [recentAudits, setRecentAudits] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+
     GetAllEmployees()
-      .then((res) => {
-        if (res.data) {
-          setTotalEmployees(res.data.length);
-        }
-      })
-      .catch((err) => console.error("Error fetching employees:", err));
+      .then((res) => setTotalEmployees(res.data?.length || 0))
+      .catch(console.error);
 
     GetAllLeaveRequests()
       .then((res) => {
-        if (res.data) {
-          const leavesData = res.data;
-          setPendingLeaves(leavesData.filter(l => l.statusName.toLowerCase() === "pending").length);
-          setRecentLeaves(leavesData.slice(-5).reverse());
-        }
+        const leaves = res.data || [];
+        setPendingLeaves(leaves.filter(l => l.statusName.toLowerCase() === "pending").length);
+        setRecentLeaves(leaves.slice(-5).reverse());
       })
-      .catch((err) => console.error("Error fetching leaves:", err));
+      .catch(console.error);
 
     GetAllPayrolls()
       .then((res) => {
-        if (res.data) {
-          const payrollsData = res.data;
-          const latest = payrollsData.sort((a, b) => b.id - a.id)[0];
-          setLatestPayroll(latest);
-          if (latest && latest.deductions !== undefined) setTotalDeductions(latest.deductions);
-          setRecentPayrolls(payrollsData.slice(-5).reverse());
-        }
+        const payrolls = res.data || [];
+        const latest = payrolls.sort((a, b) => b.id - a.id)[0];
+        setLatestPayroll(latest);
+        const totalDeduct = payrolls.reduce((sum, p) => sum + (p.deductions || 0), 0);
+        setTotalDeductions(totalDeduct);
+        setRecentPayrolls(payrolls.slice(-5).reverse());
       })
-      .catch((err) => console.error("Error fetching payrolls:", err))
+      .catch(console.error);
+
+    GetAllAuditTrail()
+      .then((res) => {
+        const audits = res.data || [];
+        const latestFive = audits.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 5);
+        setRecentAudits(latestFive);
+      })
+      .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
 
@@ -103,11 +107,7 @@ const AdminDashboard = () => {
         <h2 className="mb-3 mt-4">Quick Actions</h2>
         <div className="quick-actions-container">
           {quickActions.map((action, idx) => (
-            <div
-              className="quick-action-card"
-              key={idx}
-              onClick={() => navigate(action.path)}
-            >
+            <div className="quick-action-card" key={idx} onClick={() => navigate(action.path)}>
               <h5>{action.title}</h5>
               <p>{action.desc}</p>
             </div>
@@ -115,6 +115,7 @@ const AdminDashboard = () => {
         </div>
 
         <div className="tables">
+
           <div className="table-section">
             <h2>Recent Leave Requests</h2>
             <table>
@@ -172,6 +173,33 @@ const AdminDashboard = () => {
               </tbody>
             </table>
           </div>
+
+          <div className="table-section">
+            <h2>Latest Audit Trails</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>S.No</th>
+                  <th>User</th>
+                  <th>Action</th>
+                  <th>Entity</th>
+                  <th>Timestamp</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recentAudits.map((audit, index) => (
+                  <tr key={audit.id}>
+                    <td>{index + 1}</td>
+                    <td>{audit.userName}</td>
+                    <td>{audit.actionName}</td>
+                    <td>{audit.entityName}</td>
+                    <td>{new Date(audit.timeStamp).toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
         </div>
       </main>
     </div>
