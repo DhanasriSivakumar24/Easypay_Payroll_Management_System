@@ -19,6 +19,7 @@ namespace Easypay_App.Services
             IRepository<int, BenefitMaster> benefitMasterRepository,
             IRepository<int, BenefitEnrollment> benefitEnrollmentRepository,
             IRepository<int, BenefitStatusMaster> benefitStatusRepository,
+            IAuditTrailService auditTrailService,
             IMapper mapper)
         {
             _benefitMasterRepository = benefitMasterRepository;

@@ -10,7 +10,8 @@ const Sidebar = ({ role, userName, onLogout }) => {
     admin: [
       { name: "Dashboard", path: "/admin-dashboard" },
       { name: "User Management", path: "/user-management" },
-      { name: "Employee Management", path: "/employees" },
+      { name: "Employee Management", path: "/employees" },      
+      { name: "Benefits Management" , path: "/benefits-management"},
       { name: "Payroll Policies", path: "/payroll-policies" },
       { name: "Compliance Reports", path: "/compliance" },
       { name: "Notifications", path: "/notifications/admin-notifications" },

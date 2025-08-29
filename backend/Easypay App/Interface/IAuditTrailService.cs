@@ -4,7 +4,14 @@ namespace Easypay_App.Interface
 {
     public interface IAuditTrailService
     {
-        public Task<AuditTrailResponseDTO> LogAction(AuditTrailRequestDTO dto);
+        public Task LogAction(string userName,
+            int actionId,
+            string entityName,
+            int entityId,
+            object? oldValue = null,
+            object? newValue = null,
+            string? ipAddress = null);
+
         public Task<AuditTrailResponseDTO> GetLogById(int id);
         public Task<IEnumerable<AuditTrailResponseDTO>> GetAllLogs();
         public Task<IEnumerable<AuditTrailResponseDTO>> GetLogsByUser(string userName);

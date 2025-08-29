@@ -26,11 +26,10 @@ namespace Easypay_App.Services
         }
         public async Task<TimesheetResponseDTO> AddTimesheet(TimesheetRequestDTO request)
         {
-            // validate employee exists
             var employee = await _employeeRepository.GetValueById(request.EmployeeId);
             if (employee == null)
                 throw new NoItemFoundException($"Employee with id {request.EmployeeId} not found.");
-            // find default status (Pending) - prefer by name; fallback to id 1 if not found
+
             var allStatuses = await _statusRepository.GetAllValue();
             var pending = allStatuses.FirstOrDefault(s => s.StatusName.ToLower() == "pending");
 
@@ -55,14 +54,12 @@ namespace Easypay_App.Services
             return response;
         }
 
-        // Approve timesheet
         public async Task<bool> ApproveTimesheet(int timesheetId)
         {
             var timesheet = await _timesheetRepository.GetValueById(timesheetId);
             if (timesheet == null)
                 throw new NoItemFoundException($"Timesheet with id {timesheetId} not found.");
 
-            // find approved status
             var allStatuses = await _statusRepository.GetAllValue();
             var approved = allStatuses.FirstOrDefault(s => s.StatusName.ToLower() == "approved");
 
@@ -79,7 +76,6 @@ namespace Easypay_App.Services
             return true;
         }
 
-        // Reject timesheet
         public async Task<bool> RejectTimesheet(int timesheetId)
         {
             var timesheet = await _timesheetRepository.GetValueById(timesheetId);
@@ -120,7 +116,6 @@ namespace Easypay_App.Services
             return result;
         }
 
-        // Get timesheets by employee
         public async Task<IEnumerable<TimesheetResponseDTO>> GetTimesheetsByEmployee(int employeeId)
         {
             var all = await _timesheetRepository.GetAllValue();
@@ -140,14 +135,11 @@ namespace Easypay_App.Services
             return result;
         }
 
-        // Helper to populate EmployeeName and StatusName for a mapped DTO
         private async Task PopulateNames(TimesheetResponseDTO dto, Timesheet timesheet)
         {
-            // Employee
             var emp = await _employeeRepository.GetValueById(timesheet.EmployeeId);
             dto.EmployeeName = emp != null ? $"{emp.FirstName} {emp.LastName}" : "Unknown";
 
-            // Status
             var status = await _statusRepository.GetValueById(timesheet.StatusId);
             dto.StatusName = status?.StatusName ?? "Unknown";
         }

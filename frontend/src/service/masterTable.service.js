@@ -35,3 +35,8 @@ export function GetUserRoles() {
   const url = baseUrl +'MasterData/user-roles'; 
   return axios.get(url);
 }
+
+export function GetBenefitsMaster() {
+  const url = baseUrl +'MasterData/benefit-master'; 
+  return axios.get(url);
+}

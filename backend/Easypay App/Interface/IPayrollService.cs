@@ -5,6 +5,7 @@ namespace Easypay_App.Interface
     public interface IPayrollService
     {
         public Task<PayrollResponseDTO> GeneratePayroll(PayrollRequestDTO dto);
+        public Task<PayrollResponseDTO> GetPayrollById(int payrollId);
         public Task<IEnumerable<PayrollResponseDTO>> GetAllPayrolls();
         public Task<PayrollResponseDTO> VerifyPayroll(int payrollId);
         public Task<PayrollResponseDTO> ApprovePayroll(int payrollId);

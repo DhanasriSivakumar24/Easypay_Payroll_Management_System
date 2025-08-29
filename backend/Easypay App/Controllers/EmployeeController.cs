@@ -15,10 +15,12 @@ namespace Easypay_App.Controllers
     public class EmployeeController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;
+        private readonly IAuditTrailService _auditTrailService;
 
-        public EmployeeController(IEmployeeService employeeService)
+        public EmployeeController(IEmployeeService employeeService, IAuditTrailService auditTrailService)
         {
             _employeeService = employeeService;
+            _auditTrailService = auditTrailService;
         }
 
         [HttpPost("add")]
@@ -28,6 +30,17 @@ namespace Easypay_App.Controllers
             try
             {
                 var result = await _employeeService.AddEmployee(employeeDto);
+                string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+                await _auditTrailService.LogAction(
+                    User.Identity.Name,
+                    actionId: 1, // Add Employee
+                    entityName: "Employee",
+                    entityId: result.Id,
+                    oldValue: "N/A",
+                    newValue: result,
+                    ipAddress: ipAddress
+                );
                 return Ok(result);
             }
             catch (Exception ex)
@@ -41,7 +54,19 @@ namespace Easypay_App.Controllers
         [Authorize(Roles = "Admin, HR Manager")]
         public async Task<ActionResult> UpdateEmployee(int id, [FromBody] EmployeeUpdateRequestDTO dto)
         {
+            var oldEmployee = await _employeeService.GetEmployeeById(id);
             var result = await _employeeService.UpdateEmployee(id, dto);
+            string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+            await _auditTrailService.LogAction(
+                User.Identity.Name,
+                actionId: 2, // Update Employee
+                entityName: "Employee",
+                entityId: id,
+                oldValue: oldEmployee,
+                newValue: result,
+                ipAddress: ipAddress
+            );
             return Ok(result);
         }
 
@@ -51,7 +76,19 @@ namespace Easypay_App.Controllers
         {
             try
             {
+                var oldEmployee = await _employeeService.GetEmployeeById(id);
                 var result = await _employeeService.DeleteEmployee(id);
+                string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+                await _auditTrailService.LogAction(
+                    User.Identity.Name,
+                    actionId: 3, // Delete Employee
+                    entityName: "Employee",
+                    entityId: id,
+                    oldValue: oldEmployee,
+                    newValue: result,
+                    ipAddress: ipAddress
+                );
                 return Ok(result);
             }
             catch (Exception ex)
@@ -65,7 +102,19 @@ namespace Easypay_App.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult> ChangeUserRole([FromBody] ChangeUserRoleDTO dto)
         {
+            var oldEmployee = await _employeeService.GetEmployeeById(dto.EmployeeId);
             var result = await _employeeService.ChangeEmployeeUserRole(dto);
+            string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+            await _auditTrailService.LogAction(
+                User.Identity.Name,
+                actionId: 22, // Change User Role
+                entityName: "Employee",
+                entityId: dto.EmployeeId,
+                oldValue: oldEmployee,
+                newValue: result,
+                ipAddress: ipAddress
+            );
             return Ok(result);
         }
 
@@ -86,7 +135,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "Admin, HR Manager, Employee")]
+        [Authorize(Roles = "Admin, HR Manager,Payroll Processor, Employee")]
         public async Task<ActionResult> GetEmployeeById(int id)
         {
             try

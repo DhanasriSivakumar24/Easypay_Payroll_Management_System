@@ -1,6 +1,7 @@
 ﻿using Easypay_App.Filters;
 using Easypay_App.Interface;
 using Easypay_App.Models.DTO;
+using Easypay_App.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
@@ -15,10 +16,14 @@ namespace Easypay_App.Controllers
     public class BenefitEnrollmentController : ControllerBase
     {
         private readonly IBenefitEnrollmentService _benefitEnrollmentService;
+        private readonly IAuditTrailService _auditTrailService;
 
-        public BenefitEnrollmentController(IBenefitEnrollmentService benefitEnrollmentService)
+        public BenefitEnrollmentController(IBenefitEnrollmentService benefitEnrollmentService,
+            IAuditTrailService auditTrailService
+            )
         {
             _benefitEnrollmentService = benefitEnrollmentService;
+            _auditTrailService = auditTrailService;
         }
 
         [HttpGet("all")]
@@ -60,6 +65,17 @@ namespace Easypay_App.Controllers
             try
             {
                 var enrollment = await _benefitEnrollmentService.EnrollBenefit(requestDTO);
+                string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+                await _auditTrailService.LogAction(
+                    User.Identity.Name,
+                    actionId: 16,
+                    entityName: "BenefitEnrollment",
+                    entityId: enrollment.Id,
+                    oldValue: "-",
+                    newValue: enrollment,
+                    ipAddress: ipAddress
+                );
                 return Ok(enrollment);
             }
             catch (Exception ex)
@@ -76,8 +92,20 @@ namespace Easypay_App.Controllers
         {
             try
             {
-                var emrollment = await _benefitEnrollmentService.UpdateBenefit(id, requestDTO);
-                return Ok(emrollment);
+                var oldEnrollment = await _benefitEnrollmentService.GetBenefitById(id); // old values
+                var updatedEnrollment = await _benefitEnrollmentService.UpdateBenefit(id, requestDTO);
+                string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+                await _auditTrailService.LogAction(
+                    User.Identity.Name,
+                    actionId: 17,
+                    entityName: "BenefitEnrollment",
+                    entityId: id,
+                    oldValue: oldEnrollment,
+                    newValue: updatedEnrollment,
+                    ipAddress:ipAddress
+                );
+                return Ok(updatedEnrollment);
             }
             catch (Exception ex)
             {
@@ -92,8 +120,19 @@ namespace Easypay_App.Controllers
         {
             try
             {
-                var emrollment = await _benefitEnrollmentService.DeleteBenefit(id);
-                return Ok(emrollment);
+                var deletedEnrollment = await _benefitEnrollmentService.DeleteBenefit(id);
+                string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+                await _auditTrailService.LogAction(
+                    User.Identity.Name,
+                    actionId: 18, 
+                    entityName: "Benefit Enrollment",
+                    entityId: id,
+                    oldValue: deletedEnrollment,
+                    newValue: "-",
+                    ipAddress:ipAddress
+                );
+                return Ok(deletedEnrollment);
             }
             catch (Exception ex)
             {

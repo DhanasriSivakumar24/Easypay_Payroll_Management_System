@@ -49,6 +49,17 @@ namespace Easypay_App.Services
         }
         #endregion
 
+        #region GetPayrollById
+        public async Task<PayrollResponseDTO> GetPayrollById(int payrollId)
+        {
+            var payroll = await _payrollRepository.GetValueById(payrollId);
+            if (payroll == null)
+                throw new NoItemFoundException();
+
+            return await MapPayrollToDTO(payroll);
+        }
+        #endregion
+
         #region ApprovePayroll
         public async Task<PayrollResponseDTO> ApprovePayroll(int payrollId)
         {

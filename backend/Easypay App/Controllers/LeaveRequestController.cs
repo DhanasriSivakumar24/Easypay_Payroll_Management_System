@@ -16,10 +16,14 @@ namespace Easypay_App.Controllers
     public class LeaveRequestController : ControllerBase
     {
         private readonly ILeaveRequestService _leaveRequestService;
+        private readonly IAuditTrailService _auditTrailService;
 
-        public LeaveRequestController(ILeaveRequestService leaveRequestService)
+        public LeaveRequestController(
+            ILeaveRequestService leaveRequestService,
+            IAuditTrailService auditTrailService)
         {
             _leaveRequestService = leaveRequestService;
+            _auditTrailService = auditTrailService;
         }
 
         [HttpGet("all")]
@@ -45,6 +49,17 @@ namespace Easypay_App.Controllers
             try
             {
                 var result = await _leaveRequestService.SubmitLeaveRequest(requestDTO);
+
+                string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+                await _auditTrailService.LogAction(
+                    User.Identity.Name,
+                    actionId: 6, // Apply Leave
+                    entityName: "LeaveRequest",
+                    entityId: result.Id,
+                    oldValue: "-",
+                    newValue: result,
+                    ipAddress: ipAddress
+                );
                 return Ok(result);
             }
             catch (Exception ex)
@@ -60,7 +75,19 @@ namespace Easypay_App.Controllers
         {
             try
             {
+                var oldLeave = await _leaveRequestService.GetLeaveRequestById(id);
                 var result = await _leaveRequestService.DeleteLeaveRequest(id);
+
+                string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+                await _auditTrailService.LogAction(
+                    User.Identity.Name,
+                    actionId: 11, // Delete Leave Request
+                    entityName: "LeaveRequest",
+                    entityId: id,
+                    oldValue: oldLeave,
+                    newValue: result,
+                    ipAddress: ipAddress
+                );
                 return Ok(result);
             }
             catch (Exception ex)
@@ -86,14 +113,25 @@ namespace Easypay_App.Controllers
             }
         }
 
-        // Approve leave request
         [HttpPut("approve/{id}")]
         [Authorize(Roles = "Admin, HR Manager, Manager")]
         public async Task<ActionResult> ApproveLeave(int id, [FromQuery] int managerId)
         {
             try
             {
+                var oldLeave = await _leaveRequestService.GetLeaveRequestById(id);
                 var result = await _leaveRequestService.ApproveLeave(id, managerId, true);
+
+                string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+                await _auditTrailService.LogAction(
+                    User.Identity.Name,
+                    actionId: 7,
+                    entityName: "LeaveRequest",
+                    entityId: id,
+                    oldValue: oldLeave,
+                    newValue: result,
+                    ipAddress: ipAddress
+                );
                 return Ok(result);
             }
             catch (Exception ex)
@@ -103,14 +141,25 @@ namespace Easypay_App.Controllers
             }
         }
 
-        // Reject leave request
         [HttpPut("reject/{id}")]
         [Authorize(Roles = "Admin, HR Manager, Manager")]
         public async Task<ActionResult> RejectLeave(int id, [FromQuery] int managerId)
         {
             try
             {
+                var oldLeave = await _leaveRequestService.GetLeaveRequestById(id);
                 var result = await _leaveRequestService.RejectLeave(id, managerId);
+
+                string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+                await _auditTrailService.LogAction(
+                    User.Identity.Name,
+                    actionId: 8, 
+                    entityName: "LeaveRequest",
+                    entityId: id,
+                    oldValue: oldLeave,
+                    newValue: result,
+                    ipAddress: ipAddress
+                );
                 return Ok(result);
             }
             catch (Exception ex)

@@ -1,6 +1,7 @@
 ﻿using Easypay_App.Filters;
 using Easypay_App.Interface;
 using Easypay_App.Models.DTO;
+using Easypay_App.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
@@ -15,10 +16,13 @@ namespace Easypay_App.Controllers
     public class PayrollController : ControllerBase
     {
         private readonly IPayrollService _payrollService;
+        private readonly IAuditTrailService _auditTrailService;
 
-        public PayrollController(IPayrollService payrollService)
+        public PayrollController(IPayrollService payrollService, 
+            IAuditTrailService auditTrailService)
         {
             _payrollService = payrollService;
+            _auditTrailService = auditTrailService;
         }
 
         [HttpPost("generate")]
@@ -26,6 +30,17 @@ namespace Easypay_App.Controllers
         public async Task<ActionResult<PayrollResponseDTO>> GeneratePayroll([FromBody] PayrollRequestDTO dto)
         {
             var result = await _payrollService.GeneratePayroll(dto);
+            string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+            await _auditTrailService.LogAction(
+                User.Identity.Name,
+                actionId: 9, // Run Payroll
+                entityName: "Payroll",
+                entityId: result.Id,
+                oldValue: "-",
+                newValue: result,
+                ipAddress: ipAddress
+            );
             return Ok(result);
         }
 
@@ -49,7 +64,19 @@ namespace Easypay_App.Controllers
         [Authorize(Roles = "Payroll Processor")]
         public async Task<ActionResult<PayrollResponseDTO>> VerifyPayroll(int payrollId)
         {
+            var oldPayroll = await _payrollService.GetPayrollById(payrollId);
             var result = await _payrollService.VerifyPayroll(payrollId);
+            string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+            await _auditTrailService.LogAction(
+                User.Identity.Name,
+                actionId: 20,
+                entityName: "Payroll",
+                entityId: payrollId,
+                oldValue: oldPayroll,
+                newValue: result,
+                ipAddress: ipAddress
+            );
             return Ok(result);
         }
 
@@ -57,7 +84,19 @@ namespace Easypay_App.Controllers
         [Authorize(Roles = "HR Manager")]
         public async Task<ActionResult<PayrollResponseDTO>> ApprovePayroll(int payrollId)
         {
+            var oldPayroll = await _payrollService.GetPayrollById(payrollId);
             var result = await _payrollService.ApprovePayroll(payrollId);
+            string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+            await _auditTrailService.LogAction(
+                User.Identity.Name,
+                actionId: 19,
+                entityName: "Payroll",
+                entityId: payrollId,
+                oldValue: oldPayroll,
+                newValue: result,
+                ipAddress: ipAddress
+            );
             return Ok(result);
         }
 
@@ -65,7 +104,19 @@ namespace Easypay_App.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<PayrollResponseDTO>> MarkAsPaid(int payrollId, int adminId)
         {
+            var oldPayroll = await _payrollService.GetPayrollById(payrollId);
             var result = await _payrollService.MarkPayrollAsPaid(payrollId, adminId);
+            string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+            await _auditTrailService.LogAction(
+                User.Identity.Name,
+                actionId: 21,
+                entityName: "Payroll",
+                entityId: payrollId,
+                oldValue: oldPayroll,
+                newValue: result,
+                ipAddress: ipAddress
+            );
             return Ok(result);
         }
 
@@ -95,5 +146,12 @@ namespace Easypay_App.Controllers
             return Ok(report);
         }
 
+        [HttpGet("{payrollId}")]
+        [Authorize(Roles = "Admin, HR Manager, Payroll Processor, Employee")]
+        public async Task<ActionResult<PayrollResponseDTO>> GetPayrollById(int payrollId)
+        {
+            var payroll = await _payrollService.GetPayrollById(payrollId);
+            return Ok(payroll);
+        }
     }
 }

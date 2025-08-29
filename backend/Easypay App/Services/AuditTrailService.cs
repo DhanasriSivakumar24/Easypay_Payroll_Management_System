@@ -4,6 +4,7 @@ using Easypay_App.Interface;
 using Easypay_App.Models;
 using Easypay_App.Models.DTO;
 using log4net;
+using Newtonsoft.Json;
 
 namespace Easypay_App.Services
 {
@@ -24,37 +25,6 @@ namespace Easypay_App.Services
             _userRepo = userRepo;
             _actionRepo = actionRepo;
             _mapper = mapper;
-        }
-
-        public async Task<AuditTrailResponseDTO> LogAction(AuditTrailRequestDTO dto)
-        {
-            try 
-            {
-                var user = await _userRepo.GetValueById(dto.UserName); // Get user by username
-                if (user == null)
-                    throw new NoItemFoundException($"User with UserName {dto.UserName} not found");
-
-                var action = await _actionRepo.GetValueById(dto.ActionId);
-                if (action == null)
-                    throw new NoItemFoundException($"Action with ID {dto.ActionId} not found");
-
-                var audit = _mapper.Map<AuditTrail>(dto);
-                audit.UserId = user.Id;      
-                audit.UserName = user.UserName; 
-                audit.TimeStamp = DateTime.Now;
-
-                var added = await _auditRepo.AddValue(audit);
-
-                var result = _mapper.Map<AuditTrailResponseDTO>(added);
-                result.UserName = user.UserName;
-                result.ActionName = action.ActionName;
-
-                return result;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Error in LogAction: {ex.Message} ");
-            }
         }
 
         public async Task<IEnumerable<AuditTrailResponseDTO>> GetAllLogs()
@@ -78,13 +48,35 @@ namespace Easypay_App.Services
         private async Task<List<AuditTrailResponseDTO>> AuditResponseDTO(IEnumerable<AuditTrail> logs)
         {
             var result = new List<AuditTrailResponseDTO>();
+
             foreach (var log in logs)
             {
                 var dto = _mapper.Map<AuditTrailResponseDTO>(log);
-                dto.UserName = (await _userRepo.GetValueById(log.UserId.ToString()))?.UserName ?? log.UserName ?? "Unknown";
-                dto.ActionName = (await _actionRepo.GetValueById(log.ActionId))?.ActionName ?? "Unknown";
+
+                try
+                {
+                    var user = await _userRepo.GetValueById(log.UserId.ToString());
+                    dto.UserName = user?.UserName ?? log.UserName ?? "Unknown";
+                }
+                catch (NoItemFoundException)
+                {
+                    dto.UserName = log.UserName ?? "Unknown";
+                }
+
+                // Action lookup
+                try
+                {
+                    var action = await _actionRepo.GetValueById(log.ActionId);
+                    dto.ActionName = action?.ActionName ?? "Unknown";
+                }
+                catch (NoItemFoundException)
+                {
+                    dto.ActionName = "Unknown";
+                }
+
                 result.Add(dto);
             }
+
             return result;
         }
 
@@ -96,6 +88,32 @@ namespace Easypay_App.Services
 
             var result = _mapper.Map<AuditTrailResponseDTO>(audit);
             return result;
+        }
+
+        public async Task LogAction(string userName, int actionId, string entityName, int entityId, object? oldValue = null, object? newValue = null, string? ipAddress = null)
+        {
+            var user = await _userRepo.GetValueById(userName);
+            if (user == null)
+                throw new NoItemFoundException($"User {userName} not found");
+
+            var action = await _actionRepo.GetValueById(actionId);
+            if (action == null)
+                throw new NoItemFoundException($"Action with ID {actionId} not found");
+
+            var audit = new AuditTrail
+            {
+                UserId = user.Id,
+                UserName = user.UserName,
+                ActionId = actionId,
+                EntityName = entityName,
+                EntityId = entityId,
+                OldValue = oldValue != null ? JsonConvert.SerializeObject(oldValue) : string.Empty,
+                NewValue = newValue != null ? JsonConvert.SerializeObject(newValue) : string.Empty,
+                TimeStamp = DateTime.UtcNow,
+                IPAddress = ipAddress ?? string.Empty
+            };
+
+            await _auditRepo.AddValue(audit);
         }
     }
 }

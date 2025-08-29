@@ -16,10 +16,14 @@ namespace Easypay_App.Controllers
     public class PayrollPolicyController : ControllerBase
     {
         private readonly IPayrollPolicyService _payrollPolicyService;
+        private readonly IAuditTrailService _auditTrailService;
 
-        public PayrollPolicyController(IPayrollPolicyService payrollPolicyService)
+        public PayrollPolicyController(
+            IPayrollPolicyService payrollPolicyService,
+            IAuditTrailService auditTrailService)
         {
-            _payrollPolicyService= payrollPolicyService;
+            _payrollPolicyService = payrollPolicyService;
+            _auditTrailService = auditTrailService;
         }
 
         [HttpPost("add")]
@@ -29,6 +33,17 @@ namespace Easypay_App.Controllers
             try
             {
                 var result = await _payrollPolicyService.AddPolicy(dto);
+
+                string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+                await _auditTrailService.LogAction(
+                    User.Identity?.Name ?? "Unknown",
+                    actionId: 23, // Payroll Policy Created
+                    entityName: "PayrollPolicy",
+                    entityId: result.Id,
+                    oldValue: "N/A",
+                    newValue: result,
+                    ipAddress: ipAddress
+                );
                 return Ok(result);
             }
             catch(Exception ex)
@@ -44,7 +59,20 @@ namespace Easypay_App.Controllers
         {
             try
             {
+                var oldPolicy = await _payrollPolicyService.GetById(id);
                 var result = await _payrollPolicyService.UpdatePolicy(id, dto);
+
+                string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+                await _auditTrailService.LogAction(
+                    User.Identity?.Name ?? "Unknown",
+                    actionId: 24, // Payroll Policy Updated
+                    entityName: "PayrollPolicy",
+                    entityId: id,
+                    oldValue: oldPolicy,
+                    newValue: result,
+                    ipAddress: ipAddress
+                );
+                
                 return Ok(result);
             }
             catch (Exception ex)
@@ -60,7 +88,19 @@ namespace Easypay_App.Controllers
         {
             try
             {
+                var oldPolicy = await _payrollPolicyService.GetById(id);
                 var result = await _payrollPolicyService.DeletePolicy(id);
+
+                string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+                await _auditTrailService.LogAction(
+                    User.Identity?.Name ?? "Unknown",
+                    actionId: 25, // Payroll Policy Deleted
+                    entityName: "PayrollPolicy",
+                    entityId: id,
+                    oldValue: oldPolicy,
+                    newValue: "Deleted",
+                    ipAddress: ipAddress
+                );
                 return Ok(result);
             }
             catch (Exception ex)

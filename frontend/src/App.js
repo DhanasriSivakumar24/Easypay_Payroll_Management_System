@@ -17,6 +17,10 @@ import ApplyTimesheet from './component/Timesheet/ApplyTimesheet';
 import TimesheetHistory from './component/Timesheet/TimesheetHistory';
 import ViewNotification from './component/Notification/ViewNotification';
 import UserManagement from './component/Employees/UserManagement';
+import AuditTrail from './component/AuditTrail/AuditTrail';
+import BenefitEnrollment from './component/Benefits/BenefitEnrollment';
+import AllBenefitEnrollments from './component/Benefits/AllBenefitEnrollments';
+import ViewBenefitEnrollment from './component/Benefits/ViewBenefitEnrollment';
 
 function App() {
   return (
@@ -31,6 +35,11 @@ function App() {
                 <Route path="/employees/update-employee/:id" element={<ProtectedRoute><UpdateEmployeeDetail /></ProtectedRoute>} />
                 <Route path='/employees' element={<ProtectedRoute><AllEmployees/></ProtectedRoute>} />
                 <Route path='/user-management' element={<ProtectedRoute><UserManagement/></ProtectedRoute>} />
+                <Route path='/audit' element={<ProtectedRoute><AuditTrail/></ProtectedRoute>} />
+                <Route path='/benefits-management' element={<ProtectedRoute><AllBenefitEnrollments/></ProtectedRoute>} />
+                <Route path='/benefits-management/enroll' element={<ProtectedRoute><BenefitEnrollment/></ProtectedRoute>} />
+                <Route path="/benefits/view/:id" element ={<ProtectedRoute><ViewBenefitEnrollment/></ProtectedRoute>}/>
+                
                 
                 <Route path="/employee-dashboard" element={<ProtectedRoute><EmployeeDashboard /></ProtectedRoute>}/>
                 <Route path="/leave-requests/leaves/apply" element={<ApplyLeave />} />

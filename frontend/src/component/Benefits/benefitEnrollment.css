@@ -1,0 +1,107 @@
+.benefit-enroll-form-container {
+  max-width: 900px;
+  margin: 40px auto;
+}
+
+.benefit-enroll-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  padding: 30px 40px;
+  transition: all 0.3s ease;
+}
+
+.benefit-enroll-card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Heading */
+.benefit-enroll-card h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 25px;
+  color: #1f2a56;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 5px;
+  text-align: center;
+}
+
+/* Form Labels */
+.benefit-enroll-card label {
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 5px;
+  display: block;
+}
+
+/* Inputs & Selects */
+.benefit-enroll-card input,
+.benefit-enroll-card select {
+  width: 100%;
+  border-radius: 8px;
+  padding: 10px 15px;
+  border: 1px solid #d1d7e0;
+  font-size: 14px;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+.benefit-enroll-card input:focus,
+.benefit-enroll-card select:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 6px rgba(74, 144, 226, 0.3);
+  outline: none;
+}
+
+/* Buttons */
+.benefit-enroll-card .btn-primary {
+  background-color: #4a90e2;
+  border-color: #4a90e2;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.benefit-enroll-card .btn-primary:hover {
+  background-color: #3578c6;
+  border-color: #3578c6;
+  box-shadow: 0 4px 12px rgba(53, 120, 198, 0.3);
+}
+
+.benefit-enroll-card .btn-secondary {
+  background-color: #6c757d;
+  border-radius: 8px;
+  padding: 10px 20px;
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.benefit-enroll-card .btn-secondary:hover {
+  background-color: #5c636a;
+  box-shadow: 0 4px 12px rgba(92, 99, 106, 0.3);
+}
+
+/* Form actions */
+.form-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+/* Row spacing */
+.form-group {
+  margin-bottom: 15px;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .benefit-enroll-card {
+    padding: 20px;
+  }
+
+  .benefit-enroll-card h2 {
+    font-size: 1.5rem;
+  }
+}

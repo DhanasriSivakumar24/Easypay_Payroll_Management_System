@@ -34,6 +34,9 @@ namespace Easypay_App.Controllers
         public ActionResult GetNotificationChannelType() => Ok(_context.NotificationChannelMasters.ToList());
 
         [HttpGet("user-roles")]
-        public ActionResult GetUserRolese() => Ok(_context.UserRoleMasters.ToList());
+        public ActionResult GetUserRoles() => Ok(_context.UserRoleMasters.ToList());
+
+        [HttpGet("benefit-master")]
+        public ActionResult GetBenefits() => Ok(_context.BenefitMasters.ToList());
     }
 }

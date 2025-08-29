@@ -21,15 +21,28 @@ namespace Easypay_App.Controllers
             _auditTrailService = auditTrailService;
         }
 
-        [Authorize(Roles = "Admin")]
-        [HttpPost]
-        public async Task<IActionResult> AddAuditTrail([FromBody] AuditTrailRequestDTO request)
+        [HttpGet("all")]
+        [Authorize(Roles = "Admin, HR Manager")]
+        public async Task<ActionResult<IEnumerable<AuditTrailResponseDTO>>> GetAllLogs()
         {
-            if (request == null)
-                return BadRequest("Invalid request data.");
+            var logs = await _auditTrailService.GetAllLogs();
+            return Ok(logs);
+        }
 
-            var result = await _auditTrailService.LogAction(request);
-            return Ok(result);
+        [HttpGet("user/{userName}")]
+        [Authorize(Roles = "Admin, HR Manager")]
+        public async Task<ActionResult<IEnumerable<AuditTrailResponseDTO>>> GetLogsByUser(string userName)
+        {
+            var logs = await _auditTrailService.GetLogsByUser(userName);
+            return Ok(logs);
+        }
+
+        [HttpGet("action/{actionId}")]
+        [Authorize(Roles = "Admin, HR Manager")]
+        public async Task<ActionResult<IEnumerable<AuditTrailResponseDTO>>> GetLogsByAction(int actionId)
+        {
+            var logs = await _auditTrailService.GetLogsByAction(actionId);
+            return Ok(logs);
         }
 
         [Authorize(Roles = "Admin, HR Manager")]

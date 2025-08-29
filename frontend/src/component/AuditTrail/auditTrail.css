@@ -1,0 +1,79 @@
+.audit-trail-container {
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  margin: 20px auto;
+  max-width: 1300px;
+}
+
+.audit-trail-scroll {
+  overflow-x: auto;
+}
+
+.audit-trail-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.audit-trail-table thead {
+  background-color: #f1f2f6;
+  color: #2f3640;
+}
+
+.audit-trail-table th,
+.audit-trail-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e9ecef;
+  font-size: 14px;
+}
+
+.audit-trail-table tbody tr:hover {
+  background-color: #f8f9fa;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.badge {
+  border-radius: 50px;
+  font-size: 13px;
+  padding: 6px 12px;
+  font-weight: 500;
+}
+
+.bg-success-subtle {
+  background-color: #d1f2e8;
+  color: #0f5132;
+}
+
+.bg-danger-subtle {
+  background-color: #f8d7da;
+  color: #842029;
+}
+
+.audit-trail-table th {
+  font-weight: 600;
+}
+
+.audit-trail-filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  justify-content: flex-end;
+}
+
+.audit-trail-filters input,
+.audit-trail-filters select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ced4da;
+  font-size: 14px;
+}
+
+.audit-trail-filters input:focus,
+.audit-trail-filters select:focus {
+  outline: none;
+  border-color: #4e73df; 
+  box-shadow: 0 0 5px rgba(78, 115, 223, 0.5);
+}

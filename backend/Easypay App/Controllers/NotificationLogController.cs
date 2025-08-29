@@ -16,10 +16,14 @@ namespace Easypay_App.Controllers
     public class NotificationLogController : ControllerBase
     {
         private readonly INotificationLogService _service;
+        private readonly IAuditTrailService _auditTrailService;
 
-        public NotificationLogController(INotificationLogService service)
+        public NotificationLogController(
+            INotificationLogService service,
+            IAuditTrailService auditTrailService)
         {
             _service = service;
+            _auditTrailService = auditTrailService;
         }
 
         [HttpPost("send")]
@@ -31,6 +35,17 @@ namespace Easypay_App.Controllers
                 var result = await _service.SendNotification(request);
                 if (result == null)
                     return BadRequest("Notification could not be sent. Invalid user/channel or internal error.");
+
+                string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+                await _auditTrailService.LogAction(
+                    User.Identity?.Name,
+                    actionId: 12,
+                    entityName: "NotificationLog",
+                    entityId: result.Id,
+                    oldValue: "N/A",
+                    newValue: result,
+                    ipAddress: ipAddress
+                );
 
                 return Ok(result);
             }
