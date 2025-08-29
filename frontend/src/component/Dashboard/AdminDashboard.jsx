@@ -12,7 +12,6 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // Getting username & role from Redux
   const { username, role } = useSelector((state) => state.auth);
 
   const [totalEmployees, setTotalEmployees] = useState(0);
@@ -24,7 +23,6 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Employees
     GetAllEmployees()
       .then((res) => {
         if (res.data) {
@@ -33,7 +31,6 @@ const AdminDashboard = () => {
       })
       .catch((err) => console.error("Error fetching employees:", err));
 
-    // Leaves
     GetAllLeaveRequests()
       .then((res) => {
         if (res.data) {
@@ -44,7 +41,6 @@ const AdminDashboard = () => {
       })
       .catch((err) => console.error("Error fetching leaves:", err));
 
-    // Payrolls
     GetAllPayrolls()
       .then((res) => {
         if (res.data) {
@@ -67,13 +63,12 @@ const AdminDashboard = () => {
 
   if (loading) return <p>Loading dashboard...</p>;
 
-  // Quick action cards
   const quickActions = [
     { title: "Add Employee", desc: "Quickly add a new employee", path: "/employees/add-employee" },
     { title: "Update Employee", desc: "Edit existing employee details", path: "/employees" },
     { title: "Approve Leave", desc: "Approve pending leave requests", path: "/leaves" },
     { title: "Generate Payroll", desc: "Process payroll for employees", path: "/payroll" },
-    { title: "Enroll Benefits", desc: "Add employee benefits", path: "/policies" },
+    { title: "Enroll Benefits", desc: "Add employee benefits", path: "/benefits-management/enroll" },
   ];
 
   return (
@@ -86,7 +81,6 @@ const AdminDashboard = () => {
           <button className="logout-btn" onClick={handleLogout}>Logout</button>
         </div>
 
-        {/* Cards */}
         <div className="cards">
           <div className="card employees">
             <h3>Total Employees 👥</h3>
@@ -106,7 +100,6 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Quick Actions */}
         <h2 className="mb-3 mt-4">Quick Actions</h2>
         <div className="quick-actions-container">
           {quickActions.map((action, idx) => (
@@ -121,7 +114,6 @@ const AdminDashboard = () => {
           ))}
         </div>
 
-        {/* Tables */}
         <div className="tables">
           <div className="table-section">
             <h2>Recent Leave Requests</h2>

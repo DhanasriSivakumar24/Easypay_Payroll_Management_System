@@ -21,6 +21,7 @@ import AuditTrail from './component/AuditTrail/AuditTrail';
 import BenefitEnrollment from './component/Benefits/BenefitEnrollment';
 import AllBenefitEnrollments from './component/Benefits/AllBenefitEnrollments';
 import ViewBenefitEnrollment from './component/Benefits/ViewBenefitEnrollment';
+import SendNotification from './component/Notification/SendNotification';
 
 function App() {
   return (
@@ -39,6 +40,8 @@ function App() {
                 <Route path='/benefits-management' element={<ProtectedRoute><AllBenefitEnrollments/></ProtectedRoute>} />
                 <Route path='/benefits-management/enroll' element={<ProtectedRoute><BenefitEnrollment/></ProtectedRoute>} />
                 <Route path="/benefits/view/:id" element ={<ProtectedRoute><ViewBenefitEnrollment/></ProtectedRoute>}/>
+                <Route path='/notifications/admin-notifications' element={<ProtectedRoute><SendNotification/></ProtectedRoute>}/>
+
                 
                 
                 <Route path="/employee-dashboard" element={<ProtectedRoute><EmployeeDashboard /></ProtectedRoute>}/>
