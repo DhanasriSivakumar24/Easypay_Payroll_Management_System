@@ -18,19 +18,17 @@ const PersonalInfo = () => {
 
   if (!info) return <div>Loading...</div>;
 
-  // Avatar from ui-avatars (if no profileImage in DB)
   const avatarUrl = info.profileImage ||
     `https://ui-avatars.com/api/?name=${info.firstName}+${info.lastName}&background=0D8ABC&color=fff&size=150`;
 
-  // Format DOB as only date
   const formattedDOB = info.dateOfBirth
-    ? new Date(info.dateOfBirth).toLocaleDateString('en-GB') // dd/mm/yyyy
+    ? new Date(info.dateOfBirth).toLocaleDateString('en-GB')
     : "N/A";
 
   return (
     <EmployeeLayout>
       <div className="personal-info-container">
-        {/* Profile Header */}
+
         <div className="profile-header">
           <img src={avatarUrl} alt="Employee Avatar" className="profile-avatar" />
           <div className="profile-basic">
@@ -43,7 +41,6 @@ const PersonalInfo = () => {
           <button className="edit-btn">Edit</button>
         </div>
 
-        {/* Contact Info + Job Info side by side */}
         <div className="info-row">
           <div className="info-card">
             <h3>Contact Information</h3>
@@ -67,14 +64,12 @@ const PersonalInfo = () => {
           </div>
         </div>
 
-        {/* Personal Details */}
         <div className="info-card">
           <h3>Personal Details</h3>
           <div className="info-grid">
             <p><strong>Date of Birth:</strong> {formattedDOB}</p>
             <p><strong>Gender:</strong> {info.gender ?? "N/A"}</p>
             <p><strong>PAN Number:</strong> {info.panNumber ?? "N/A"}</p>
-            <p><strong>Aadhaar Number:</strong> {info.aadhaarNumber ?? "N/A"}</p>
           </div>
         </div>
       </div>

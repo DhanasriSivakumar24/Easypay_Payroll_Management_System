@@ -140,5 +140,12 @@ namespace Easypay_App.Controllers
                 throw new Exception($"Unable to Delete Enrollment for Id: {id}");
             }
         }
+
+        [HttpGet("employee/{employeeId}")]
+        public async Task<ActionResult<IEnumerable<BenefitEnrollmentAddResponseDTO>>> GetByEmployeeId(int employeeId)
+        {
+            var result = await _benefitEnrollmentService.GetBenefitsByEmployeeId(employeeId);
+            return Ok(result);
+        }
     }
 }

@@ -56,10 +56,10 @@ const ApplyTimesheet = () => {
     <EmployeeLayout active="timesheet">
       <div className="apply-timesheet-container">
         <div className="timesheet-header">
-          <h2>Submit Timesheet 🕒</h2>
+          <h2>Submit Timesheet</h2>
           <button
             className="history-btn"
-            onClick={() => navigate("/timesheets/timesheet-history")}
+            onClick={() => navigate("/timesheets")}
           >
              View History
           </button>

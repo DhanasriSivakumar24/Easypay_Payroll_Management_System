@@ -13,18 +13,21 @@ namespace Easypay_App.Services
         private readonly IRepository<int, LeaveRequest> _leaveRequestRepository;
         private readonly IRepository<int, LeaveStatusMaster> _leaveStatusRepository;
         private readonly IRepository<int, LeaveTypeMaster> _leaveTypeRepository;
+        private readonly INotificationLogService _notificationService;
         private readonly IMapper _mapper;
 
         public LeaveRequestService(IRepository<int,Employee> employeeRepository,
             IRepository<int,LeaveRequest> leaveRequestRepository,
             IRepository<int, LeaveStatusMaster> leaveStatusRepository,
             IRepository<int, LeaveTypeMaster> leaveTypeRepository,
+            INotificationLogService notificationLogService,
             IMapper mapper) 
         {
             _employeeRepository = employeeRepository;
             _leaveRequestRepository = leaveRequestRepository;
             _leaveStatusRepository = leaveStatusRepository;
             _leaveTypeRepository = leaveTypeRepository;
+            _notificationService = notificationLogService;
             _mapper = mapper;
         }
         public async Task<LeaveRequestResponseDTO> ApproveLeave(int id, int managerId, bool isApproved)
@@ -40,8 +43,21 @@ namespace Easypay_App.Services
 
             var response = _mapper.Map<LeaveRequestResponseDTO>(leave);
             await PopulateNames(response, leave);
+
+            string message = isApproved
+                ? $"Your leave request from {leave.StartDate:dd-MMM} to {leave.EndDate:dd-MMM} has been approved."
+                : $"Your leave request from {leave.StartDate:dd-MMM} to {leave.EndDate:dd-MMM} has been rejected.";
+
+            await _notificationService.SendNotification(new NotificationLogRequestDTO
+            {
+                UserId = leave.EmployeeId,
+                ChannelId = 2,
+                Message = message
+            });
+
             return response;
         }
+
         public async Task<LeaveRequestResponseDTO> DeleteLeaveRequest(int id)
         {
             var leave = await _leaveRequestRepository.GetValueById(id);
@@ -94,6 +110,13 @@ namespace Easypay_App.Services
 
             var response = _mapper.Map<LeaveRequestResponseDTO>(request);
             await PopulateNames(response, request);
+
+            await _notificationService.SendNotification(new NotificationLogRequestDTO
+            {
+                UserId = request.EmployeeId,
+                ChannelId = 1,
+                Message = $"Your leave request from {request.StartDate:dd-MMM} to {request.EndDate:dd-MMM} has been rejected."
+            });
             return response;
         }
         public async Task<LeaveRequestResponseDTO> SubmitLeaveRequest(LeaveRequestDTO dto)
@@ -106,6 +129,13 @@ namespace Easypay_App.Services
 
             var response = _mapper.Map<LeaveRequestResponseDTO>(leaveRequest);
             await PopulateNames(response, leaveRequest);
+
+            await _notificationService.SendNotification(new NotificationLogRequestDTO
+            {
+                UserId = leaveRequest.EmployeeId,
+                ChannelId = 1,
+                Message = $"Your leave request from {leaveRequest.StartDate:dd-MMM} to {leaveRequest.EndDate:dd-MMM} has been submitted and is pending approval."
+            });
             return response;
         }
         private async Task PopulateNames(LeaveRequestResponseDTO dto, LeaveRequest request)

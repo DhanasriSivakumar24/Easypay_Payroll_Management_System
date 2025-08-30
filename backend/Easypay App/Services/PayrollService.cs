@@ -103,11 +103,10 @@ namespace Easypay_App.Services
             if (employee == null || policy == null)
                 throw new NoItemFoundException();
 
-            // Check full-month period (1st → last day of month)
+            // Check full-month period
             if (dto.PeriodStart.Day != 1 || dto.PeriodEnd.Day != DateTime.DaysInMonth(dto.PeriodEnd.Year, dto.PeriodEnd.Month))
                 throw new InvalidOperationException("Payroll must cover a full month (1st to last day).");
 
-            // Preventing duplicate payrolls
             var existingPayrolls = await _payrollRepository.GetAllValue();
             bool exists = existingPayrolls.Any(p =>
                 p.EmployeeId == dto.EmployeeId &&
@@ -117,7 +116,6 @@ namespace Easypay_App.Services
             if (exists)
                 throw new InvalidOperationException("Payroll already generated for this employee for the selected month.");
 
-            // Policy validation
             if (policy.BasicPercent + policy.HRAPercent + policy.SpecialPercent +
                 policy.TravelPercent + policy.MedicalPercent > 100)
                 throw new InvalidOperationException("Invalid payroll policy: total percentages exceed 100%.");

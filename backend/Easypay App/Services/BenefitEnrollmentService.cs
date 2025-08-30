@@ -1,5 +1,4 @@
-﻿// ✅ FINAL VERSION of BenefitEnrollmentService.cs
-using AutoMapper;
+﻿using AutoMapper;
 using Easypay_App.Exceptions;
 using Easypay_App.Interface;
 using Easypay_App.Models;
@@ -109,6 +108,27 @@ namespace Easypay_App.Services
 
             var response = _mapper.Map<BenefitEnrollmentAddResponseDTO>(enrollment);
             await PopulateName(response, enrollment);
+            return response;
+        }
+        public async Task<IEnumerable<BenefitEnrollmentAddResponseDTO>> GetBenefitsByEmployeeId(int employeeId)
+        {
+            var allEnrollments = await _benefitEnrollmentRepository.GetAllValue();
+            var employeeEnrollments = allEnrollments
+                                        .Where(e => e.EmployeeId == employeeId)
+                                        .ToList();
+
+            if (employeeEnrollments == null || !employeeEnrollments.Any())
+                throw new NoItemFoundException();
+
+            var response = new List<BenefitEnrollmentAddResponseDTO>();
+
+            foreach (var enrollment in employeeEnrollments)
+            {
+                var dto = _mapper.Map<BenefitEnrollmentAddResponseDTO>(enrollment);
+                await PopulateName(dto, enrollment);
+                response.Add(dto);
+            }
+
             return response;
         }
 

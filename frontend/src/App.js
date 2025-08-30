@@ -26,6 +26,7 @@ import AllPayrolls from './component/Payroll/AllPayrolls';
 import GeneratePayrollPage from './component/Payroll/GeneratePayroll';
 import ComplianceReport from './component/Payroll/ComplianceReport';
 import ApproveLeaveRequests from './component/LeaveRequest/ApproveLeaveRequests';
+import MyBenefitEnrollments from './component/Benefits/MyBenefitEnrollments';
 
 function App() {
   return (
@@ -58,6 +59,7 @@ function App() {
                 <Route path='/timesheets/submit-timesheet' element={<ProtectedRoute><ApplyTimesheet/></ProtectedRoute>}/>
                 <Route path='/notifications/view-notifications' element={<ProtectedRoute><ViewNotification/></ProtectedRoute>}/>
                 <Route path= '/employees/SearchEmployee' element ={<Employees/>}/>
+                <Route path='/myEnrolledBenefit' element={<ProtectedRoute><MyBenefitEnrollments/></ProtectedRoute>}/>
             </Routes>
       </BrowserRouter>{/* //routing related things should be here in the broweseroute */}
     </div>

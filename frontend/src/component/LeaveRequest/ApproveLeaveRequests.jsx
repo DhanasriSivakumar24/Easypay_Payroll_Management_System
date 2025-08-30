@@ -11,8 +11,10 @@ import "./approveLeaveRequests.css";
 const AllLeaveRequests = () => {
   const [leaveRequests, setLeaveRequests] = useState([]);
   const [search, setSearch] = useState("");
-  const [showAll, setShowAll] = useState(false); // toggle flag
+  const [showAll, setShowAll] = useState(false);
   const navigate = useNavigate();
+
+  const managerId = sessionStorage.getItem("employeeId");
 
   useEffect(() => {
     GetAllLeaveRequests()
@@ -21,8 +23,13 @@ const AllLeaveRequests = () => {
   }, []);
 
   const handleApprove = (id, name) => {
+    if (!managerId) {
+      alert("Manager ID not found. Please log in again.");
+      return;
+    }
+
     if (window.confirm(`Approve leave request for ${name}?`)) {
-      ApproveLeaveRequest(id)
+      ApproveLeaveRequest(id, managerId)
         .then(() => {
           alert("Leave request approved!");
           setLeaveRequests(
@@ -36,8 +43,13 @@ const AllLeaveRequests = () => {
   };
 
   const handleReject = (id, name) => {
+    if (!managerId) {
+      alert("Manager ID not found. Please log in again.");
+      return;
+    }
+
     if (window.confirm(`Reject leave request for ${name}?`)) {
-      RejectLeaveRequest(id)
+      RejectLeaveRequest(id, managerId)
         .then(() => {
           alert("Leave request rejected!");
           setLeaveRequests(
@@ -50,7 +62,7 @@ const AllLeaveRequests = () => {
     }
   };
 
-  // 🔹 Filter requests based on toggle + search
+  // 🔹 Filter requests
   const filteredRequests = leaveRequests.filter((lr) => {
     const id = lr?.id ? String(lr.id).toLowerCase() : "";
     const name = lr?.employeeName ? lr.employeeName.toLowerCase() : "";
@@ -62,7 +74,6 @@ const AllLeaveRequests = () => {
       status.includes(search.toLowerCase());
 
     if (!showAll) {
-      // only show pending
       return matchesSearch && status === "pending";
     }
     return matchesSearch;
@@ -91,7 +102,7 @@ const AllLeaveRequests = () => {
           </div>
         </div>
 
-        {/* Table card */}
+        {/* Table */}
         <div className="employee-card">
           <table className="employee-table">
             <thead>
@@ -110,7 +121,7 @@ const AllLeaveRequests = () => {
               {filteredRequests.length > 0 ? (
                 filteredRequests.map((lr, index) => (
                   <tr key={index}>
-                    <td>{index+1}</td>
+                    <td>{index + 1}</td>
                     <td>{lr?.employeeName || "-"}</td>
                     <td>{lr?.leaveTypeName || "-"}</td>
                     <td>{lr?.startDate?.split("T")[0] || "-"}</td>

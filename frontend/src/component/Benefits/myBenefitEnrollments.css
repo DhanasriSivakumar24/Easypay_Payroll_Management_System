@@ -1,0 +1,77 @@
+/* Container */
+.my-benefit-container {
+  max-width: 1000px;
+  margin: 20px auto;
+  padding: 20px;
+  font-family: "Segoe UI", sans-serif;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* Header */
+.my-benefit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.my-benefit-header h2 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #1f2a56;
+}
+
+/* Table */
+.my-benefit-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+}
+
+.my-benefit-table th,
+.my-benefit-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+.my-benefit-table th {
+  background: #f9f9f9;
+  font-weight: 600;
+  color: #444;
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-badge.active {
+  background-color: #d4f6e0;
+  color: #1a7f37;
+}
+
+.status-badge.inactive {
+  background-color: #fde2e2;
+  color: #d93025;
+}
+
+.status-badge.pending {
+  background-color: #fff4cc;
+  color: #a97800;
+}
+
+/* Info / No data */
+.no-benefits {
+  text-align: center;
+  padding: 20px;
+  color: #888;
+  font-style: italic;
+}

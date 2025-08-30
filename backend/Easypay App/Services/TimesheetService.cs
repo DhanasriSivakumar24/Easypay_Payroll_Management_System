@@ -11,17 +11,20 @@ namespace Easypay_App.Services
         private readonly IRepository<int, Timesheet> _timesheetRepository;
         private readonly IRepository<int, Employee> _employeeRepository;
         private readonly IRepository<int, TimesheetStatusMaster> _statusRepository;
+        private readonly INotificationLogService _notificationService;
         private readonly IMapper _mapper;
 
         public TimesheetService(
             IRepository<int, Timesheet> timesheetRepository,
             IRepository<int, Employee> employeeRepository,
             IRepository<int, TimesheetStatusMaster> statusRepository,
+            INotificationLogService notificationService,
             IMapper mapper)
         {
             _timesheetRepository = timesheetRepository;
             _employeeRepository = employeeRepository;
-            _statusRepository = statusRepository; 
+            _statusRepository = statusRepository;
+            _notificationService = notificationService;
             _mapper = mapper;
         }
         public async Task<TimesheetResponseDTO> AddTimesheet(TimesheetRequestDTO request)
@@ -73,6 +76,14 @@ namespace Easypay_App.Services
 
             timesheet.StatusId = approved.Id;
             await _timesheetRepository.UpdateValue(timesheet.Id, timesheet);
+
+            await _notificationService.SendNotification(new NotificationLogRequestDTO
+            {
+                UserId = timesheet.EmployeeId,  
+                ChannelId = 2,
+                Message = $" Your timesheet (ID: {timesheet.Id}) has been approved."
+            });
+
             return true;
         }
 
@@ -93,6 +104,13 @@ namespace Easypay_App.Services
 
             timesheet.StatusId = rejected.Id;
             await _timesheetRepository.UpdateValue(timesheet.Id, timesheet);
+
+            await _notificationService.SendNotification(new NotificationLogRequestDTO
+            {
+                UserId = timesheet.EmployeeId,
+                ChannelId = 2, 
+                Message = $"Your timesheet (ID: {timesheet.Id}) has been rejected."
+            });
             return true;
         }
 

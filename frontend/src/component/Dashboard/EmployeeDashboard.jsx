@@ -27,14 +27,12 @@ const EmployeeDashboard = () => {
     setRole(userRole);
 
     if (!empId || userRole !== "Employee") {
-      // Not an employee → redirect to login
       navigate("/login");
       return;
     }
 
     const loadDashboardData = async () => {
       try {
-        // ✅ Leaves for this employee
         const leavesRes = await GetLeaveRequestsByEmployee(empId); 
         const leavesData = leavesRes?.data || [];
         setTotalLeaves(leavesData.length);
@@ -43,7 +41,6 @@ const EmployeeDashboard = () => {
         );
         setRecentLeaves(leavesData.slice(-5).reverse());
 
-        // ✅ Payrolls for this employee
         const payrollsRes = await GetPayrollByEmployeeId(empId); 
         const payrollsData = payrollsRes?.data || [];
         const latest = payrollsData.sort((a, b) => b.id - a.id)[0];
@@ -66,12 +63,11 @@ const EmployeeDashboard = () => {
 
   if (loading) return <p>Loading dashboard...</p>;
 
-  // Quick actions for employees
   const quickActions = [
     { title: "Apply Leave", desc: "Request for leave easily", path: "/leave-requests/leaves/apply" },
     { title: "View My Leaves", desc: "Check your leave history", path: "/leave-requests" },
     { title: "View Payrolls", desc: "Check your salary slips", path: "/payroll/my-payrolls" },
-    { title: "View Benefits", desc: "See your enrolled benefits", path: "/policies/my-policies" },
+    { title: "View Benefits", desc: "See your enrolled benefits", path: "/myEnrolledBenefit" },
   ];
 
   return (
@@ -84,7 +80,6 @@ const EmployeeDashboard = () => {
           <button className="logout-btn" onClick={handleLogout}>Logout</button>
         </div>
 
-        {/* Stats Cards */}
         <div className="cards">
           <div className="card leaves">
             <h3>Total Leaves 🗂</h3>
@@ -104,7 +99,6 @@ const EmployeeDashboard = () => {
           </div>
         </div>
 
-        {/* Quick Actions */}
         <h2 className="mb-3 mt-4">Quick Actions</h2>
         <div className="quick-actions-container">
           {quickActions.map((action, idx) => (
@@ -119,9 +113,7 @@ const EmployeeDashboard = () => {
           ))}
         </div>
 
-        {/* Tables */}
         <div className="tables">
-          {/* Recent Leaves */}
           <div className="table-section">
             <h2>Recent Leave Requests</h2>
             <table>
@@ -152,7 +144,6 @@ const EmployeeDashboard = () => {
             </table>
           </div>
 
-          {/* Recent Payrolls */}
           <div className="table-section">
             <h2>Recent Payrolls</h2>
             <table>

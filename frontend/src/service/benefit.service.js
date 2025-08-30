@@ -20,3 +20,8 @@ export function GetBenefitEnrollmentById(BenefitId) {
   const url = baseUrl + `BenefitEnrollment/${BenefitId}`;
   return axios.get(url);
 }
+
+export function GetBenefitEnrollmentsByEmployee(employeeId) {
+  const url = baseUrl + `BenefitEnrollment/employee/${employeeId}`;
+  return axios.get(url);
+}

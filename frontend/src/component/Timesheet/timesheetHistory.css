@@ -159,3 +159,18 @@
   background-color: #fff4cc;
   color: #a97800;
 }
+
+.benefit-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap; 
+  gap: 10px;
+}
+
+.benefit-actions-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}

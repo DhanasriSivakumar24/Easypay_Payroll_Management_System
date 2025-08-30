@@ -63,8 +63,8 @@ const TimesheetHistory = () => {
     <EmployeeLayout active="timesheet-history">
       <div className="timesheet-history-container">
         <div className="header-row">
-          <h2>📊 Timesheet History</h2>
-          <div className="actions">
+          <h2> Timesheet History</h2>
+          <div className="benefit-actions-left">
             <select
               className="filter-dropdown"
               value={selectedMonth}
@@ -74,7 +74,7 @@ const TimesheetHistory = () => {
                 <option key={month} value={month}>{month}</option>
               ))}
             </select>
-            <button className="submit-btn" onClick={handleSubmitClick}>➕ Submit Timesheet</button>
+            <button className="submit-btn" onClick={handleSubmitClick}> Submit Timesheet</button>
           </div>
         </div>
 
@@ -83,7 +83,6 @@ const TimesheetHistory = () => {
 
         {!loading && !error && (
           <>
-            {/* Summary Cards */}
             <div className="summary-cards">
               <div className="summary-card total">
                 <h3>Total Hours</h3>
@@ -103,7 +102,6 @@ const TimesheetHistory = () => {
               </div>
             </div>
 
-            {/* Table */}
             <div className="timesheet-card">
               <div className="timesheet-header">
                 <h4>Timesheet History</h4>
