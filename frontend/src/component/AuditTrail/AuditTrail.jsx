@@ -20,11 +20,11 @@ const AuditTrail = () => {
     if (role === "Admin") {
       GetAllAuditTrail()
         .then((res) => {
-          const logs = res.data || [];
+          let logs = res.data || [];
+          logs = logs.sort((a, b) => new Date(b.timeStamp) - new Date(a.timeStamp));
           setAuditLogs(logs);
           setFilteredLogs(logs);
 
-          // Create unique action list for dropdown
           const actions = [...new Set(logs.map(l => l.actionName))];
           setActionsList(actions);
         })

@@ -25,6 +25,7 @@ import SendNotification from './component/Notification/SendNotification';
 import AllPayrolls from './component/Payroll/AllPayrolls';
 import GeneratePayrollPage from './component/Payroll/GeneratePayroll';
 import ComplianceReport from './component/Payroll/ComplianceReport';
+import ApproveLeaveRequests from './component/LeaveRequest/ApproveLeaveRequests';
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
                 <Route path='/payrolls' element={<ProtectedRoute><AllPayrolls/></ProtectedRoute>}/>
                 <Route path='/payrolls/generate-payroll' element={<ProtectedRoute><GeneratePayrollPage/></ProtectedRoute>}/>
                 <Route path='/compliance' element={<ProtectedRoute><ComplianceReport/></ProtectedRoute>}/>
+                <Route path='/leaves' element={<ProtectedRoute><ApproveLeaveRequests/></ProtectedRoute>}/>
                 
                 <Route path="/employee-dashboard" element={<ProtectedRoute><EmployeeDashboard /></ProtectedRoute>}/>
                 <Route path="/leave-requests/leaves/apply" element={<ApplyLeave />} />

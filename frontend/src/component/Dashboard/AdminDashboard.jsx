@@ -25,7 +25,6 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-
     GetAllEmployees()
       .then((res) => setTotalEmployees(res.data?.length || 0))
       .catch(console.error);
@@ -52,7 +51,9 @@ const AdminDashboard = () => {
     GetAllAuditTrail()
       .then((res) => {
         const audits = res.data || [];
-        const latestFive = audits.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 5);
+        const latestFive = audits
+          .sort((a, b) => new Date(b.timeStamp) - new Date(a.timeStamp))
+          .slice(0, 5);
         setRecentAudits(latestFive);
       })
       .catch(console.error)

@@ -1,0 +1,88 @@
+.approve-leave-container {
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.approve-leave-container h2 {
+  margin-bottom: 15px;
+}
+
+.approve-leave-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.approve-leave-container th,
+.approve-leave-container td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+.approve-btn {
+  background: #4caf50;
+  color: white;
+  padding: 6px 12px;
+  margin-right: 5px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.reject-btn {
+  background: #e74c3c;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.approve-btn:hover { background: #45a049; }
+.reject-btn:hover { background: #c0392b; }
+
+.btn-approve {
+  background: #d4f6e0;
+  color: #1a7f37;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 6px;
+  font-weight: 600;
+}
+
+.btn-approve:hover {
+  background: #bcefcf;
+}
+
+.btn-reject {
+  background: #fde2e2;
+  color: #d93025;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-reject:hover {
+  background: #f9caca;
+}
+
+.toggle-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-left: 10px;
+  font-weight: 600;
+}
+
+.toggle-btn:hover {
+  background: #0056b3;
+}
