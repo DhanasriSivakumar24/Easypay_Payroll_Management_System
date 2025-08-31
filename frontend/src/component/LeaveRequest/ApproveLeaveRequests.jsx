@@ -5,7 +5,7 @@ import {
   ApproveLeaveRequest,
   RejectLeaveRequest,
 } from "../../service/leave.service";
-import AdminLayout from "../navbar/AdminLayout";
+import AdminLayout from "../Sidebar/AdminLayout";
 import "./approveLeaveRequests.css";
 
 const AllLeaveRequests = () => {

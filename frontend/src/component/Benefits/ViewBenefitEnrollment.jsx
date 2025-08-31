@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import AdminLayout from "../navbar/AdminLayout";
+import AdminLayout from "../Sidebar/AdminLayout";
 import { GetBenefitEnrollmentById } from "../../service/benefit.service";
 import '../Employees/personalInfo.css';
 

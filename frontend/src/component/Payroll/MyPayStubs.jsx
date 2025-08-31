@@ -4,7 +4,7 @@ import { GetPayrollByEmployeeId } from "../../service/payroll.service";
 import { GetPersonalInfo } from "../../service/employee.service";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import EmployeeLayout from "../navbar/EmployeeLayout";
+import EmployeeLayout from "../Sidebar/EmployeeLayout";
 import "./myPayStubs.css";
 
 const MyPayStubs = () => {

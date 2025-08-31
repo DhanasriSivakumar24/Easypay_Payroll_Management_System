@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { GetAllEmployees, DeleteEmployee } from "../../service/employee.service";
-import AdminLayout from "../navbar/AdminLayout";
+import AdminLayout from "../Sidebar/AdminLayout";
+import PayrollProcessorLayout from "../Sidebar/PayrollProcessorLayout";
 import "./AllEmployees.css";
 
 const AllEmployees = () => {
+  const { role } = useSelector((state) => state.auth);
   const [employees, setEmployees] = useState([]);
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
@@ -43,10 +46,15 @@ const AllEmployees = () => {
     );
   });
 
+  const Layout =
+    role === "Payroll Processor"
+      ? PayrollProcessorLayout
+      : AdminLayout;
+
   return (
-    <AdminLayout>
+    <Layout>
       <div className="employee-container">
-        {/* Header row with search + add */}
+
         <div className="header-row">
           <h2>Employees</h2>
           <div className="actions">
@@ -57,16 +65,18 @@ const AllEmployees = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
-            <button
-              className="add-btn"
-              onClick={() => navigate("/employees/add-employee")}
-            >
-              + Add Employee
-            </button>
+
+            {(role === "Admin" || role === "HR Manager") && (
+              <button
+                className="add-btn"
+                onClick={() => navigate("/employees/add-employee")}
+              >
+                + Add Employee
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Table card */}
         <div className="employee-card">
           <table className="employee-table">
             <thead>
@@ -105,20 +115,26 @@ const AllEmployees = () => {
                       >
                         View
                       </button>
-                      <button
-                        className="btn-edit"
-                        onClick={() =>
-                          navigate(`/employees/update-employee/${emp.id}`)
-                        }
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="btn-delete"
-                        onClick={() => handleDelete(emp.id, emp.firstName)}
-                      >
-                        Delete
-                      </button>
+
+                      {(role === "Admin" || role === "HR Manager") && (
+                        <button
+                          className="btn-edit"
+                          onClick={() =>
+                            navigate(`/employees/update-employee/${emp.id}`)
+                          }
+                        >
+                          Edit
+                        </button>
+                      )}
+
+                      {role === "Admin" && (
+                        <button
+                          className="btn-delete"
+                          onClick={() => handleDelete(emp.id, emp.firstName)}
+                        >
+                          Delete
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))
@@ -133,7 +149,7 @@ const AllEmployees = () => {
           </table>
         </div>
       </div>
-    </AdminLayout>
+    </Layout>
   );
 };
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { GetLeaveRequestsByEmployee } from '../../service/leave.service';
-import EmployeeLayout from '../navbar/EmployeeLayout';
+import EmployeeLayout from '../Sidebar/EmployeeLayout';
 import './leaveRequests.css';
 
 const LeaveRequests = () => {

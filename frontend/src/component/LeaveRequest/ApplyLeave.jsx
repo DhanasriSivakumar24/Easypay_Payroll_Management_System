@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { GetLeaveType } from "../../service/masterTable.service";
 import { SubmitLeaveRequest } from "../../service/leave.service";
 import "./applyLeave.css";
-import EmployeeLayout from "../navbar/EmployeeLayout";
+import EmployeeLayout from "../Sidebar/EmployeeLayout";
 import { useNavigate } from "react-router-dom";
 
 const ApplyLeave = () => {

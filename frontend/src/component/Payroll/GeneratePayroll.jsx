@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AdminLayout from "../navbar/AdminLayout";
+import { useSelector } from "react-redux";
+import AdminLayout from "../Sidebar/AdminLayout";
+import PayrollProcessorLayout from "../Sidebar/PayrollProcessorLayout";
 import { GeneratePayroll } from "../../service/payroll.service";
 import { GetAllEmployees } from "../../service/employee.service";
 import { GetAllPolicies } from "../../service/policy.service";
 import "./generatePayroll.css";
 
 const GeneratePayrollPage = () => {
+  const { role } = useSelector((state) => state.auth);
   const [employeeId, setEmployeeId] = useState("");
   const [policyId, setPolicyId] = useState("");
   const [periodStart, setPeriodStart] = useState("");
@@ -21,12 +24,12 @@ const GeneratePayrollPage = () => {
       .catch(err => console.error("Failed to fetch employees:", err));
 
     GetAllPolicies()
-      .then(res => {
-        const data = res.data?.policies || res.data || [];
-        setPolicies(data);
-      })
-      .catch(err => console.error("Failed to fetch policies:", err));
-  }, []);
+    .then(res => {
+      const data = Array.isArray(res.data) ? res.data : res.data?.policies || [];
+      setPolicies(data);
+    })
+    .catch(err => console.error("Failed to fetch policies:", err));
+}, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -54,8 +57,11 @@ const GeneratePayrollPage = () => {
       });
   };
 
+  // Choose layout dynamically
+  const Layout = role === "Payroll Processor" ? PayrollProcessorLayout : AdminLayout;
+
   return (
-    <AdminLayout>
+    <Layout>
       <div className="generate-payroll-container">
         <h2>Generate Payroll</h2>
         <form onSubmit={handleSubmit} className="generate-form">
@@ -103,7 +109,7 @@ const GeneratePayrollPage = () => {
 
         </form>
       </div>
-    </AdminLayout>
+    </Layout>
   );
 };
 

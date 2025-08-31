@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { login } from "../../authSlicer";  // ✅ import redux action
+import { login } from "../../authSlicer";
 import { loginAPICall } from "../../service/login.service";
 import { LoginModel } from "../../models/login.model";
 import { LoginErrorModel } from "../../models/loginerror.model";
@@ -11,7 +11,7 @@ const Login = () => {
   const [user, setUser] = useState(new LoginModel());
   const [error, setError] = useState(new LoginErrorModel());
   const navigate = useNavigate();
-  const dispatch = useDispatch(); // redux dispatcher
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -38,7 +38,6 @@ const Login = () => {
           })
         );
 
-        // Optional
         sessionStorage.setItem("token", data.token);
         sessionStorage.setItem("username", data.userName);
         sessionStorage.setItem("employeeId", data.employeeId);
@@ -47,12 +46,16 @@ const Login = () => {
         const role = data.role?.toUpperCase();
 
         if (role === "ADMIN") {
-  navigate("/admin-dashboard");
-} else if (role === "EMPLOYEE") {
-  navigate("/employee-dashboard");
-} else {
-  navigate("/dashboard");
-}
+          navigate("/admin-dashboard");
+        } else if (role === "EMPLOYEE") {
+          navigate("/employee-dashboard");
+        } else if (role === "PAYROLL PROCESSOR") {
+          navigate("/processor-dashboard");
+        }else if (role === "MANAGER") {
+          navigate("/manager-dashboard");
+        } else {
+          navigate("/login");
+        }
       })
       .catch((err) => alert(err.response?.data?.error || "Login failed"));
   };
@@ -64,7 +67,7 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      {/* Left Section (Form) */}
+
       <div className="login-form-section">
         <div className="login-box">
           <div className="login-logo">Payroll System</div>
@@ -103,7 +106,6 @@ const Login = () => {
         </div>
       </div>
 
-      {/* Right Section (Blue Background with Illustration) */}
       <div className="login-illustration-section">
         <img
           src="/login.png"

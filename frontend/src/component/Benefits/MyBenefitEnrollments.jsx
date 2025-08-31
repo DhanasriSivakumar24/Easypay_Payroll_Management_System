@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../navbar/Sidebar";
+import Sidebar from "../Sidebar/Sidebar";
 import { GetBenefitEnrollmentsByEmployee } from "../../service/benefit.service";
 import "./myBenefitEnrollments.css";
-import EmployeeLayout from "../navbar/EmployeeLayout";
+import EmployeeLayout from "../Sidebar/EmployeeLayout";
 
 const MyBenefitEnrollments = () => {
   const [enrollments, setEnrollments] = useState([]);

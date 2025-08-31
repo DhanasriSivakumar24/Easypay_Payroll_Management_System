@@ -26,7 +26,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpPost("generate")]
-        [Authorize(Roles = "Admin, HR Manager")]
+        [Authorize(Roles = "Admin, HR Manager, Payroll Processor")]
         public async Task<ActionResult<PayrollResponseDTO>> GeneratePayroll([FromBody] PayrollRequestDTO dto)
         {
             var result = await _payrollService.GeneratePayroll(dto);
@@ -101,7 +101,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpPut("mark-paid/{payrollId}/{adminId}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Payroll Processor")]
         public async Task<ActionResult<PayrollResponseDTO>> MarkAsPaid(int payrollId, int adminId)
         {
             var oldPayroll = await _payrollService.GetPayrollById(payrollId);
@@ -121,7 +121,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpGet("get-approved-payroll")]
-        [Authorize(Roles = "Admin, HR Manager")]
+        [Authorize(Roles = "Admin, HR Manager, Payroll Processor")]
         public async Task<ActionResult<IEnumerable<PayrollResponseDTO>>> GetApprovedPayrolls([FromQuery] DateTime start, [FromQuery] DateTime end)
         {
             var result = await _payrollService.GetApprovedPayrolls(start, end);

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import AdminLayout from "../navbar/AdminLayout";
+import AdminLayout from "../Sidebar/AdminLayout";
 import { GetAllEmployees } from "../../service/employee.service";
 import { AddBenefitEnrollment } from "../../service/benefit.service";
 import {GetBenefitsMaster } from "../../service/masterTable.service"

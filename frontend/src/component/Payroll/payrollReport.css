@@ -1,0 +1,125 @@
+.report-container {
+  max-width: 1300px;
+  margin: 20px auto;
+  padding: 20px;
+  font-family: "Segoe UI", sans-serif;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.report-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.report-date-filters {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.report-date-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.report-date-group label {
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.report-input {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  width: 180px;
+}
+
+.report-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.report-btn-primary {
+  background: #4a90e2;
+  border: none;
+  padding: 10px 18px;
+  color: #fff;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.report-btn-primary:hover {
+  background: #3578c6;
+}
+
+.report-btn-cancel {
+  background: #f0f0f0;
+  border: 1px solid #ccc;
+  padding: 10px 18px;
+  color: #333;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.report-btn-cancel:hover {
+  background: #e0e0e0;
+}
+
+.report-card {
+  overflow-x: auto;
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1000px;
+}
+
+.report-table th,
+.report-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+.report-table th {
+  background: #f9f9f9;
+  font-weight: 600;
+}
+
+.report-no-data {
+  text-align: center;
+  padding: 20px;
+  color: #888;
+}
+
+.report-summary p {
+  margin: 0;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .report-date-filters,
+  .report-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

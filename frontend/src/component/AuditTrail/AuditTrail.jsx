@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { GetAllAuditTrail } from "../../service/audit.service";
-import AdminLayout from "../navbar/AdminLayout";
+import AdminLayout from "../Sidebar/AdminLayout";
+import PayrollProcessorLayout from "../Sidebar/PayrollProcessorLayout";
 import './auditTrail.css';
 
 const AuditTrail = () => {
@@ -13,11 +14,10 @@ const AuditTrail = () => {
   const [searchUser, setSearchUser] = useState("");
   const [searchAction, setSearchAction] = useState("");
   const [searchId, setSearchId] = useState("");
-
   const [actionsList, setActionsList] = useState([]);
 
   useEffect(() => {
-    if (role === "Admin") {
+    if (role === "Admin" || role === "Payroll Processor") {
       GetAllAuditTrail()
         .then((res) => {
           let logs = res.data || [];
@@ -52,10 +52,13 @@ const AuditTrail = () => {
   }, [searchUser, searchAction, searchId, auditLogs]);
 
   if (loading) return <p>Loading audit trail...</p>;
-  if (role !== "Admin") return <p>Access Denied: Only Admins can see audit logs.</p>;
+  if (role !== "Admin" && role !== "Payroll Processor") 
+    return <p>Access Denied: Only Admin or Payroll Processor can see audit logs.</p>;
+
+  const Layout = role === "Payroll Processor" ? PayrollProcessorLayout : AdminLayout;
 
   return (
-    <AdminLayout>
+    <Layout>
       <div className="audit-trail-container audit-trail-scroll">
         <h2>Audit Trail Logs</h2>
 
@@ -122,7 +125,7 @@ const AuditTrail = () => {
           </tbody>
         </table>
       </div>
-    </AdminLayout>
+    </Layout>
   );
 };
 

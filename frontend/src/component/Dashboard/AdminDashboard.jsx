@@ -6,7 +6,7 @@ import { GetAllEmployees } from "../../service/employee.service";
 import { GetAllLeaveRequests } from "../../service/leave.service";
 import { GetAllPayrolls } from "../../service/payroll.service";
 import { GetAllAuditTrail } from "../../service/audit.service"; 
-import Sidebar from "../navbar/Sidebar"; 
+import Sidebar from "../Sidebar/Sidebar"; 
 import './adminDashboard.css';
 
 const AdminDashboard = () => {

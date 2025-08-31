@@ -6,7 +6,7 @@ import {
   UpdateEmployee,
 } from "../../service/employee.service";
 import "./AddEmployee.css";
-import AdminLayout from "../navbar/AdminLayout";
+import AdminLayout from "../Sidebar/AdminLayout";
 
 const UpdateEmployeeDetail = () => {
   const { id } = useParams();

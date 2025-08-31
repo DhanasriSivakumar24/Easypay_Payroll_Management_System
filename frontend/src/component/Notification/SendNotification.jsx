@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { GetNotificationChannel } from "../../service/masterTable.service";
 import { GetAllEmployees } from "../../service/employee.service";
 import { SendNotificationAPI } from "../../service/notification.service";
-import AdminLayout from "../navbar/AdminLayout";
+import AdminLayout from "../Sidebar/AdminLayout";
 import "./sendNotification.css";
 
 const SendNotification = () => {
@@ -11,7 +11,7 @@ const SendNotification = () => {
   const [employees, setEmployees] = useState([]);
   const [channels, setChannels] = useState([]);
 
-  const [userId, setUserId] = useState("");      // single user
+  const [userId, setUserId] = useState("");    
   const [channelId, setChannelId] = useState(""); 
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
@@ -45,7 +45,7 @@ const SendNotification = () => {
       setUserId("");
       setChannelId("");
     } catch (err) {
-      // 401 usually means token missing/expired or wrong role
+
       if (err?.response?.status === 401) {
         alert("Unauthorized: please log in again or check your token/role.");
       } else if (err?.response?.status === 403) {
@@ -59,12 +59,9 @@ const SendNotification = () => {
     }
   };
 
-  // gate the page by role
-  if (role !== "Admin" && role !== "HR Manager") {
+  if (role !== "Admin" && role !== "HR Manager"&& role !== "Payroll Processor") {
     return (
-      <AdminLayout>
         <div className="not-allowed"> You are not allowed to send notifications.</div>
-      </AdminLayout>
     );
   }
 

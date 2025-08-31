@@ -19,11 +19,10 @@ const Sidebar = ({ role, userName, onLogout }) => {
     ],
     payrollprocessor: [
       { name: "Dashboard", path: "/processor-dashboard" },
-      { name: "Payroll Processing", path: "/payroll-processing" },
-      { name: "Payroll Verification", path: "/payroll-verification" },
-      { name: "Benefits", path: "/benefits" },
+      { name: "Payroll Processing", path: "/payrolls/generate-payroll" },
+      { name: "Payroll Verification", path: "/payrolls-verification" },
       { name: "Audit Trail", path: "/audit" },
-      { name: "Notifications", path: "/notifications" },
+      { name: "Notifications", path: "/notifications/processor-notifications" },
     ],
     employee: [
       { name: "Dashboard", path: "/employee-dashboard" },
@@ -37,7 +36,7 @@ const Sidebar = ({ role, userName, onLogout }) => {
       { name: "Dashboard", path: "/manager-dashboard" },
       { name: "Team Payroll", path: "/team-payroll" },
       { name: "Leave Approvals", path: "/leave-approvals" },
-      { name: "Notifications", path: "/notifications" },
+      { name: "Notifications", path: "/notifications/manager-notifications" },
     ],
   };
 

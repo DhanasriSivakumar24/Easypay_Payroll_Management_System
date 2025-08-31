@@ -22,7 +22,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpGet("all")]
-        [Authorize(Roles = "Admin, HR Manager")]
+        [Authorize(Roles = "Admin, HR Manager, Payroll Processor")]
         public async Task<ActionResult<IEnumerable<AuditTrailResponseDTO>>> GetAllLogs()
         {
             var logs = await _auditTrailService.GetAllLogs();
@@ -30,7 +30,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpGet("user/{userName}")]
-        [Authorize(Roles = "Admin, HR Manager")]
+        [Authorize(Roles = "Admin, HR Manager, Payroll Processor")]
         public async Task<ActionResult<IEnumerable<AuditTrailResponseDTO>>> GetLogsByUser(string userName)
         {
             var logs = await _auditTrailService.GetLogsByUser(userName);
@@ -38,14 +38,14 @@ namespace Easypay_App.Controllers
         }
 
         [HttpGet("action/{actionId}")]
-        [Authorize(Roles = "Admin, HR Manager")]
+        [Authorize(Roles = "Admin, HR Manager, Payroll Processor")]
         public async Task<ActionResult<IEnumerable<AuditTrailResponseDTO>>> GetLogsByAction(int actionId)
         {
             var logs = await _auditTrailService.GetLogsByAction(actionId);
             return Ok(logs);
         }
 
-        [Authorize(Roles = "Admin, HR Manager")]
+        [Authorize(Roles = "Admin, HR Manager, Payroll Processor")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAuditTrailById(int id)
         {

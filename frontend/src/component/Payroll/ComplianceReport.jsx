@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import AdminLayout from "../navbar/AdminLayout";
+import AdminLayout from "../Sidebar/AdminLayout";
 import { GetComplianceReport } from "../../service/payroll.service";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";

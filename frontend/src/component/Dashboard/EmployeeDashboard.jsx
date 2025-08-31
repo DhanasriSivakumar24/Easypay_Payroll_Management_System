@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GetLeaveRequestsByEmployee } from "../../service/leave.service"; 
 import { GetPayrollByEmployeeId } from "../../service/payroll.service"; 
-import Sidebar from "../navbar/Sidebar";
+import Sidebar from "../Sidebar/Sidebar";
 import "./employeeDashboard.css";
 
 const EmployeeDashboard = () => {

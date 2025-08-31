@@ -127,7 +127,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpGet("all")]
-        [Authorize(Roles = "Admin,HR Manager")]
+        [Authorize(Roles = "Admin,HR Manager,Payroll Processor")]
         public async Task<ActionResult> GetAll()
         {
             try

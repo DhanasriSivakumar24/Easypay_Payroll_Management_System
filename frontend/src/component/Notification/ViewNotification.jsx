@@ -1,19 +1,30 @@
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux'; 
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 import { GetNotificationsByUser } from '../../service/notification.service';
-import EmployeeLayout from '../navbar/EmployeeLayout';
+import ManagerLayout from '../Sidebar/ManagerLayout';
+import PayrollProcessorLayout from '../Sidebar/PayrollProcessorLayout';
+import EmployeeLayout from '../Sidebar/EmployeeLayout';
 import './viewNotification.css';
 
 const ViewNotification = () => {
-  const { employeeId } = useSelector((state) => state.auth);
+  const { employeeId, role } = useSelector((state) => state.auth);
   const [requests, setRequests] = useState([]);
   const [filteredRequests, setFilteredRequests] = useState([]);
-
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [selectedChannel, setSelectedChannel] = useState("All");
-
   const navigate = useNavigate();
+
+  const normalizedRole = role?.toLowerCase();
+  const isAdmin = ["manager"].includes(normalizedRole);
+  const isProcessor = ["payrollprocessor", "payroll processor"].includes(normalizedRole);
+  const isEmployee = ["employee"].includes(normalizedRole);
+
+  const Layout = isProcessor
+    ? PayrollProcessorLayout
+    : isAdmin
+    ? ManagerLayout
+    : EmployeeLayout;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,7 +43,6 @@ const ViewNotification = () => {
     fetchData();
   }, [employeeId]);
 
-  // Filter logic
   useEffect(() => {
     let filtered = [...requests];
 
@@ -47,7 +57,7 @@ const ViewNotification = () => {
   }, [selectedStatus, selectedChannel, requests]);
 
   return (
-    <EmployeeLayout>
+    <Layout>
       <div className="notification-container">
         <h2 className="notification-title">My Notifications</h2>
 
@@ -94,7 +104,7 @@ const ViewNotification = () => {
           ))
         )}
       </div>
-    </EmployeeLayout>
+    </Layout>
   );
 };
 

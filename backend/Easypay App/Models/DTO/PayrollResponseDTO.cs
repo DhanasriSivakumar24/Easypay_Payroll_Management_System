@@ -12,5 +12,6 @@
         public decimal NetPay { get; set; }
         public DateTime PeriodStart { get; set; }
         public DateTime PeriodEnd { get; set; }
+        public DateTime paidDate { get; set; }
     }
 }

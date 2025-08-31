@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import EmployeeLayout from '../navbar/EmployeeLayout';
+import EmployeeLayout from '../Sidebar/EmployeeLayout';
 import { GetPersonalInfo } from '../../service/employee.service';
 import './personalInfo.css';
 

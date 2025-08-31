@@ -3,7 +3,7 @@ import DepartmentRoleDropdown from "./DepartmentRoleDropdown";
 import { AddEmployeeAPI, GetAllEmployees } from "../../service/employee.service";
 import './AddEmployee.css';
 import { useNavigate } from "react-router-dom";
-import AdminLayout from "../navbar/AdminLayout";
+import AdminLayout from "../Sidebar/AdminLayout";
 
 const AddEmployee = () => {
   const [employee, setEmployee] = useState({

@@ -1,4 +1,4 @@
-.employee-container {
+.payroll-container {
   max-width: 1300px;
   margin: 20px auto;
   padding: 20px;
@@ -15,52 +15,49 @@
   margin-bottom: 20px;
 }
 
-.actions {
+.tabs {
   display: flex;
   gap: 10px;
 }
 
-.search-input {
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-  width: 280px;
-}
-
-.add-btn {
-  background: #4a90e2;
+.tab {
+  padding: 8px 16px;
   border: none;
-  padding: 10px 18px;
-  color: #fff;
+  background: #f0f0f0;
   border-radius: 6px;
-  font-weight: 600;
   cursor: pointer;
+  font-weight: 600;
+  color: #333;
   transition: all 0.3s ease;
 }
 
-.add-btn:hover {
-  background: #3578c6;
+.tab:hover {
+  background: #e0e0e0;
 }
 
-.employee-card {
+.tab.active {
+  background: #4a90e2;
+  color: white;
+}
+
+.payroll-card {
   overflow-x: auto;
 }
 
-.employee-table {
+.payroll-table {
   width: 100%;
   border-collapse: collapse;
   min-width: 1000px;
 }
 
-.employee-table th,
-.employee-table td {
+.payroll-table th,
+.payroll-table td {
   padding: 14px 18px;
   border-bottom: 1px solid #eee;
   text-align: left;
 }
 
-.employee-table th {
+.payroll-table th {
   background: #f9f9f9;
   font-weight: 600;
 }
@@ -74,35 +71,31 @@
   text-transform: capitalize;
 }
 
-.status-badge.active {
+.status-badge.approved {
+  background-color: #fff3cd;
+  color: #a97800;
+}
+
+.status-badge.paid {
   background-color: #d4f6e0;
   color: #1a7f37;
 }
 
-.status-badge.inactive {
-  background-color: #fde2e2;
-  color: #d93025;
-}
-
-.status-badge.unknown {
-  background-color: #f0f0f0;
-  color: #555;
-}
-
-.btn-view,
-.btn-edit,
-.btn-delete {
-  font-size: 13px;
-  padding: 5px 10px;
-  border-radius: 6px;
-  margin-right: 5px;
+.pay-btn {
+  background: #4caf50;
   border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
+  transition: background 0.2s;
 }
 
-.btn-view { background: #f0f0f0; color: #1f2a56; }
-.btn-edit { background: #fff3cd; color: #a97800; }
-.btn-delete { background: #fde2e2; color: #d93025; }
+.pay-btn:hover {
+  background: #3d9140;
+}
 
 .no-data {
   text-align: center;

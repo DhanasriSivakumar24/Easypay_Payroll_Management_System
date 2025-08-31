@@ -1,7 +1,4 @@
-import logo from './logo.svg';
-import './App.css';
 import Login from './component/login/login';
-import Employees from './component/Employees/employees';
 import 'bootstrap/dist/css/bootstrap.css';
 import { BrowserRouter, Route, Routes} from 'react-router-dom';
 import PersonalInfo from './component/Employees/PersonalInfo';
@@ -28,6 +25,11 @@ import ComplianceReport from './component/Payroll/ComplianceReport';
 import ApproveLeaveRequests from './component/LeaveRequest/ApproveLeaveRequests';
 import MyBenefitEnrollments from './component/Benefits/MyBenefitEnrollments';
 import MyPayStubs from './component/Payroll/MyPayStubs';
+import PayrollProcessorDashboard from './component/Dashboard/PayrollProcessorDashboard';
+import PayrollReport from './component/Payroll/PayrollReport';
+import PendingPayroll from './component/Payroll/PendingPayroll';
+import { GeneratePayroll } from './service/payroll.service';
+import ManagerDashboard from './component/Dashboard/ManagerDashboard';
 
 function App() {
   return (
@@ -59,9 +61,18 @@ function App() {
                 <Route path='/timesheets' element={<ProtectedRoute><TimesheetHistory/></ProtectedRoute>}/>
                 <Route path='/timesheets/submit-timesheet' element={<ProtectedRoute><ApplyTimesheet/></ProtectedRoute>}/>
                 <Route path='/notifications/view-notifications' element={<ProtectedRoute><ViewNotification/></ProtectedRoute>}/>
-                <Route path= '/employees/SearchEmployee' element ={<Employees/>}/>
                 <Route path='/myEnrolledBenefit' element={<ProtectedRoute><MyBenefitEnrollments/></ProtectedRoute>}/>
                 <Route path='/paystubs' element={<ProtectedRoute><MyPayStubs/></ProtectedRoute>}/>
+
+                <Route path='/processor-dashboard' element={<ProtectedRoute><PayrollProcessorDashboard/></ProtectedRoute>}/>
+                <Route path='/notifications/processor-notifications' element={<ProtectedRoute><ViewNotification/></ProtectedRoute>}/>
+                <Route path='/payrolls/reports' element={<ProtectedRoute><PayrollReport/></ProtectedRoute>}/>
+                <Route path='/payrolls/pay' element={<ProtectedRoute><PendingPayroll/></ProtectedRoute>}/>
+                <Route path='/payrolls/generate-payroll' element={<ProtectedRoute><GeneratePayroll/></ProtectedRoute>}/>
+                <Route path='/payrolls-verification' element={<ProtectedRoute><AllPayrolls/></ProtectedRoute>}/>
+                
+                <Route path='/manager-dashboard' element={<ProtectedRoute><ManagerDashboard/></ProtectedRoute>}/>
+                <Route path='/notifications/manager-notifications' element={<ProtectedRoute><ViewNotification/></ProtectedRoute>}/>
             </Routes>
       </BrowserRouter>{/* //routing related things should be here in the broweseroute */}
     </div>

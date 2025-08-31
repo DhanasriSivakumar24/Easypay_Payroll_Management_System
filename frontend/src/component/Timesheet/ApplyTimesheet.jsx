@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { AddTimesheet } from "../../service/timesheet.service";
-import EmployeeLayout from "../navbar/EmployeeLayout";
+import EmployeeLayout from "../Sidebar/EmployeeLayout";
 import "./applyTimesheet.css";
 
 const ApplyTimesheet = () => {

@@ -11,7 +11,6 @@
   margin-bottom: 20px;
 }
 
-/* Filter Section */
 .filter-section {
   display: flex;
   justify-content: flex-end;
@@ -33,7 +32,6 @@
   border: 1px solid #0077ff;
 }
 
-/* Notification Cards */
 .notification-card {
   background: #fff;
   padding: 15px 20px;

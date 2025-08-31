@@ -15,7 +15,6 @@
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
-/* Heading */
 .benefit-enroll-card h2 {
   font-size: 1.8rem;
   font-weight: 600;
@@ -26,7 +25,6 @@
   text-align: center;
 }
 
-/* Form Labels */
 .benefit-enroll-card label {
   font-weight: 500;
   color: #333;
@@ -34,7 +32,6 @@
   display: block;
 }
 
-/* Inputs & Selects */
 .benefit-enroll-card input,
 .benefit-enroll-card select {
   width: 100%;
@@ -52,7 +49,6 @@
   outline: none;
 }
 
-/* Buttons */
 .benefit-enroll-card .btn-primary {
   background-color: #4a90e2;
   border-color: #4a90e2;
@@ -83,19 +79,16 @@
   box-shadow: 0 4px 12px rgba(92, 99, 106, 0.3);
 }
 
-/* Form actions */
 .form-actions {
   display: flex;
   gap: 15px;
   margin-top: 20px;
 }
 
-/* Row spacing */
 .form-group {
   margin-bottom: 15px;
 }
 
-/* Responsive tweaks */
 @media (max-width: 768px) {
   .benefit-enroll-card {
     padding: 20px;
