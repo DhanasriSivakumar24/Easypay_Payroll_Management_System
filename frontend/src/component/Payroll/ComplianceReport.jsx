@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "../navbar/AdminLayout";
 import { GetComplianceReport } from "../../service/payroll.service";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import "./complianceReport.css";
 
 const ComplianceReport = () => {
@@ -9,12 +11,10 @@ const ComplianceReport = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  // Store default previous month range and default report
   const [defaultStart, setDefaultStart] = useState("");
   const [defaultEnd, setDefaultEnd] = useState("");
   const [defaultReport, setDefaultReport] = useState(null);
 
-  // On mount: get previous month range & initial report
   useEffect(() => {
     const now = new Date();
     const firstDayPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
@@ -36,7 +36,7 @@ const ComplianceReport = () => {
     GetComplianceReport(start, end)
       .then((res) => {
         setReport(res.data);
-        if (isInitial) setDefaultReport(res.data); // store initial report
+        if (isInitial) setDefaultReport(res.data);
       })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
@@ -49,10 +49,43 @@ const ComplianceReport = () => {
   };
 
   const handleCancel = () => {
-    // Reset dates and table to initial previous month
     setStartDate(defaultStart);
     setEndDate(defaultEnd);
     setReport(defaultReport);
+  };
+
+  const downloadReport = () => {
+    const doc = new jsPDF();
+    
+    doc.setFontSize(16);
+    doc.text("Compliance Report", 14, 20);
+    doc.setFontSize(12);
+    doc.text(`Period: ${startDate} to ${endDate}`, 14, 28);
+    
+    const tableColumn = ["S.No", "Employee ID", "Employee Name", "Gross Salary", "PF Contribution"];
+    const tableRows = report.employeeDetails.map((emp, idx) => [
+      idx + 1,
+      emp.employeeId,
+      emp.employeeName,
+      emp.grossSalary,
+      emp.pfContribution,
+    ]);
+    
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 35,
+      styles: { fontSize: 10 },
+      headStyles: { fillColor: [135, 206, 235] },
+      margin: { top: 30, left: 14, right: 14 },
+    });
+    
+    const finalY = doc.lastAutoTable.finalY;
+    doc.setFontSize(12);
+    doc.text(`Total Gross Salary: ${report.totalGrossSalary}`, 14, finalY + 10);
+    doc.text(`Total PF Contribution: ${report.totalPFContribution}`, 14, finalY + 18);
+    
+    doc.save(`Compliance_Report_${startDate}_to_${endDate}.pdf`);
   };
 
   return (
@@ -86,6 +119,11 @@ const ComplianceReport = () => {
             <div className="buttons">
               <button className="add-btn" onClick={handleFilter}>Filter</button>
               <button className="cancel-btn" onClick={handleCancel}>Cancel</button>
+              {report && (
+                <button className="add-btn" onClick={downloadReport}>
+                  Download
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -102,7 +140,13 @@ const ComplianceReport = () => {
               </tr>
             </thead>
             <tbody>
-              {report && report.employeeDetails.length > 0 ? (
+              {loading ? (
+                <tr>
+                  <td colSpan="5" className="no-data">
+                    Loading report...
+                  </td>
+                </tr>
+              ) : report && report.employeeDetails.length > 0 ? (
                 report.employeeDetails.map((emp, idx) => (
                   <tr key={idx}>
                     <td>{idx + 1}</td>

@@ -66,7 +66,7 @@ const ApplyTimesheet = () => {
         </div>
 
         <form className="apply-timesheet-form" onSubmit={handleSubmit}>
-          {/* Work Date */}
+
           <label>Work Date</label>
           <input
             type="date"
@@ -75,7 +75,6 @@ const ApplyTimesheet = () => {
             required
           />
 
-          {/* Hours Worked */}
           <label>Hours Worked</label>
           <input
             type="number"
@@ -87,7 +86,6 @@ const ApplyTimesheet = () => {
             required
           />
 
-          {/* Task Description */}
           <label>Task Description</label>
           <textarea
             placeholder="Enter details of work done"
@@ -96,7 +94,6 @@ const ApplyTimesheet = () => {
             required
           />
 
-          {/* Is Billable */}
           <label className="billable-row">
             <input
               type="checkbox"
@@ -106,7 +103,6 @@ const ApplyTimesheet = () => {
             Is Billable?
           </label>
 
-          {/* Buttons */}
           <div className="btn-row">
             <button type="submit" className="btn btn-primary w-50">
                Submit

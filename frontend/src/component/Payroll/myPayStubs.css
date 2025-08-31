@@ -1,0 +1,105 @@
+.paystub-container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+  font-family: "Segoe UI", sans-serif;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.search-input {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  width: 260px;
+}
+
+.paystub-card {
+  overflow-x: auto;
+}
+
+.paystub-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+}
+
+.paystub-table th,
+.paystub-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+}
+
+.paystub-table th {
+  background: #f9f9f9;
+  font-weight: 600;
+}
+
+.netpay {
+  font-weight: 700;
+  color: #1a7f37;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-badge.pending { background: #fff3cd; color: #a97800; }
+.status-badge.processed { background: #e7f0ff; color: #1f57d6; }
+.status-badge.approved { background: #d4f6e0; color: #1a7f37; }
+.status-badge.paid { background: #d1e7ff; color: #0a58ca; }
+.status-badge.unknown { background: #f0f0f0; color: #555; }
+
+.no-data {
+  text-align: center;
+  padding: 20px;
+  color: #888;
+}
+
+.download-btn {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  background-color: #1f57d6;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.download-btn:hover {
+  background-color: #1440a3;
+  transform: scale(1.05);
+}
+
+.download-btn:active {
+  background-color: #0a2a70;
+  transform: scale(0.98);
+}
+
+.download-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(31, 87, 214, 0.3);
+}
+

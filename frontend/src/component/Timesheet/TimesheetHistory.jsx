@@ -30,19 +30,16 @@ const TimesheetHistory = () => {
     fetchTimesheets();
   }, [employeeId]);
 
-  // Filter timesheets by selected month
   const filteredTimesheets = timesheets.filter(t => 
     new Date(t.workDate).toLocaleString('default', { month: 'long' }) === selectedMonth
   );
 
-  // Sort filtered timesheets
   const sortedTimesheets = [...filteredTimesheets].sort((a, b) => {
     const dateA = new Date(a.workDate);
     const dateB = new Date(b.workDate);
     return sortOption === 'dateAsc' ? dateA - dateB : dateB - dateA;
   });
 
-  // Summary
   const summary = {
     totalHours: sortedTimesheets.reduce((sum, t) => sum + (t.hoursWorked || 0), 0),
     approved: sortedTimesheets.filter((t) => t.statusName?.toLowerCase() === "approved").length,

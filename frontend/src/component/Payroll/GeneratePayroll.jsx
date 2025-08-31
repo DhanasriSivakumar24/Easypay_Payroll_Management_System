@@ -16,12 +16,10 @@ const GeneratePayrollPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Load Employees
     GetAllEmployees()
       .then(res => setEmployees(res.data || []))
       .catch(err => console.error("Failed to fetch employees:", err));
 
-    // Load Policies
     GetAllPolicies()
       .then(res => {
         const data = res.data?.policies || res.data || [];
@@ -38,16 +36,12 @@ const GeneratePayrollPage = () => {
       return;
     }
 
-    // Correct payload matching C# DTO (PascalCase)
     const dto = {
       EmployeeId: Number(employeeId),
       PolicyId: Number(policyId),
-      PeriodStart: periodStart, // YYYY-MM-DD
-      PeriodEnd: periodEnd      // YYYY-MM-DD
+      PeriodStart: periodStart, 
+      PeriodEnd: periodEnd     
     };
-
-    // Debug: see what is being sent
-    console.log("Payroll DTO to send:", dto);
 
     GeneratePayroll(dto)
       .then(() => {
@@ -66,7 +60,6 @@ const GeneratePayrollPage = () => {
         <h2>Generate Payroll</h2>
         <form onSubmit={handleSubmit} className="generate-form">
 
-          {/* Employee Dropdown */}
           <div className="form-group">
             <label>Employee</label>
             <select value={employeeId} onChange={(e) => setEmployeeId(e.target.value)}>
@@ -79,7 +72,6 @@ const GeneratePayrollPage = () => {
             </select>
           </div>
 
-          {/* Policy Dropdown */}
           <div className="form-group">
             <label>Policy</label>
             <select value={policyId} onChange={(e) => setPolicyId(e.target.value)}>
@@ -92,19 +84,16 @@ const GeneratePayrollPage = () => {
             </select>
           </div>
 
-          {/* Period Start */}
           <div className="form-group">
             <label>Period Start</label>
             <input type="date" value={periodStart} onChange={(e) => setPeriodStart(e.target.value)} />
           </div>
 
-          {/* Period End */}
           <div className="form-group">
             <label>Period End</label>
             <input type="date" value={periodEnd} onChange={(e) => setPeriodEnd(e.target.value)} />
           </div>
 
-          {/* Buttons */}
           <div className="d-flex gap-2 mt-3">
             <button type="submit" className="btn btn-primary w-50">Generate</button>
             <button type="button" className="btn btn-secondary w-50" onClick={() => navigate("/payrolls")}>

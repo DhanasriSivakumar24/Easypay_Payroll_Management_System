@@ -66,7 +66,7 @@ const EmployeeDashboard = () => {
   const quickActions = [
     { title: "Apply Leave", desc: "Request for leave easily", path: "/leave-requests/leaves/apply" },
     { title: "View My Leaves", desc: "Check your leave history", path: "/leave-requests" },
-    { title: "View Payrolls", desc: "Check your salary slips", path: "/payroll/my-payrolls" },
+    { title: "View Payrolls", desc: "Check your salary slips", path: "/paystubs" },
     { title: "View Benefits", desc: "See your enrolled benefits", path: "/myEnrolledBenefit" },
   ];
 

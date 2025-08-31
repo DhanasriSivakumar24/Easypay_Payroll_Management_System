@@ -35,7 +35,6 @@ const AuditTrail = () => {
     }
   }, [role]);
 
-  // Filter logs whenever search changes
   useEffect(() => {
     let temp = [...auditLogs];
 
@@ -60,7 +59,6 @@ const AuditTrail = () => {
       <div className="audit-trail-container audit-trail-scroll">
         <h2>Audit Trail Logs</h2>
 
-        {/* Search / Filter Section */}
         <div className="audit-trail-filters">
           <input
             type="text"
@@ -87,7 +85,6 @@ const AuditTrail = () => {
           />
         </div>
 
-        {/* Audit Table */}
         <table className="audit-trail-table">
           <thead>
             <tr>

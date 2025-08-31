@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AdminLayout from "../navbar/AdminLayout";
 import { GetBenefitEnrollmentById } from "../../service/benefit.service";
-import '../Employees/personalInfo.css'; // Use the same card theme
+import '../Employees/personalInfo.css';
 
 const ViewBenefitEnrollment = () => {
   const { id } = useParams();
@@ -17,7 +17,6 @@ const ViewBenefitEnrollment = () => {
 
   if (!enrollment) return <div>Loading...</div>;
 
-  // Avatar fallback
   const avatarUrl = enrollment.profileImage ||
     `https://ui-avatars.com/api/?name=${enrollment.employeeFirstName}+${enrollment.employeeLastName}&background=0D8ABC&color=fff&size=150`;
 
@@ -27,7 +26,6 @@ const ViewBenefitEnrollment = () => {
   return (
     <AdminLayout>
       <div className="personal-info-container">
-        {/* Profile Header */}
         <div className="profile-header">
           <img src={avatarUrl} alt="Employee Avatar" className="profile-avatar" />
           <div className="profile-basic">
@@ -40,7 +38,6 @@ const ViewBenefitEnrollment = () => {
           <button className="edit-btn" onClick={() => navigate(`/benefits/edit/${id}`)}>Edit</button>
         </div>
 
-        {/* Enrollment Details */}
         <div className="info-card">
           <h3>Benefit Enrollment Details</h3>
           <div className="info-grid">
@@ -51,7 +48,6 @@ const ViewBenefitEnrollment = () => {
           </div>
         </div>
 
-        {/* Contact Info */}
         <div className="info-card">
           <h3>Contact Information</h3>
           <div className="info-grid">

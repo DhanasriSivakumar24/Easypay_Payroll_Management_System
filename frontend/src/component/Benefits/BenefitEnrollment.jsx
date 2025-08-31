@@ -25,12 +25,10 @@ const BenefitEnrollment = () => {
     const allowedRoles = ["Admin", "HR Manager"];
     if (!allowedRoles.includes(role)) return;
 
-    // Load Employees
     GetAllEmployees()
       .then(res => setEmployees(res.data || []))
       .catch(err => console.error(err));
 
-    // Load Benefits from Master Table and filter active ones
     GetBenefitsMaster()
       .then(res => {
         const activeBenefits = (res.data || []).filter(b => b.isActive);
@@ -66,7 +64,6 @@ const BenefitEnrollment = () => {
           <h2>Enroll Employee Benefit</h2>
           <form onSubmit={handleSubmit}>
 
-            {/* Employee */}
             <div className="form-group">
               <label>Employee</label>
               <select
@@ -84,7 +81,6 @@ const BenefitEnrollment = () => {
               </select>
             </div>
 
-            {/* Benefit */}
             <div className="form-group">
               <label>Benefit</label>
               <select
@@ -100,7 +96,6 @@ const BenefitEnrollment = () => {
               </select>
             </div>
 
-            {/* Start Date */}
             <div className="form-group">
               <label>Start Date</label>
               <input
@@ -112,7 +107,6 @@ const BenefitEnrollment = () => {
               />
             </div>
 
-            {/* End Date */}
             <div className="form-group">
               <label>End Date</label>
               <input
@@ -124,7 +118,6 @@ const BenefitEnrollment = () => {
               />
             </div>
 
-            {/* Form Actions */}
             <div className="form-actions">
               <button type="submit" className="btn btn-primary w-50">Enroll Benefit</button>
               <button type="button" className="btn btn-secondary w-50" onClick={() => navigate("/benefits-management")}>Cancel</button>
