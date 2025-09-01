@@ -9,6 +9,10 @@ using Easypay_App.Services;
 using EasyPay_App.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using NUnit.Framework;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Easypay_Test
 {
@@ -18,9 +22,10 @@ namespace Easypay_Test
         private IRepository<int, BenefitEnrollment> _enrollmentRepo;
         private IRepository<int, BenefitStatusMaster> _statusRepo;
         private IRepository<int, Employee> _employeeRepo;
-
         private Mock<IMapper> _mockMapper;
+        private Mock<IAuditTrailService> _mockAuditTrailService;
         private BenefitEnrollmentService _service;
+        private PayrollContext _context;
 
         [SetUp]
         public void Setup()
@@ -29,21 +34,22 @@ namespace Easypay_Test
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
 
-            var context = new PayrollContext(options);
+            _context = new PayrollContext(options);
 
-            _benefitRepo = new BenefitsRepository(context);
-            _enrollmentRepo = new BenefitEnrollmentRepository(context);
-            _statusRepo = new BenefitsStatusRepository(context);
-            _employeeRepo = new EmployeeRepository(context);
+            _benefitRepo = new BenefitsRepository(_context);
+            _enrollmentRepo = new BenefitEnrollmentRepository(_context);
+            _statusRepo = new BenefitsStatusRepository(_context);
+            _employeeRepo = new EmployeeRepository(_context);
 
             _mockMapper = new Mock<IMapper>();
+            _mockAuditTrailService = new Mock<IAuditTrailService>();
 
             // Seed data
             _benefitRepo.AddValue(new BenefitMaster { Id = 1, BenefitName = "Test Benefit", EmployeeContribution = 100, EmployerContribution = 80 });
             _statusRepo.AddValue(new BenefitStatusMaster { Id = 1, StatusName = "Pending" });
             _employeeRepo.AddValue(new Employee { Id = 1, FirstName = "John", LastName = "Doe" });
 
-            _service = new BenefitEnrollmentService(_benefitRepo, _enrollmentRepo, _statusRepo, _mockMapper.Object);
+            _service = new BenefitEnrollmentService(_benefitRepo, _enrollmentRepo, _statusRepo, _mockAuditTrailService.Object, _mockMapper.Object);
         }
 
         #region EnrollBenefit
@@ -227,6 +233,7 @@ namespace Easypay_Test
         [TearDown]
         public void TearDown()
         {
+            _context.Dispose();
         }
     }
 }

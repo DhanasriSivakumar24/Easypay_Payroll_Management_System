@@ -34,7 +34,7 @@ namespace Easypay_App.Controllers
 
             await _auditTrailService.LogAction(
                 User.Identity.Name,
-                actionId: 9, // Run Payroll
+                actionId: 9, 
                 entityName: "Payroll",
                 entityId: result.Id,
                 oldValue: "-",

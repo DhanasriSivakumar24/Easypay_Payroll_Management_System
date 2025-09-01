@@ -18,17 +18,14 @@ namespace Easypay_App.Services
         }
         public async Task<string> GenerateToken(LoginResponseDTO login)
         {
-            //Payload for the token
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, login.UserName),
                 new Claim(ClaimTypes.Role, login.Role)
             };
 
-            //algo used for tokken
             var cred = new SigningCredentials(_key,SecurityAlgorithms.HmacSha256Signature);
 
-            //loading token details
             var descriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
@@ -36,7 +33,6 @@ namespace Easypay_App.Services
                 SigningCredentials = cred
             };
 
-            //generating the token
             var tokenHandlers = new JwtSecurityTokenHandler();
             var token = tokenHandlers.CreateToken(descriptor);
             return tokenHandlers.WriteToken(token);

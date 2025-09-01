@@ -165,7 +165,7 @@ const PayrollReport = () => {
   return (
     <Layout>
       <div className="report-container">
-        {/* Header */}
+
         <div className="report-header">
           <h2>Payroll Report</h2>
           <div className="report-actions">
@@ -205,7 +205,6 @@ const PayrollReport = () => {
           </div>
         </div>
 
-        {/* Table */}
         <div className="report-card">
           <table className="report-table">
             <thead>

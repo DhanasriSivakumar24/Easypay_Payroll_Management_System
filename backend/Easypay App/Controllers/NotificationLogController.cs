@@ -51,7 +51,6 @@ namespace Easypay_App.Controllers
             }
             catch (Exception ex)
             {
-                // Log the error using ILogger
                 return StatusCode(500, $"Internal Server Error: {ex.Message}");
             }
         }

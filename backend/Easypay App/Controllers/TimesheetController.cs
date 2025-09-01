@@ -34,7 +34,7 @@ namespace Easypay_App.Controllers
             string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
             await _auditTrailService.LogAction(
                 User.Identity?.Name ?? "Unknown",
-                actionId: 13, // Apply Timesheet
+                actionId: 13,
                 entityName: "Timesheet",
                 entityId: result.Id,
                 oldValue: "N/A",
@@ -61,7 +61,7 @@ namespace Easypay_App.Controllers
             string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
             await _auditTrailService.LogAction(
                 User.Identity?.Name ?? "Unknown",
-                actionId: 15, // Approve Timesheet
+                actionId: 15,
                 entityName: "Timesheet",
                 entityId: id,
                 oldValue: "Pending",
@@ -80,7 +80,7 @@ namespace Easypay_App.Controllers
             string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
             await _auditTrailService.LogAction(
                 User.Identity?.Name ?? "Unknown",
-                actionId: 14, // Reject Timesheet
+                actionId: 14,
                 entityName: "Timesheet",
                 entityId: id,
                 oldValue: "Pending",

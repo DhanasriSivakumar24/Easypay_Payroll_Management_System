@@ -53,7 +53,7 @@ namespace Easypay_App.Controllers
                 string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
                 await _auditTrailService.LogAction(
                     User.Identity.Name,
-                    actionId: 6, // Apply Leave
+                    actionId: 6,
                     entityName: "LeaveRequest",
                     entityId: result.Id,
                     oldValue: "-",
@@ -81,7 +81,7 @@ namespace Easypay_App.Controllers
                 string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
                 await _auditTrailService.LogAction(
                     User.Identity.Name,
-                    actionId: 11, // Delete Leave Request
+                    actionId: 11,
                     entityName: "LeaveRequest",
                     entityId: id,
                     oldValue: oldLeave,

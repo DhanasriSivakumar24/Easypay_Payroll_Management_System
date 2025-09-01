@@ -15,18 +15,18 @@ namespace Easypay_App.Repositories
         public async Task<T> AddValue(T entity)
         {
             _context.ChangeTracker.Clear();
-            _context.Add(entity);//Adds the entry to the current collection. Marks teh status of teh entry to added
-            await _context.SaveChangesAsync();//Creates the insert query with the new value and executes it.
-            return entity;//new object withteh identity will be provided
+            _context.Add(entity);
+            await _context.SaveChangesAsync();
+            return entity;
         }
 
         public async Task<T> DeleteValue(K key)
         {
             _context.ChangeTracker.Clear();
-            var obj = await GetValueById(key);//Gets teh object withteh ID
-            _context.Remove(obj);//Identifies teh object within teh colelction, marks teh status to deleted
-            await _context.SaveChangesAsync();//Generates the delete queryby default cascading delete
-            return obj;//returns the deleted object
+            var obj = await GetValueById(key);
+            _context.Remove(obj);
+            await _context.SaveChangesAsync();
+            return obj;
         }
 
         public abstract Task<IEnumerable<T>> GetAllValue();

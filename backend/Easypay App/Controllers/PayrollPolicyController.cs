@@ -37,7 +37,7 @@ namespace Easypay_App.Controllers
                 string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
                 await _auditTrailService.LogAction(
                     User.Identity?.Name ?? "Unknown",
-                    actionId: 23, // Payroll Policy Created
+                    actionId: 23,
                     entityName: "PayrollPolicy",
                     entityId: result.Id,
                     oldValue: "N/A",
@@ -65,7 +65,7 @@ namespace Easypay_App.Controllers
                 string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
                 await _auditTrailService.LogAction(
                     User.Identity?.Name ?? "Unknown",
-                    actionId: 24, // Payroll Policy Updated
+                    actionId: 24, 
                     entityName: "PayrollPolicy",
                     entityId: id,
                     oldValue: oldPolicy,
@@ -94,7 +94,7 @@ namespace Easypay_App.Controllers
                 string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
                 await _auditTrailService.LogAction(
                     User.Identity?.Name ?? "Unknown",
-                    actionId: 25, // Payroll Policy Deleted
+                    actionId: 25,
                     entityName: "PayrollPolicy",
                     entityId: id,
                     oldValue: oldPolicy,

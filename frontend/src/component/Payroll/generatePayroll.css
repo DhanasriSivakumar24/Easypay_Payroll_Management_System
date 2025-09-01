@@ -44,7 +44,6 @@
   outline: none;
 }
 
-/* Buttons (reuse AddEmployee styles) */
 .btn.btn-primary {
   background-color: #4a90e2;
   border-color: #4a90e2;
@@ -60,7 +59,6 @@
   box-shadow: 0 4px 12px rgba(53, 120, 198, 0.3);
 }
 
-/* Flex spacing */
 .d-flex {
   display: flex;
 }

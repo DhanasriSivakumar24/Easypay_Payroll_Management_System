@@ -65,7 +65,6 @@ const MyPayStubs = () => {
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
 
-    // Left Column
     doc.text("Employee Name:", 25, yPos + 7);
     doc.text("Employee ID:", 25, yPos + 14);
     doc.text("Department:", 25, yPos + 21);
@@ -77,7 +76,6 @@ const MyPayStubs = () => {
     doc.text(employeeInfo.departmentName ?? "", 60, yPos + 21);
     doc.text(`${formatDate(paystub.periodStart)} - ${formatDate(paystub.periodEnd)}`, 60, yPos + 28);
 
-    // Right Column
     doc.setFont("helvetica", "bold");
     doc.text("Role:", pageWidth / 2 + 5, yPos + 7);
     doc.text("Status:", pageWidth / 2 + 5, yPos + 14);
@@ -90,7 +88,6 @@ const MyPayStubs = () => {
 
     yPos += 50;
 
-    // --- Particulars Table
     const particularsTableData = [
       ["Particulars", "Amount"],
       ["Basic Pay", formatCurrency(paystub.basicPay ?? 0)],
@@ -111,7 +108,6 @@ const MyPayStubs = () => {
     const tableEnd = doc.lastAutoTable.finalY;
     yPos = tableEnd + 10;
 
-    // --- Summary Section ---
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
     doc.text("Summary", 20, yPos);

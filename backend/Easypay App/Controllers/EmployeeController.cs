@@ -34,7 +34,7 @@ namespace Easypay_App.Controllers
 
                 await _auditTrailService.LogAction(
                     User.Identity.Name,
-                    actionId: 1, // Add Employee
+                    actionId: 1,
                     entityName: "Employee",
                     entityId: result.Id,
                     oldValue: "N/A",
@@ -60,7 +60,7 @@ namespace Easypay_App.Controllers
 
             await _auditTrailService.LogAction(
                 User.Identity.Name,
-                actionId: 2, // Update Employee
+                actionId: 2, 
                 entityName: "Employee",
                 entityId: id,
                 oldValue: oldEmployee,
@@ -82,7 +82,7 @@ namespace Easypay_App.Controllers
 
                 await _auditTrailService.LogAction(
                     User.Identity.Name,
-                    actionId: 3, // Delete Employee
+                    actionId: 3,
                     entityName: "Employee",
                     entityId: id,
                     oldValue: oldEmployee,
@@ -108,7 +108,7 @@ namespace Easypay_App.Controllers
 
             await _auditTrailService.LogAction(
                 User.Identity.Name,
-                actionId: 22, // Change User Role
+                actionId: 22,
                 entityName: "Employee",
                 entityId: dto.EmployeeId,
                 oldValue: oldEmployee,

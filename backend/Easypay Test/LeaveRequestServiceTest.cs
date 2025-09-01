@@ -23,6 +23,7 @@ namespace Easypay_Test
         private IRepository<int, LeaveStatusMaster> _statusRepo;
         private IRepository<int, LeaveTypeMaster> _typeRepo;
         private Mock<IMapper> _mapper;
+        private Mock<INotificationLogService> _notificationService;
         private LeaveRequestService _service;
         private PayrollContext _context;
 
@@ -39,6 +40,8 @@ namespace Easypay_Test
             _leaveRequestRepo = new LeaveRequestRepository(_context);
             _statusRepo = new LeaveStatusRepository(_context);
             _typeRepo = new LeaveTypeRepository(_context);
+            _mapper = new Mock<IMapper>();
+            _notificationService = new Mock<INotificationLogService>();
 
             _employeeRepo.AddValue(new Employee { Id = 1, FirstName = "Asha", LastName = "Kumar" });
             _employeeRepo.AddValue(new Employee { Id = 2, FirstName = "Manager", LastName = "Smith" });
@@ -47,8 +50,7 @@ namespace Easypay_Test
             _statusRepo.AddValue(new LeaveStatusMaster { Id = 3, StatusName = "Rejected" });
             _typeRepo.AddValue(new LeaveTypeMaster { Id = 1, LeaveTypeName = "Sick Leave" });
 
-            _mapper = new Mock<IMapper>();
-            _service = new LeaveRequestService(_employeeRepo, _leaveRequestRepo, _statusRepo, _typeRepo, _mapper.Object);
+            _service = new LeaveRequestService(_employeeRepo, _leaveRequestRepo, _statusRepo, _typeRepo, _notificationService.Object, _mapper.Object);
         }
 
         [Test]
@@ -92,6 +94,7 @@ namespace Easypay_Test
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.EmployeeName, Is.EqualTo("Asha Kumar"));
+            _notificationService.Verify(n => n.SendNotification(It.IsAny<NotificationLogRequestDTO>()), Times.Once());
         }
 
         [Test]
@@ -111,7 +114,7 @@ namespace Easypay_Test
 
             await _leaveRequestRepo.AddValue(leaveRequest);
 
-            _mapper.Setup(m => m.Map<LeaveRequestResponseDTO>(leaveRequest)).Returns(
+            _mapper.Setup(m => m.Map<LeaveRequestResponseDTO>(It.IsAny<LeaveRequest>())).Returns(
                 new LeaveRequestResponseDTO
                 {
                     Id = leaveRequest.Id,
@@ -232,6 +235,7 @@ namespace Easypay_Test
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.StatusName, Is.EqualTo("Approved"));
+            _notificationService.Verify(n => n.SendNotification(It.IsAny<NotificationLogRequestDTO>()), Times.Once());
         }
 
         [Test]
@@ -276,6 +280,7 @@ namespace Easypay_Test
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.StatusName, Is.EqualTo("Rejected"));
+            _notificationService.Verify(n => n.SendNotification(It.IsAny<NotificationLogRequestDTO>()), Times.Once());
         }
 
         [Test]
@@ -325,6 +330,66 @@ namespace Easypay_Test
         public void DeleteLeaveRequest_Exception()
         {
             Assert.ThrowsAsync<NoItemFoundException>(async () => await _service.DeleteLeaveRequest(999));
+        }
+
+        [Test]
+        public async Task GetLeaveRequestsByEmployee()
+        {
+            var leaveRequest = new LeaveRequest
+            {
+                Id = 1,
+                EmployeeId = 1,
+                LeaveTypeId = 1,
+                StatusId = 1,
+                StartDate = DateTime.Today,
+                EndDate = DateTime.Today.AddDays(1),
+                Reason = "Test",
+                RequestedAt = DateTime.Now
+            };
+
+            await _leaveRequestRepo.AddValue(leaveRequest);
+
+            _mapper.Setup(m => m.Map<LeaveRequestResponseDTO>(It.IsAny<LeaveRequest>())).Returns(
+                (LeaveRequest lr) => new LeaveRequestResponseDTO
+                {
+                    Id = lr.Id,
+                    EmployeeId = lr.EmployeeId,
+                    LeaveTypeId = lr.LeaveTypeId,
+                    StartDate = lr.StartDate,
+                    EndDate = lr.EndDate,
+                    Reason = lr.Reason,
+                    EmployeeName = "Asha Kumar",
+                    LeaveTypeName = "Sick Leave",
+                    StatusName = "Pending"
+                });
+
+            var result = await _service.GetLeaveRequestsByEmployee(1);
+
+            Assert.That(result.Count(), Is.EqualTo(1));
+            Assert.That(result.First().EmployeeName, Is.EqualTo("Asha Kumar"));
+        }
+
+        [Test]
+        public async Task GetLeaveRequestsByEmployee_Empty()
+        {
+            _mapper.Setup(m => m.Map<LeaveRequestResponseDTO>(It.IsAny<LeaveRequest>())).Returns(
+                (LeaveRequest lr) => new LeaveRequestResponseDTO
+                {
+                    Id = lr.Id,
+                    EmployeeId = lr.EmployeeId,
+                    LeaveTypeId = lr.LeaveTypeId,
+                    StartDate = lr.StartDate,
+                    EndDate = lr.EndDate,
+                    Reason = lr.Reason,
+                    EmployeeName = "Asha Kumar",
+                    LeaveTypeName = "Sick Leave",
+                    StatusName = "Pending"
+                });
+
+            var result = await _service.GetLeaveRequestsByEmployee(999);
+
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count(), Is.EqualTo(0));
         }
 
         [TearDown]

@@ -16,13 +16,13 @@ using System.Threading.Tasks;
 
 namespace Easypay_Test
 {
-    [TestFixture]
     public class TimesheetServiceTest
     {
         private IRepository<int, Timesheet> _timesheetRepo;
         private IRepository<int, Employee> _employeeRepo;
         private IRepository<int, TimesheetStatusMaster> _statusRepo;
         private Mock<IMapper> _mockMapper;
+        private Mock<INotificationLogService> _mockNotificationService;
         private TimesheetService _service;
         private PayrollContext _context;
 
@@ -40,9 +40,16 @@ namespace Easypay_Test
             _statusRepo = new TimesheetStatusRepository(_context);
 
             _mockMapper = new Mock<IMapper>();
-            _service = new TimesheetService(_timesheetRepo, _employeeRepo, _statusRepo, _mockMapper.Object);
+            _mockNotificationService = new Mock<INotificationLogService>();
 
-            // Seed data directly in Setup
+            _service = new TimesheetService(
+                _timesheetRepo,
+                _employeeRepo,
+                _statusRepo,
+                _mockNotificationService.Object,
+                _mockMapper.Object
+            );
+
             var employees = new List<Employee>
             {
                 new Employee { Id = 1, FirstName = "John", LastName = "Doe" },
@@ -213,8 +220,8 @@ namespace Easypay_Test
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Count(), Is.EqualTo(2));
-            Assert.That(result.Any(r => r.EmployeeName == "Jane Smith" && r.HoursWorked == 7), Is.True, "Timesheet for Jane Smith with 7 hours should exist");
-            Assert.That(result.Any(r => r.EmployeeName == "John Doe" && r.HoursWorked == 8), Is.True, "Timesheet for John Doe with 8 hours should exist");
+            Assert.That(result.Any(r => r.EmployeeName == "Jane Smith" && r.HoursWorked == 7), Is.True);
+            Assert.That(result.Any(r => r.EmployeeName == "John Doe" && r.HoursWorked == 8), Is.True);
         }
 
         [Test]
@@ -229,11 +236,15 @@ namespace Easypay_Test
         [Test]
         public async Task GetTimesheetsByEmployee_ShouldReturnList_WhenFound()
         {
-            var timesheets = new List<Timesheet>
+            var timesheet = new Timesheet
             {
-                new Timesheet { Id = 1, EmployeeId = 1, WorkDate = DateTime.Today, HoursWorked = 8, StatusId = 1 }
+                Id = 1,
+                EmployeeId = 1,
+                WorkDate = DateTime.Today,
+                HoursWorked = 8,
+                StatusId = 1
             };
-            await _timesheetRepo.AddValue(timesheets[0]);
+            await _timesheetRepo.AddValue(timesheet);
 
             _mockMapper.Setup(m => m.Map<TimesheetResponseDTO>(It.IsAny<Timesheet>()))
                 .Returns((Timesheet t) => new TimesheetResponseDTO

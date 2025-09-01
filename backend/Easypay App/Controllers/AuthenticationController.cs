@@ -2,6 +2,7 @@
 using Easypay_App.Interface;
 using Easypay_App.Models;
 using Easypay_App.Models.DTO;
+using Easypay_App.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
@@ -16,12 +17,12 @@ namespace Easypay_App.Controllers
     public class AuthenticationController : ControllerBase
     {
         private readonly IAuthenticationService _authenticationService;
-        private readonly ILogger<AuthenticationController> _logger;
+        private readonly IAuditTrailService _auditTrailService;
 
-        public AuthenticationController(IAuthenticationService authenticationService, ILogger<AuthenticationController> logger)
+        public AuthenticationController(IAuthenticationService authenticationService, IAuditTrailService auditTrailService)
         {
             _authenticationService = authenticationService;
-            _logger = logger;
+            _auditTrailService = auditTrailService;
         }
 
         [HttpPost("Register")]
@@ -32,7 +33,7 @@ namespace Easypay_App.Controllers
             var result = await _authenticationService.Register(requestDTO);
 
             var role = await roleRepo.GetValueById(result.UserRoleId);
-
+            string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
             var response = new RegisterResponseDTO
             {
                 UserId = result.Id,
@@ -40,6 +41,15 @@ namespace Easypay_App.Controllers
                 Role = role?.UserRoleName ?? "Unknown"
             };
 
+            await _auditTrailService.LogAction(
+                   User.Identity.Name,
+                   actionId: 26,
+                   entityName: "New User Register",
+                   entityId: result.Id,
+                   oldValue: "N/A",
+                   newValue: result,
+                   ipAddress: ipAddress
+               );
             return Ok(response);
         }
 
@@ -47,6 +57,19 @@ namespace Easypay_App.Controllers
         public async Task<ActionResult<LoginResponseDTO>> Login(LoginRequestDTO requestDTO)
         {
             var result = await _authenticationService.Login(requestDTO);
+
+            string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+            await _auditTrailService.LogAction(
+                   User.Identity.Name,
+                   actionId: 4,
+                   entityName: "Login",
+                   entityId: 0,
+                   oldValue: "N/A",
+                   newValue: "N/A",
+                   ipAddress: ipAddress
+               );
+
             return Ok(result);
         }
     }

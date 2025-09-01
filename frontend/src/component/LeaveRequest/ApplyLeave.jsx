@@ -20,7 +20,6 @@ const ApplyLeave = () => {
   const [statusMsg, setStatusMsg] = useState("");
   const navigate = useNavigate();
 
-  // fetch leave types
   useEffect(() => {
     GetLeaveType()
       .then((res) => setLeaveTypes(res.data))

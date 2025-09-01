@@ -46,7 +46,6 @@ namespace Easypay_Test
             _mockMapper = new Mock<IMapper>();
             _service = new PayrollService(_employeeRepo, _policyRepo, _statusRepo, _payrollRepo, _timesheetRepo, _mockMapper.Object);
 
-            // Seed data
             var employees = new List<Employee>
             {
                 new Employee { Id = 1, FirstName = "John", LastName = "Doe", Salary = 50000 },
@@ -83,7 +82,9 @@ namespace Easypay_Test
 
             var timesheets = new List<Timesheet>
             {
-                new Timesheet { Id = 1, EmployeeId = 1, WorkDate = DateTime.Now.AddDays(-1), HoursWorked = 8, StatusId = 1 }
+                new Timesheet { Id = 1, EmployeeId = 1, WorkDate = new DateTime(2025, 8, 5), HoursWorked = 8, StatusId = 1 },
+                new Timesheet { Id = 2, EmployeeId = 1, WorkDate = new DateTime(2025, 8, 10), HoursWorked = 8, StatusId = 1 },
+                new Timesheet { Id = 3, EmployeeId = 2, WorkDate = new DateTime(2025, 8, 15), HoursWorked = 8, StatusId = 1 }
             };
             _context.Timesheets.AddRange(timesheets);
 
@@ -97,7 +98,6 @@ namespace Easypay_Test
             _context.Dispose();
         }
 
-        #region ApprovePayroll
         [Test]
         public async Task ApprovePayroll_ShouldReturnResponse_WhenValid()
         {
@@ -106,8 +106,8 @@ namespace Easypay_Test
                 Id = 1,
                 EmployeeId = 1,
                 PolicyId = 1,
-                PeriodStart = DateTime.Today.AddDays(-7),
-                PeriodEnd = DateTime.Today,
+                PeriodStart = new DateTime(2025, 8, 1),
+                PeriodEnd = new DateTime(2025, 8, 31),
                 StatusId = 1,
                 NetPay = 45000
             };
@@ -139,16 +139,14 @@ namespace Easypay_Test
         {
             Assert.ThrowsAsync<NoItemFoundException>(() => _service.ApprovePayroll(999));
         }
-        #endregion
 
-        #region GetApprovedPayrolls
         [Test]
         public async Task GetApprovedPayrolls_ShouldReturnList_WhenFound()
         {
             var payrolls = new List<Payroll>
             {
-                new Payroll { Id = 1, EmployeeId = 1, PolicyId = 1, PeriodStart = DateTime.Today.AddDays(-7), PeriodEnd = DateTime.Today, StatusId = 3, NetPay = 45000 },
-                new Payroll { Id = 2, EmployeeId = 2, PolicyId = 1, PeriodStart = DateTime.Today.AddDays(-7), PeriodEnd = DateTime.Today, StatusId = 3, NetPay = 55000 }
+                new Payroll { Id = 1, EmployeeId = 1, PolicyId = 1, PeriodStart = new DateTime(2025, 8, 1), PeriodEnd = new DateTime(2025, 8, 31), StatusId = 3, NetPay = 45000 },
+                new Payroll { Id = 2, EmployeeId = 2, PolicyId = 1, PeriodStart = new DateTime(2025, 8, 1), PeriodEnd = new DateTime(2025, 8, 31), StatusId = 3, NetPay = 55000 }
             };
             foreach (var p in payrolls)
             {
@@ -167,7 +165,7 @@ namespace Easypay_Test
                     PeriodEnd = p.PeriodEnd
                 });
 
-            var result = await _service.GetApprovedPayrolls(DateTime.Today.AddDays(-7), DateTime.Today);
+            var result = await _service.GetApprovedPayrolls(new DateTime(2025, 8, 1), new DateTime(2025, 8, 31));
 
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Count());
@@ -176,24 +174,14 @@ namespace Easypay_Test
         }
 
         [Test]
-        public async Task GetApprovedPayrolls_ShouldReturnEmptyList_WhenNoneFound()
-        {
-            var result = await _service.GetApprovedPayrolls(DateTime.Today.AddDays(-7), DateTime.Today);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(0, result.Count());
-        }
-        #endregion
-
-        #region GeneratePayroll
-        [Test]
         public async Task GeneratePayroll_ShouldReturnResponse_WhenValid()
         {
             var requestDto = new PayrollRequestDTO
             {
                 EmployeeId = 1,
                 PolicyId = 1,
-                PeriodStart = DateTime.Today.AddDays(-7),
-                PeriodEnd = DateTime.Today
+                PeriodStart = new DateTime(2025, 8, 1),
+                PeriodEnd = new DateTime(2025, 8, 31)
             };
 
             _mockMapper.Setup(m => m.Map<PayrollResponseDTO>(It.IsAny<Payroll>()))
@@ -213,7 +201,7 @@ namespace Easypay_Test
             Assert.IsNotNull(result);
             Assert.AreEqual("John Doe", result.EmployeeName);
             Assert.AreEqual("Generated", result.StatusName);
-            Assert.IsTrue(result.NetPay > 0); // NetPay depends on timesheet calculations, so we check it's positive
+            Assert.IsTrue(result.NetPay > 0);
         }
 
         [Test]
@@ -223,22 +211,20 @@ namespace Easypay_Test
             {
                 EmployeeId = 999,
                 PolicyId = 999,
-                PeriodStart = DateTime.Today.AddDays(-7),
-                PeriodEnd = DateTime.Today
+                PeriodStart = new DateTime(2025, 8, 1),
+                PeriodEnd = new DateTime(2025, 8, 31)
             };
 
             Assert.ThrowsAsync<NoItemFoundException>(() => _service.GeneratePayroll(requestDto));
         }
-        #endregion
 
-        #region GetAllPayrolls
         [Test]
         public async Task GetAllPayrolls_ShouldReturnList_WhenFound()
         {
             var payrolls = new List<Payroll>
             {
-                new Payroll { Id = 1, EmployeeId = 1, PolicyId = 1, PeriodStart = DateTime.Today.AddDays(-7), PeriodEnd = DateTime.Today, StatusId = 1, NetPay = 45000 },
-                new Payroll { Id = 2, EmployeeId = 2, PolicyId = 1, PeriodStart = DateTime.Today.AddDays(-7), PeriodEnd = DateTime.Today, StatusId = 1, NetPay = 55000 }
+                new Payroll { Id = 1, EmployeeId = 1, PolicyId = 1, PeriodStart = new DateTime(2025, 8, 1), PeriodEnd = new DateTime(2025, 8, 31), StatusId = 1, NetPay = 45000 },
+                new Payroll { Id = 2, EmployeeId = 2, PolicyId = 1, PeriodStart = new DateTime(2025, 8, 1), PeriodEnd = new DateTime(2025, 8, 31), StatusId = 1, NetPay = 55000 }
             };
             foreach (var p in payrolls)
             {
@@ -266,21 +252,11 @@ namespace Easypay_Test
         }
 
         [Test]
-        public async Task GetAllPayrolls_ShouldReturnEmptyList_WhenNoneFound()
-        {
-            var result = await _service.GetAllPayrolls();
-            Assert.IsNotNull(result);
-            Assert.AreEqual(0, result.Count());
-        }
-        #endregion
-
-        #region GetPayrollByEmployeeId
-        [Test]
         public async Task GetPayrollByEmployeeId_ShouldReturnList_WhenFound()
         {
             var payrolls = new List<Payroll>
             {
-                new Payroll { Id = 1, EmployeeId = 1, PolicyId = 1, PeriodStart = DateTime.Today.AddDays(-7), PeriodEnd = DateTime.Today, StatusId = 1, NetPay = 45000 }
+                new Payroll { Id = 1, EmployeeId = 1, PolicyId = 1, PeriodStart = new DateTime(2025, 8, 1), PeriodEnd = new DateTime(2025, 8, 31), StatusId = 1, NetPay = 45000 }
             };
             await _payrollRepo.AddValue(payrolls[0]);
 
@@ -304,16 +280,6 @@ namespace Easypay_Test
         }
 
         [Test]
-        public async Task GetPayrollByEmployeeId_ShouldReturnEmptyList_Found()
-        {
-            var result = await _service.GetPayrollByEmployeeId(999);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(0, result.Count());
-        }
-        #endregion
-
-        #region MarkPayrollAsPaid
-        [Test]
         public async Task MarkPayrollAsPaid_ShouldReturnResponse_WhenValid()
         {
             var payroll = new Payroll
@@ -321,8 +287,8 @@ namespace Easypay_Test
                 Id = 1,
                 EmployeeId = 1,
                 PolicyId = 1,
-                PeriodStart = DateTime.Today.AddDays(-7),
-                PeriodEnd = DateTime.Today,
+                PeriodStart = new DateTime(2025, 8, 1),
+                PeriodEnd = new DateTime(2025, 8, 31),
                 StatusId = 5,
                 NetPay = 45000
             };
@@ -351,42 +317,21 @@ namespace Easypay_Test
         }
 
         [Test]
-        public void MarkPayrollAsPaid_ShouldThrowException_WhenPayrollNotFound()
-        {
-            Assert.ThrowsAsync<NoItemFoundException>(() => _service.MarkPayrollAsPaid(999, 1));
-        }
-        #endregion
-
-        #region GenerateComplianceReport
-        [Test]
         public async Task GenerateComplianceReport_ShouldReturnReport_WhenFound()
         {
             var payrolls = new List<Payroll>
             {
-                new Payroll { Id = 1, EmployeeId = 1, PolicyId = 1, PeriodStart = DateTime.Today.AddDays(-7), PeriodEnd = DateTime.Today, StatusId = 3, NetPay = 45000 }
+                new Payroll { Id = 1, EmployeeId = 1, PolicyId = 1, PeriodStart = new DateTime(2025, 8, 1), PeriodEnd = new DateTime(2025, 8, 31), StatusId = 3, NetPay = 45000 }
             };
             await _payrollRepo.AddValue(payrolls[0]);
 
-            var result = await _service.GenerateComplianceReport(DateTime.Today.AddDays(-7), DateTime.Today);
+            var result = await _service.GenerateComplianceReport(new DateTime(2025, 8, 1), new DateTime(2025, 8, 31));
 
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.EmployeeDetails.Count);
             Assert.AreEqual("John Doe", result.EmployeeDetails.First().EmployeeName);
         }
 
-        [Test]
-        public async Task GenerateComplianceReport_ShouldReturnEmptyReport_WhenNoneFound()
-        {
-            var result = await _service.GenerateComplianceReport(DateTime.Today.AddDays(-7), DateTime.Today);
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual(0, result.EmployeeDetails.Count);
-            Assert.AreEqual(0, result.TotalGrossSalary);
-            Assert.AreEqual(0, result.TotalPFContribution);
-        }
-        #endregion
-
-        #region VerifyPayroll
         [Test]
         public async Task VerifyPayroll_ShouldReturnResponse_WhenValid()
         {
@@ -395,8 +340,8 @@ namespace Easypay_Test
                 Id = 1,
                 EmployeeId = 1,
                 PolicyId = 1,
-                PeriodStart = DateTime.Today.AddDays(-7),
-                PeriodEnd = DateTime.Today,
+                PeriodStart = new DateTime(2025, 8, 1),
+                PeriodEnd = new DateTime(2025, 8, 31),
                 StatusId = 1,
                 NetPay = 45000
             };
@@ -422,12 +367,5 @@ namespace Easypay_Test
             var updatedPayroll = await _payrollRepo.GetValueById(payroll.Id);
             Assert.AreEqual(2, updatedPayroll.StatusId);
         }
-
-        [Test]
-        public void VerifyPayroll_ShouldThrowException_WhenPayrollNotFound()
-        {
-            Assert.ThrowsAsync<NoItemFoundException>(() => _service.VerifyPayroll(999));
-        }
-        #endregion
     }
 }

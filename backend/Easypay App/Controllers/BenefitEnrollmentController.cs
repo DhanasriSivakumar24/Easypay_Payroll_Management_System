@@ -72,7 +72,7 @@ namespace Easypay_App.Controllers
                     actionId: 16,
                     entityName: "BenefitEnrollment",
                     entityId: enrollment.Id,
-                    oldValue: "-",
+                    oldValue: "N/A",
                     newValue: enrollment,
                     ipAddress: ipAddress
                 );
@@ -129,7 +129,7 @@ namespace Easypay_App.Controllers
                     entityName: "Benefit Enrollment",
                     entityId: id,
                     oldValue: deletedEnrollment,
-                    newValue: "-",
+                    newValue: "N/A",
                     ipAddress:ipAddress
                 );
                 return Ok(deletedEnrollment);

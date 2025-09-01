@@ -57,7 +57,6 @@ const GeneratePayrollPage = () => {
       });
   };
 
-  // Choose layout dynamically
   const Layout = role === "Payroll Processor" ? PayrollProcessorLayout : AdminLayout;
 
   return (

@@ -62,8 +62,6 @@ namespace Easypay_App.Services
                 {
                     dto.UserName = log.UserName ?? "Unknown";
                 }
-
-                // Action lookup
                 try
                 {
                     var action = await _actionRepo.GetValueById(log.ActionId);

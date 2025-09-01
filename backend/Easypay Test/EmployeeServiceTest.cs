@@ -47,7 +47,6 @@ namespace Easypay_Test
             _mockMapper = new Mock<IMapper>();
             _service = new EmployeeService(_employeeRepo, _departmentRepo, _roleRepo, _statusRepo, _userRoleRepo, _mockMapper.Object);
 
-            // Seed data
             var departments = new List<DepartmentMaster>
             {
                 new DepartmentMaster { Id = 1, DepartmentName = "HR" },
@@ -98,7 +97,13 @@ namespace Easypay_Test
                     StatusName = employee.StatusId == 1 ? "Active" : "Inactive",
                     UserRoleName = employee.UserRoleId == 1 ? "Admin" : "Employee",
                     Salary = employee.Salary,
-                    ReportingManager = employee.ReportingManagerId
+                    ReportingManager = employee.ReportingManagerId,
+                    ReportingManagerName = employee.ReportingManagerId.HasValue ? "Manager Name" : "N/A",
+                    DateOfBirth = employee.DateOfBirth,
+                    JoinDate = employee.JoinDate,
+                    Address = employee.Address ?? string.Empty,
+                    PanNumber = employee.PanNumber ?? string.Empty,
+                    Gender = employee.Gender ?? string.Empty
                 });
         }
 
@@ -117,11 +122,17 @@ namespace Easypay_Test
                 StatusId = 1,
                 Salary = 35000,
                 ReportingManagerId = null,
-                UserRoleId = 2
+                UserRoleId = 2,
+                DateOfBirth = new DateTime(1990, 1, 1),
+                JoinDate = new DateTime(2020, 1, 1),
+                Address = "123 Main St",
+                PanNumber = "ABCDE1234F",
+                Gender = "F"
             };
 
             var employee = new Employee
             {
+                Id = 1,
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
                 Email = dto.Email,
@@ -131,7 +142,12 @@ namespace Easypay_Test
                 StatusId = dto.StatusId,
                 Salary = dto.Salary,
                 ReportingManagerId = dto.ReportingManagerId,
-                UserRoleId = dto.UserRoleId
+                UserRoleId = dto.UserRoleId,
+                DateOfBirth = dto.DateOfBirth,
+                JoinDate = dto.JoinDate,
+                Address = dto.Address,
+                PanNumber = dto.PanNumber,
+                Gender = dto.Gender
             };
 
             _mockMapper.Setup(m => m.Map<Employee>(dto)).Returns(employee);
@@ -148,6 +164,11 @@ namespace Easypay_Test
             Assert.That(result.StatusName, Is.EqualTo("Active"));
             Assert.That(result.UserRoleName, Is.EqualTo("Employee"));
             Assert.That(result.Salary, Is.EqualTo(35000));
+            Assert.That(result.DateOfBirth, Is.EqualTo(new DateTime(1990, 1, 1)));
+            Assert.That(result.JoinDate, Is.EqualTo(new DateTime(2020, 1, 1)));
+            Assert.That(result.Address, Is.EqualTo("123 Main St"));
+            Assert.That(result.PanNumber, Is.EqualTo("ABCDE1234F"));
+            Assert.That(result.Gender, Is.EqualTo("F"));
         }
         #endregion
 
@@ -166,11 +187,16 @@ namespace Easypay_Test
                 RoleId = 1,
                 StatusId = 1,
                 Salary = 25000,
-                UserRoleId = 2
+                UserRoleId = 2,
+                DateOfBirth = new DateTime(1980, 1, 1),
+                JoinDate = new DateTime(2020, 1, 1),
+                Address = "Old Address",
+                PanNumber = "ABCDE1234F",
+                Gender = "M"
             };
             await _employeeRepo.AddValue(employee);
 
-            var dto = new EmployeeAddRequestDTO
+            var dto = new EmployeeUpdateRequestDTO
             {
                 FirstName = "Updated",
                 LastName = "User",
@@ -181,7 +207,12 @@ namespace Easypay_Test
                 StatusId = 1,
                 Salary = 40000,
                 ReportingManagerId = 1,
-                UserRoleId = 1
+                UserRoleId = 1,
+                DateOfBirth = new DateTime(1985, 5, 5),
+                JoinDate = new DateTime(2021, 2, 2),
+                Address = "New Address",
+                PanNumber = "XYZAB5678G",
+                Gender = "F"
             };
 
             var updatedEmployee = new Employee
@@ -191,15 +222,40 @@ namespace Easypay_Test
                 LastName = dto.LastName,
                 Email = dto.Email,
                 PhoneNumber = dto.PhoneNumber,
-                DepartmentId = dto.DepartmentId,
-                RoleId = dto.RoleId,
-                StatusId = dto.StatusId,
-                Salary = dto.Salary,
+                DepartmentId = dto.DepartmentId!.Value,
+                RoleId = dto.RoleId!.Value,
+                StatusId = dto.StatusId!.Value,
+                Salary = dto.Salary!.Value,
                 ReportingManagerId = dto.ReportingManagerId,
-                UserRoleId = dto.UserRoleId
+                UserRoleId = dto.UserRoleId!.Value,
+                DateOfBirth = dto.DateOfBirth!.Value,
+                JoinDate = dto.JoinDate!.Value,
+                Address = dto.Address,
+                PanNumber = dto.PanNumber,
+                Gender = dto.Gender
             };
 
-            SetupMapperForEmployee(updatedEmployee);
+            _mockMapper.Setup(m => m.Map<EmployeeAddResponseDTO>(It.Is<Employee>(e => e.Id == updatedEmployee.Id)))
+                .Returns(new EmployeeAddResponseDTO
+                {
+                    Id = updatedEmployee.Id,
+                    FirstName = updatedEmployee.FirstName,
+                    LastName = updatedEmployee.LastName,
+                    Email = updatedEmployee.Email,
+                    PhoneNumber = updatedEmployee.PhoneNumber,
+                    DepartmentName = updatedEmployee.DepartmentId == 1 ? "HR" : "IT",
+                    RoleName = updatedEmployee.RoleId == 1 ? "Manager" : "Developer",
+                    StatusName = updatedEmployee.StatusId == 1 ? "Active" : "Inactive",
+                    UserRoleName = updatedEmployee.UserRoleId == 1 ? "Admin" : "Employee",
+                    Salary = updatedEmployee.Salary,
+                    ReportingManager = updatedEmployee.ReportingManagerId,
+                    ReportingManagerName = updatedEmployee.ReportingManagerId.HasValue ? "Manager Name" : "N/A",
+                    DateOfBirth = updatedEmployee.DateOfBirth,
+                    JoinDate = updatedEmployee.JoinDate,
+                    Address = updatedEmployee.Address ?? string.Empty,
+                    PanNumber = updatedEmployee.PanNumber ?? string.Empty,
+                    Gender = updatedEmployee.Gender ?? string.Empty
+                });
 
             var result = await _service.UpdateEmployee(1, dto);
 
@@ -212,12 +268,104 @@ namespace Easypay_Test
             Assert.That(result.UserRoleName, Is.EqualTo("Admin"));
             Assert.That(result.ReportingManager, Is.EqualTo(1));
             Assert.That(result.Salary, Is.EqualTo(40000));
+            Assert.That(result.DateOfBirth, Is.EqualTo(new DateTime(1985, 5, 5)));
+            Assert.That(result.JoinDate, Is.EqualTo(new DateTime(2021, 2, 2)));
+            Assert.That(result.Address, Is.EqualTo("New Address"));
+            Assert.That(result.PanNumber, Is.EqualTo("XYZAB5678G"));
+            Assert.That(result.Gender, Is.EqualTo("F"));
+        }
+
+        [Test]
+        public async Task UpdateEmployee_ShouldUpdateOnlyProvidedFields_WhenPartialUpdate()
+        {
+            var employee = new Employee
+            {
+                Id = 1,
+                FirstName = "Old",
+                LastName = "Name",
+                Email = "old@email.com",
+                PhoneNumber = "1234567890",
+                DepartmentId = 1,
+                RoleId = 1,
+                StatusId = 1,
+                Salary = 25000,
+                UserRoleId = 2,
+                DateOfBirth = new DateTime(1980, 1, 1),
+                JoinDate = new DateTime(2020, 1, 1),
+                Address = "Old Address",
+                PanNumber = "ABCDE1234F",
+                Gender = "M"
+            };
+            await _employeeRepo.AddValue(employee);
+
+            var dto = new EmployeeUpdateRequestDTO
+            {
+                FirstName = "Updated",
+                Salary = 35000
+            };
+
+            var updatedEmployee = new Employee
+            {
+                Id = 1,
+                FirstName = "Updated",
+                LastName = employee.LastName,
+                Email = employee.Email,
+                PhoneNumber = employee.PhoneNumber,
+                DepartmentId = employee.DepartmentId,
+                RoleId = employee.RoleId,
+                StatusId = employee.StatusId,
+                Salary = 35000,
+                UserRoleId = employee.UserRoleId,
+                DateOfBirth = employee.DateOfBirth,
+                JoinDate = employee.JoinDate,
+                Address = employee.Address,
+                PanNumber = employee.PanNumber,
+                Gender = employee.Gender
+            };
+
+            _mockMapper.Setup(m => m.Map<EmployeeAddResponseDTO>(It.Is<Employee>(e => e.Id == updatedEmployee.Id)))
+                .Returns(new EmployeeAddResponseDTO
+                {
+                    Id = updatedEmployee.Id,
+                    FirstName = updatedEmployee.FirstName,
+                    LastName = updatedEmployee.LastName,
+                    Email = updatedEmployee.Email,
+                    PhoneNumber = updatedEmployee.PhoneNumber,
+                    DepartmentName = updatedEmployee.DepartmentId == 1 ? "HR" : "IT",
+                    RoleName = updatedEmployee.RoleId == 1 ? "Manager" : "Developer",
+                    StatusName = updatedEmployee.StatusId == 1 ? "Active" : "Inactive",
+                    UserRoleName = updatedEmployee.UserRoleId == 1 ? "Admin" : "Employee",
+                    Salary = updatedEmployee.Salary,
+                    ReportingManager = updatedEmployee.ReportingManagerId,
+                    ReportingManagerName = updatedEmployee.ReportingManagerId.HasValue ? "Manager Name" : "N/A",
+                    DateOfBirth = updatedEmployee.DateOfBirth,
+                    JoinDate = updatedEmployee.JoinDate,
+                    Address = updatedEmployee.Address ?? string.Empty,
+                    PanNumber = updatedEmployee.PanNumber ?? string.Empty,
+                    Gender = updatedEmployee.Gender ?? string.Empty
+                });
+
+            var result = await _service.UpdateEmployee(1, dto);
+
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.FirstName, Is.EqualTo("Updated"));
+            Assert.That(result.LastName, Is.EqualTo("Name"));
+            Assert.That(result.Email, Is.EqualTo("old@email.com"));
+            Assert.That(result.Salary, Is.EqualTo(35000));
+            Assert.That(result.DepartmentName, Is.EqualTo("HR"));
+            Assert.That(result.RoleName, Is.EqualTo("Manager"));
+            Assert.That(result.UserRoleName, Is.EqualTo("Employee"));
+            Assert.That(result.DateOfBirth, Is.EqualTo(new DateTime(1980, 1, 1)));
+            Assert.That(result.JoinDate, Is.EqualTo(new DateTime(2020, 1, 1)));
+            Assert.That(result.Address, Is.EqualTo("Old Address"));
+            Assert.That(result.PanNumber, Is.EqualTo("ABCDE1234F"));
+            Assert.That(result.Gender, Is.EqualTo("M"));
         }
 
         [Test]
         public void UpdateEmployee_ShouldThrowException_WhenEmployeeNotFound()
         {
-            var dto = new EmployeeAddRequestDTO
+            var dto = new EmployeeUpdateRequestDTO
             {
                 FirstName = "Test",
                 LastName = "User",
@@ -239,8 +387,42 @@ namespace Easypay_Test
         {
             var employees = new List<Employee>
             {
-                new Employee { Id = 1, FirstName = "Alice", LastName = "Brown", Email = "alice@email.com", PhoneNumber = "1111111111", DepartmentId = 1, RoleId = 1, StatusId = 1, UserRoleId = 2, Salary = 30000 },
-                new Employee { Id = 2, FirstName = "Bob", LastName = "Smith", Email = "bob@email.com", PhoneNumber = "2222222222", DepartmentId = 2, RoleId = 2, StatusId = 1, UserRoleId = 1, Salary = 40000 }
+                new Employee
+                {
+                    Id = 1,
+                    FirstName = "Alice",
+                    LastName = "Brown",
+                    Email = "alice@email.com",
+                    PhoneNumber = "1111111111",
+                    DepartmentId = 1,
+                    RoleId = 1,
+                    StatusId = 1,
+                    UserRoleId = 2,
+                    Salary = 30000,
+                    DateOfBirth = new DateTime(1990, 1, 1),
+                    JoinDate = new DateTime(2020, 1, 1),
+                    Address = "456 Oak St",
+                    PanNumber = "FGHIJ6789K",
+                    Gender = "F"
+                },
+                new Employee
+                {
+                    Id = 2,
+                    FirstName = "Bob",
+                    LastName = "Smith",
+                    Email = "bob@email.com",
+                    PhoneNumber = "2222222222",
+                    DepartmentId = 2,
+                    RoleId = 2,
+                    StatusId = 1,
+                    UserRoleId = 1,
+                    Salary = 40000,
+                    DateOfBirth = new DateTime(1985, 2, 2),
+                    JoinDate = new DateTime(2019, 2, 2),
+                    Address = "789 Pine St",
+                    PanNumber = "KLMNO1234P",
+                    Gender = "M"
+                }
             };
             foreach (var emp in employees)
             {
@@ -278,7 +460,12 @@ namespace Easypay_Test
                 RoleId = 1,
                 StatusId = 1,
                 UserRoleId = 1,
-                Salary = 30000
+                Salary = 30000,
+                DateOfBirth = new DateTime(1990, 1, 1),
+                JoinDate = new DateTime(2020, 1, 1),
+                Address = "123 Main St",
+                PanNumber = "ABCDE1234F",
+                Gender = "M"
             };
             await _employeeRepo.AddValue(employee);
             SetupMapperForEmployee(employee);
@@ -293,6 +480,11 @@ namespace Easypay_Test
             Assert.That(result.StatusName, Is.EqualTo("Active"));
             Assert.That(result.UserRoleName, Is.EqualTo("Admin"));
             Assert.That(result.Salary, Is.EqualTo(30000));
+            Assert.That(result.DateOfBirth, Is.EqualTo(new DateTime(1990, 1, 1)));
+            Assert.That(result.JoinDate, Is.EqualTo(new DateTime(2020, 1, 1)));
+            Assert.That(result.Address, Is.EqualTo("123 Main St"));
+            Assert.That(result.PanNumber, Is.EqualTo("ABCDE1234F"));
+            Assert.That(result.Gender, Is.EqualTo("M"));
         }
 
         [Test]
@@ -317,7 +509,12 @@ namespace Easypay_Test
                 RoleId = 1,
                 StatusId = 1,
                 UserRoleId = 2,
-                Salary = 30000
+                Salary = 30000,
+                DateOfBirth = new DateTime(1990, 1, 1),
+                JoinDate = new DateTime(2020, 1, 1),
+                Address = "123 Main St",
+                PanNumber = "ABCDE1234F",
+                Gender = "M"
             };
             await _employeeRepo.AddValue(employee);
             SetupMapperForEmployee(employee);
@@ -352,7 +549,12 @@ namespace Easypay_Test
                 RoleId = 1,
                 StatusId = 1,
                 Salary = 42000,
-                UserRoleId = 2
+                UserRoleId = 2,
+                DateOfBirth = new DateTime(1990, 1, 1),
+                JoinDate = new DateTime(2020, 1, 1),
+                Address = "123 Main St",
+                PanNumber = "ABCDE1234F",
+                Gender = "M"
             };
             await _employeeRepo.AddValue(employee);
 
@@ -373,7 +575,12 @@ namespace Easypay_Test
                 RoleId = employee.RoleId,
                 StatusId = employee.StatusId,
                 Salary = employee.Salary,
-                UserRoleId = 1
+                UserRoleId = 1,
+                DateOfBirth = employee.DateOfBirth,
+                JoinDate = employee.JoinDate,
+                Address = employee.Address,
+                PanNumber = employee.PanNumber,
+                Gender = employee.Gender
             });
 
             var result = await _service.ChangeEmployeeUserRole(dto);
@@ -403,8 +610,42 @@ namespace Easypay_Test
         {
             var employees = new List<Employee>
             {
-                new Employee { Id = 1, FirstName = "Alice", LastName = "Brown", Email = "alice@email.com", PhoneNumber = "1111111111", DepartmentId = 1, RoleId = 1, StatusId = 1, UserRoleId = 2, Salary = 30000 },
-                new Employee { Id = 2, FirstName = "Bob", LastName = "Smith", Email = "bob@email.com", PhoneNumber = "2222222222", DepartmentId = 2, RoleId = 2, StatusId = 1, UserRoleId = 1, Salary = 40000 }
+                new Employee
+                {
+                    Id = 1,
+                    FirstName = "Alice",
+                    LastName = "Brown",
+                    Email = "alice@email.com",
+                    PhoneNumber = "1111111111",
+                    DepartmentId = 1,
+                    RoleId = 1,
+                    StatusId = 1,
+                    UserRoleId = 2,
+                    Salary = 30000,
+                    DateOfBirth = new DateTime(1990, 1, 1),
+                    JoinDate = new DateTime(2020, 1, 1),
+                    Address = "456 Oak St",
+                    PanNumber = "FGHIJ6789K",
+                    Gender = "F"
+                },
+                new Employee
+                {
+                    Id = 2,
+                    FirstName = "Bob",
+                    LastName = "Smith",
+                    Email = "bob@email.com",
+                    PhoneNumber = "2222222222",
+                    DepartmentId = 2,
+                    RoleId = 2,
+                    StatusId = 1,
+                    UserRoleId = 1,
+                    Salary = 40000,
+                    DateOfBirth = new DateTime(1985, 2, 2),
+                    JoinDate = new DateTime(2019, 2, 2),
+                    Address = "789 Pine St",
+                    PanNumber = "KLMNO1234P",
+                    Gender = "M"
+                }
             };
             foreach (var emp in employees)
             {
@@ -433,8 +674,42 @@ namespace Easypay_Test
         {
             var employees = new List<Employee>
             {
-                new Employee { Id = 1, FirstName = "Alice", LastName = "Brown", Email = "alice@email.com", PhoneNumber = "1111111111", DepartmentId = 1, RoleId = 1, StatusId = 1, UserRoleId = 2, Salary = 30000 },
-                new Employee { Id = 2, FirstName = "Bob", LastName = "Smith", Email = "bob@email.com", PhoneNumber = "2222222222", DepartmentId = 2, RoleId = 2, StatusId = 1, UserRoleId = 1, Salary = 40000 }
+                new Employee
+                {
+                    Id = 1,
+                    FirstName = "Alice",
+                    LastName = "Brown",
+                    Email = "alice@email.com",
+                    PhoneNumber = "1111111111",
+                    DepartmentId = 1,
+                    RoleId = 1,
+                    StatusId = 1,
+                    UserRoleId = 2,
+                    Salary = 30000,
+                    DateOfBirth = new DateTime(1990, 1, 1),
+                    JoinDate = new DateTime(2020, 1, 1),
+                    Address = "456 Oak St",
+                    PanNumber = "FGHIJ6789K",
+                    Gender = "F"
+                },
+                new Employee
+                {
+                    Id = 2,
+                    FirstName = "Bob",
+                    LastName = "Smith",
+                    Email = "bob@email.com",
+                    PhoneNumber = "2222222222",
+                    DepartmentId = 2,
+                    RoleId = 2,
+                    StatusId = 1,
+                    UserRoleId = 1,
+                    Salary = 40000,
+                    DateOfBirth = new DateTime(1985, 2, 2),
+                    JoinDate = new DateTime(2019, 2, 2),
+                    Address = "789 Pine St",
+                    PanNumber = "KLMNO1234P",
+                    Gender = "M"
+                }
             };
             foreach (var emp in employees)
             {
@@ -463,8 +738,42 @@ namespace Easypay_Test
         {
             var employees = new List<Employee>
             {
-                new Employee { Id = 1, FirstName = "Bob", LastName = "Smith", Email = "bob@email.com", PhoneNumber = "2222222222", DepartmentId = 2, RoleId = 2, StatusId = 1, UserRoleId = 1, Salary = 40000 },
-                new Employee { Id = 2, FirstName = "Alice", LastName = "Brown", Email = "alice@email.com", PhoneNumber = "1111111111", DepartmentId = 1, RoleId = 1, StatusId = 1, UserRoleId = 2, Salary = 30000 }
+                new Employee
+                {
+                    Id = 1,
+                    FirstName = "Bob",
+                    LastName = "Smith",
+                    Email = "bob@email.com",
+                    PhoneNumber = "2222222222",
+                    DepartmentId = 2,
+                    RoleId = 2,
+                    StatusId = 1,
+                    UserRoleId = 1,
+                    Salary = 40000,
+                    DateOfBirth = new DateTime(1985, 2, 2),
+                    JoinDate = new DateTime(2019, 2, 2),
+                    Address = "789 Pine St",
+                    PanNumber = "KLMNO1234P",
+                    Gender = "M"
+                },
+                new Employee
+                {
+                    Id = 2,
+                    FirstName = "Alice",
+                    LastName = "Brown",
+                    Email = "alice@email.com",
+                    PhoneNumber = "1111111111",
+                    DepartmentId = 1,
+                    RoleId = 1,
+                    StatusId = 1,
+                    UserRoleId = 2,
+                    Salary = 30000,
+                    DateOfBirth = new DateTime(1990, 1, 1),
+                    JoinDate = new DateTime(2020, 1, 1),
+                    Address = "456 Oak St",
+                    PanNumber = "FGHIJ6789K",
+                    Gender = "F"
+                }
             };
             foreach (var emp in employees)
             {
@@ -474,7 +783,7 @@ namespace Easypay_Test
 
             var criteria = new EmployeeSearchRequestDTO
             {
-                Sort = 2, // Sort by FirstName ascending
+                Sort = 2,
                 PageNumber = 1,
                 PageSize = 10
             };
@@ -489,12 +798,46 @@ namespace Easypay_Test
         }
 
         [Test]
-        public async Task SearchEmployees_ShouldReturnPaginatedResponse_WhenFilteredBySalaryRange()
+        public async Task SearchEmployees_ShouldReturnPaginatedResponse()
         {
             var employees = new List<Employee>
             {
-                new Employee { Id = 1, FirstName = "Alice", LastName = "Brown", Email = "alice@email.com", PhoneNumber = "1111111111", DepartmentId = 1, RoleId = 1, StatusId = 1, UserRoleId = 2, Salary = 30000 },
-                new Employee { Id = 2, FirstName = "Bob", LastName = "Smith", Email = "bob@email.com", PhoneNumber = "2222222222", DepartmentId = 2, RoleId = 2, StatusId = 1, UserRoleId = 1, Salary = 50000 }
+                new Employee
+                {
+                    Id = 1,
+                    FirstName = "Alice",
+                    LastName = "Brown",
+                    Email = "alice@email.com",
+                    PhoneNumber = "1111111111",
+                    DepartmentId = 1,
+                    RoleId = 1,
+                    StatusId = 1,
+                    UserRoleId = 2,
+                    Salary = 30000,
+                    DateOfBirth = new DateTime(1990, 1, 1),
+                    JoinDate = new DateTime(2020, 1, 1),
+                    Address = "456 Oak St",
+                    PanNumber = "FGHIJ6789K",
+                    Gender = "F"
+                },
+                new Employee
+                {
+                    Id = 2,
+                    FirstName = "Bob",
+                    LastName = "Smith",
+                    Email = "bob@email.com",
+                    PhoneNumber = "2222222222",
+                    DepartmentId = 2,
+                    RoleId = 2,
+                    StatusId = 1,
+                    UserRoleId = 1,
+                    Salary = 50000,
+                    DateOfBirth = new DateTime(1985, 2, 2),
+                    JoinDate = new DateTime(2019, 2, 2),
+                    Address = "789 Pine St",
+                    PanNumber = "KLMNO1234P",
+                    Gender = "M"
+                }
             };
             foreach (var emp in employees)
             {
@@ -518,7 +861,7 @@ namespace Easypay_Test
         }
 
         [Test]
-        public void SearchEmployees_ShouldThrowException_WhenNoResultsFound()
+        public void SearchEmployees_ShouldThrowException()
         {
             var criteria = new EmployeeSearchRequestDTO
             {
