@@ -45,7 +45,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpGet("all")]
-        [Authorize(Roles = "Admin, HR Manager, Payroll Processor")]
+        [Authorize(Roles = "Admin, HR Manager, Payroll Processor, Manager")]
         public async Task<ActionResult<IEnumerable<PayrollResponseDTO>>> GetAllPayrolls()
         {
             var result = await _payrollService.GetAllPayrolls();
@@ -53,7 +53,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpGet("employee/{empId}")]
-        [Authorize(Roles = "Admin, HR Manager, Payroll Processor,Employee")]
+        [Authorize(Roles = "Admin, HR Manager, Payroll Processor,Employee,Manager")]
         public async Task<ActionResult<IEnumerable<PayrollResponseDTO>>> GetPayrollByEmployeeId(int empId)
         {
             var result = await _payrollService.GetPayrollByEmployeeId(empId);
@@ -121,7 +121,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpGet("get-approved-payroll")]
-        [Authorize(Roles = "Admin, HR Manager, Payroll Processor")]
+        [Authorize(Roles = "Admin, HR Manager, Payroll Processor,Manager")]
         public async Task<ActionResult<IEnumerable<PayrollResponseDTO>>> GetApprovedPayrolls([FromQuery] DateTime start, [FromQuery] DateTime end)
         {
             var result = await _payrollService.GetApprovedPayrolls(start, end);
@@ -147,7 +147,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpGet("{payrollId}")]
-        [Authorize(Roles = "Admin, HR Manager, Payroll Processor, Employee")]
+        [Authorize(Roles = "Admin, HR Manager, Payroll Processor, Employee, Manager")]
         public async Task<ActionResult<PayrollResponseDTO>> GetPayrollById(int payrollId)
         {
             var payroll = await _payrollService.GetPayrollById(payrollId);

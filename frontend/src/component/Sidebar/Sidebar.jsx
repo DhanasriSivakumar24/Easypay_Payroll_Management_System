@@ -34,8 +34,8 @@ const Sidebar = ({ role, userName, onLogout }) => {
     ],
     manager: [
       { name: "Dashboard", path: "/manager-dashboard" },
-      { name: "Team Payroll", path: "/team-payroll" },
-      { name: "Leave Approvals", path: "/leave-approvals" },
+      { name: "Team Payroll", path: "/payrolls" },
+      { name: "Leave Approvals", path: "/leaves" },
       { name: "Notifications", path: "/notifications/manager-notifications" },
     ],
   };

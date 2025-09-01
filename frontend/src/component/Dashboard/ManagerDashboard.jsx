@@ -45,17 +45,17 @@ const ManagerDashboard = () => {
     {
       title: "Team Payrolls",
       desc: "View payrolls for your team",
-      path: "/payrolls/team",
+      path: "/payrolls",
     },
     {
       title: "Approve Leaves",
       desc: "Approve pending leave requests",
-      path: "/leaves/pending",
+      path: "/leaves",
     },
     {
       title: "Download Reports",
       desc: "Export team payroll and leave reports",
-      path: "/reports/team",
+      path: "/payrolls/reports",
     },
     {
       title: "All Employees",

@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { GetAllEmployees, DeleteEmployee } from "../../service/employee.service";
+import { GetAllEmployees } from "../../service/employee.service";
 import AdminLayout from "../Sidebar/AdminLayout";
 import PayrollProcessorLayout from "../Sidebar/PayrollProcessorLayout";
+import ManagerLayout from "../Sidebar/ManagerLayout";
 import "./AllEmployees.css";
 
 const AllEmployees = () => {
@@ -17,20 +18,6 @@ const AllEmployees = () => {
       .then((res) => setEmployees(res.data || []))
       .catch((err) => console.log(err));
   }, []);
-
-  const handleDelete = (id, name) => {
-    if (window.confirm(`Are you sure you want to delete ${name}?`)) {
-      DeleteEmployee(id)
-        .then(() => {
-          alert(`${name} deleted successfully!`);
-          setEmployees(employees.filter(emp => emp.id !== id));
-        })
-        .catch(err => {
-          console.error("Delete failed", err);
-          alert("Failed to delete employee.");
-        });
-    }
-  };
 
   const filteredEmployees = employees.filter((emp) => {
     const id = emp?.id ? String(emp.id).toLowerCase() : "";
@@ -49,6 +36,8 @@ const AllEmployees = () => {
   const Layout =
     role === "Payroll Processor"
       ? PayrollProcessorLayout
+      : role === "Manager"
+      ? ManagerLayout
       : AdminLayout;
 
   return (
@@ -130,7 +119,7 @@ const AllEmployees = () => {
                       {role === "Admin" && (
                         <button
                           className="btn-delete"
-                          onClick={() => handleDelete(emp.id, emp.firstName)}
+                          onClick={() => alert("Delete functionality")}
                         >
                           Delete
                         </button>

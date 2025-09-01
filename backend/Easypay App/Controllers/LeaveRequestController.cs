@@ -70,7 +70,7 @@ namespace Easypay_App.Controllers
         }
 
         [HttpDelete("delete/{id}")]
-        [Authorize(Roles = "Admin, HR Manager, Employee")]
+        [Authorize(Roles = "Admin, HR Manager, Employee,Manager")]
         public async Task<ActionResult> Delete(int id)
         {
             try

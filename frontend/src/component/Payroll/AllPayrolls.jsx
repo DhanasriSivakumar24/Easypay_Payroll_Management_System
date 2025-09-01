@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux"; 
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
   GetAllPayrolls,
@@ -9,6 +9,7 @@ import {
 } from "../../service/payroll.service";
 import AdminLayout from "../Sidebar/AdminLayout";
 import PayrollProcessorLayout from "../Sidebar/PayrollProcessorLayout";
+import ManagerLayout from "../Sidebar/ManagerLayout";
 import "./allPayrolls.css";
 
 const AllPayrolls = () => {
@@ -16,41 +17,66 @@ const AllPayrolls = () => {
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
 
-  const { role } = useSelector((state) => state.auth);
+  const { role, employeeId } = useSelector((state) => state.auth);
   const normalizedRole = role?.toLowerCase();
 
   const isAdmin = ["admin", "hrmanager", "hr manager"].includes(normalizedRole);
   const isProcessor = ["payrollprocessor", "payroll processor"].includes(normalizedRole);
+  const isManager = normalizedRole === "manager";
 
-  const Layout = isProcessor ? PayrollProcessorLayout : AdminLayout;
+  const Layout = isProcessor
+    ? PayrollProcessorLayout
+    : isManager
+    ? ManagerLayout
+    : AdminLayout;
 
   useEffect(() => {
-    if (isAdmin || isProcessor) {
-      GetAllPayrolls()
-        .then((res) => setPayrolls(res.data || []))
-        .catch((err) => console.log("Error fetching payrolls:", err));
-    }
-  }, [isAdmin, isProcessor]);
+    const fetchPayrolls = async () => {
+      try {
+        let data = (await GetAllPayrolls()).data || [];
+        setPayrolls(data);
+      } catch (err) {
+        alert("Failed to load payrolls. Please check your connection or contact support.");
+      }
+    };
 
-  const refreshPayrolls = () => {
-    GetAllPayrolls().then((res) => setPayrolls(res.data || []));
+    if (isAdmin || isProcessor || isManager) {
+      fetchPayrolls();
+    }
+  }, [isAdmin, isProcessor, isManager]);
+
+  const refreshPayrolls = async () => {
+    try {
+      let data = (await GetAllPayrolls()).data || [];
+      setPayrolls(data);
+    } catch (err) {
+      alert("Failed to refresh payrolls. Please try again.");
+    }
   };
 
   const handleVerify = (id) => {
     if (window.confirm("Verify this payroll?")) {
-      VerifyPayroll(id).then(() => {
-        alert("Payroll verified successfully!");
-        refreshPayrolls();
-      });
+      VerifyPayroll(id)
+        .then(() => {
+          alert("Payroll verified successfully!");
+          refreshPayrolls();
+        })
+        .catch((err) => {
+          alert("Failed to verify payroll. Please try again.");
+        });
     }
   };
 
   const handleApprove = (id) => {
     if (window.confirm("Approve this payroll?")) {
-      ApprovePayroll(id).then(() => {
-        alert("Payroll approved successfully!");
-        refreshPayrolls();
-      });
+      ApprovePayroll(id)
+        .then(() => {
+          alert("Payroll approved successfully!");
+          refreshPayrolls();
+        })
+        .catch((err) => {
+          alert("Failed to approve payroll. Please try again.");
+        });
     }
   };
 
@@ -66,7 +92,9 @@ const AllPayrolls = () => {
           alert("Payroll marked as Paid!");
           refreshPayrolls();
         })
-        .catch(err => console.error("Error marking payroll as paid:", err));
+        .catch((err) => {
+          alert("Failed to mark payroll as paid. Please try again.");
+        });
     }
   };
 
@@ -81,7 +109,7 @@ const AllPayrolls = () => {
     );
   });
 
-  if (!isAdmin && !isProcessor) {
+  if (!isAdmin && !isProcessor && !isManager) {
     return (
       <Layout>
         <div className="unauthorized">
@@ -94,7 +122,6 @@ const AllPayrolls = () => {
   return (
     <Layout>
       <div className="payroll-container">
-
         <div className="header-row">
           <h2>Payrolls</h2>
           <div className="actions">
@@ -105,13 +132,14 @@ const AllPayrolls = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
-
-            <button
-              className="add-btn"
-              onClick={() => navigate("/payrolls/generate-payroll")}
-            >
-              + Generate Payroll
-            </button>
+            {(isAdmin || isProcessor) && (
+              <button
+                className="add-btn"
+                onClick={() => navigate("/payrolls/generate-payroll")}
+              >
+                + Generate Payroll
+              </button>
+            )}
           </div>
         </div>
 
@@ -123,7 +151,7 @@ const AllPayrolls = () => {
                 <th>Employee</th>
                 <th>Policy</th>
                 <th>Period</th>
-                <th>Deduction</th>                
+                <th>Deduction</th>
                 <th>Net Pay</th>
                 <th>Status</th>
                 <th className="text-center">Actions</th>
@@ -136,7 +164,9 @@ const AllPayrolls = () => {
                     <td>{p?.id || "-"}</td>
                     <td>{p?.employeeName || "-"}</td>
                     <td>{p?.policyName || "-"}</td>
-                    <td>{p?.periodStart?.slice(0, 10)} - {p?.periodEnd?.slice(0, 10)}</td>
+                    <td>
+                      {p?.periodStart?.slice(0, 10)} - {p?.periodEnd?.slice(0, 10)}
+                    </td>
                     <td>₹{p?.deductions?.toFixed(2) || "0.00"}</td>
                     <td>₹{p?.netPay?.toFixed(2) || "0.00"}</td>
                     <td>
@@ -145,31 +175,27 @@ const AllPayrolls = () => {
                       </span>
                     </td>
                     <td className="text-center">
-
                       {(isAdmin || isProcessor) && (
-                        <button
-                          className="btn-verify"
-                          onClick={() => handleVerify(p.id)}
-                        >
+                        <button className="btn-verify" onClick={() => handleVerify(p.id)}>
                           Verify
                         </button>
                       )}
-
                       {isAdmin && (
-                        <button
-                          className="btn-approve"
-                          onClick={() => handleApprove(p.id)}
-                        >
-                          Approve
-                        </button>
+                        <>
+                          <button className="btn-approve" onClick={() => handleApprove(p.id)}>
+                            Approve
+                          </button>
+                          <button className="btn-paid" onClick={() => handleMarkPaid(p.id)}>
+                            Mark Paid
+                          </button>
+                        </>
                       )}
-
-                      {isAdmin && (
+                      {isManager && (
                         <button
-                          className="btn-paid"
-                          onClick={() => handleMarkPaid(p.id)}
+                          className="btn-view"
+                          onClick={() => alert(`Viewing payroll for ${p.employeeName}`)}
                         >
-                          Mark Paid
+                          View
                         </button>
                       )}
                     </td>
@@ -177,7 +203,9 @@ const AllPayrolls = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" className="no-data">No payrolls found</td>
+                  <td colSpan="8" className="no-data">
+                    No payrolls found
+                  </td>
                 </tr>
               )}
             </tbody>
