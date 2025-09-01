@@ -44,7 +44,6 @@ namespace Easypay_Test
             _mockMapper = new Mock<IMapper>();
             _mockAuditTrailService = new Mock<IAuditTrailService>();
 
-            // Seed data
             _benefitRepo.AddValue(new BenefitMaster { Id = 1, BenefitName = "Test Benefit", EmployeeContribution = 100, EmployerContribution = 80 });
             _statusRepo.AddValue(new BenefitStatusMaster { Id = 1, StatusName = "Pending" });
             _employeeRepo.AddValue(new Employee { Id = 1, FirstName = "John", LastName = "Doe" });

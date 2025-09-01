@@ -16,7 +16,6 @@ namespace Easypay_Test
         [SetUp]
         public void Setup()
         {
-            //configuring the setup
             var config = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string>
                 {
@@ -28,17 +27,14 @@ namespace Easypay_Test
         [Test]
         public void TokenTest()
         {
-            //arrange
             var user = new LoginResponseDTO
             {
                 UserName = "test",
                 Role = "Tester"
             };
 
-            //action 
             var result = _tokenService.GenerateToken(user);
 
-            //assert
             Assert.That(result, Is.Not.Null);
         }
 

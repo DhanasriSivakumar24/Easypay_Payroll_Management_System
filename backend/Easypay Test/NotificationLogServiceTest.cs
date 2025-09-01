@@ -35,7 +35,6 @@ namespace Easypay_Test
 
             _service = new NotificationLogService(_context, _notificationRepo, _mapper);
 
-            // Seed required entities
             _context.NotificationChannelMasters.Add(new NotificationChannelMaster { Id = 1, Name = "Email" });
             _context.NotificationStatusMasters.Add(new NotificationStatusMaster { Id = 2, StatusName = "Sent" });
 
