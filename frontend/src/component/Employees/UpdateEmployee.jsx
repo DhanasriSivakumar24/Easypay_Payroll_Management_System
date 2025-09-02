@@ -28,14 +28,12 @@ const UpdateEmployeeDetail = () => {
     reportingManagerId: null,
   });
 
-  // Format date into YYYY-MM-DD
   const formatDate = (dateStr) => {
     if (!dateStr) return "";
     const date = new Date(dateStr);
     return date.toISOString().split("T")[0];
   };
 
-  // Fetch employee by ID
   useEffect(() => {
     if (id) {
       GetEmployeeById(id)
@@ -54,12 +52,10 @@ const UpdateEmployeeDetail = () => {
     }
   }, [id]);
 
-  // Handle input change
   const handleChange = (field, value) => {
     setEmployee((prev) => ({ ...prev, [field]: value }));
   };
 
-  // Submit updated employee
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -73,7 +69,6 @@ const UpdateEmployeeDetail = () => {
         : null,
     };
 
-    // Remove empty string/null fields so backend doesn't overwrite
     Object.keys(payload).forEach(
       (key) =>
         (payload[key] === "" || payload[key] === null) && delete payload[key]
@@ -96,7 +91,6 @@ const UpdateEmployeeDetail = () => {
           <h4 className="mb-4">Update Employee</h4>
 
           <form onSubmit={handleSubmit}>
-            {/* First & Last Name */}
             <div className="row g-3 mb-3">
               <div className="col-md-6">
                 <label>First Name</label>
@@ -120,7 +114,6 @@ const UpdateEmployeeDetail = () => {
               </div>
             </div>
 
-            {/* Email & Phone */}
             <div className="row g-3 mb-3">
               <div className="col-md-6">
                 <label>Email</label>
@@ -144,7 +137,6 @@ const UpdateEmployeeDetail = () => {
               </div>
             </div>
 
-            {/* DOB & Join Date */}
             <div className="row g-3 mb-3">
               <div className="col-md-6">
                 <label>Date of Birth</label>
@@ -168,7 +160,6 @@ const UpdateEmployeeDetail = () => {
               </div>
             </div>
 
-            {/* Address & PAN */}
             <div className="row g-3 mb-3">
               <div className="col-md-6">
                 <label>Address</label>
@@ -190,7 +181,6 @@ const UpdateEmployeeDetail = () => {
               </div>
             </div>
 
-            {/* Salary & Gender */}
             <div className="row g-3 mb-3">
               <div className="col-md-6">
                 <label>Salary</label>
@@ -217,7 +207,6 @@ const UpdateEmployeeDetail = () => {
               </div>
             </div>
 
-            {/* Department & Role */}
             <DepartmentRoleDropdown
               department={employee.departmentId}
               setDepartment={(val) => handleChange("departmentId", val)}
@@ -225,7 +214,6 @@ const UpdateEmployeeDetail = () => {
               setRole={(val) => handleChange("roleId", val)}
             />
 
-            {/* Submit */}
             <div className="d-flex gap-2 mt-3">
               <button
                 type="submit"

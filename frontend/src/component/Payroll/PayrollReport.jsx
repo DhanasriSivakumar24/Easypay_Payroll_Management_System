@@ -58,7 +58,6 @@ const PayrollReport = () => {
         return payDate >= new Date(start) && payDate <= new Date(end);
       });
       setPayrolls(filtered);
-      console.log("Filtered payrolls:", filtered);
     } catch (err) {
       console.error("Error fetching payrolls:", err);
       alert("Failed to load payrolls. Please try again.");
@@ -97,7 +96,6 @@ const PayrollReport = () => {
     doc.setFontSize(12);
     doc.text(`Period: ${startDate} to ${endDate}`, 14, 28);
 
-    // Group payrolls by month
     const groupedPayrolls = payrolls.reduce((acc, p) => {
       const payDate = new Date(p.paidDate);
       const monthYear = payDate.toLocaleString("en-IN", { month: "long", year: "numeric" });

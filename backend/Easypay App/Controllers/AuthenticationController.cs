@@ -57,19 +57,6 @@ namespace Easypay_App.Controllers
         public async Task<ActionResult<LoginResponseDTO>> Login(LoginRequestDTO requestDTO)
         {
             var result = await _authenticationService.Login(requestDTO);
-
-            string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
-
-            await _auditTrailService.LogAction(
-                   User.Identity.Name,
-                   actionId: 4,
-                   entityName: "Login",
-                   entityId: 0,
-                   oldValue: "N/A",
-                   newValue: "N/A",
-                   ipAddress: ipAddress
-               );
-
             return Ok(result);
         }
     }

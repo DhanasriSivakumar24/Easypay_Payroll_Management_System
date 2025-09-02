@@ -41,7 +41,7 @@ export function DeleteEmployee(employeeId) {
   return axios.delete(url);
 }
 
-export function ChangeUserRole(changeRoleDTO) {
+export function ChangeUserRoleAPI(changeRoleDTO) {
   const url = baseUrl + "Employee/change-userrole";
   return axios.put(url, changeRoleDTO);
 }

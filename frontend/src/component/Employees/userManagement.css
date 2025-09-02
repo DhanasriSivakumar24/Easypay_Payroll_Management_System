@@ -15,34 +15,34 @@
   padding-bottom: 10px;
 }
 
-.user-management-container .form-section {
+.form-section {
   display: flex;
   flex-direction: column;
   gap: 15px;
   margin-bottom: 25px;
 }
 
-.user-management-container .employee-row {
+.employee-row {
   display: flex;
   gap: 20px;
   align-items: flex-end;
 }
 
-.user-management-container .employee-dropdown, 
-.user-management-container .employee-search {
+.employee-dropdown,
+.employee-search {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-.user-management-container label {
+label {
   font-weight: 600;
   margin-bottom: 6px;
   color: #34495e;
 }
 
-.user-management-container .dropdown, 
-.user-management-container .input-box {
+.dropdown,
+.input-box {
   padding: 10px;
   border: 1px solid #dcdcdc;
   border-radius: 8px;
@@ -50,25 +50,25 @@
   transition: 0.2s;
 }
 
-.user-management-container .dropdown:focus, 
-.user-management-container .input-box:focus {
+.dropdown:focus,
+.input-box:focus {
   border-color: #3498db;
   outline: none;
   box-shadow: 0 0 4px rgba(52,152,219,0.4);
 }
 
-.user-management-container .large-dropdown,
-.user-management-container .small-search {
+.large-dropdown,
+.small-search {
   height: 42px;
 }
 
-.user-management-container .btn-row {
+.btn-row {
   display: flex;
   gap: 12px;
   margin-top: 10px;
 }
 
-.user-management-container .btn-primary {
+.btn-primary {
   background: #3498db;
   color: #fff;
   font-weight: 600;
@@ -80,11 +80,11 @@
   transition: 0.2s;
 }
 
-.user-management-container .btn-primary:hover {
+.btn-primary:hover {
   background: #2980b9;
 }
 
-.user-management-container .btn-secondary {
+.btn-secondary {
   background: #7f8c8d;
   color: #fff;
   font-weight: 600;
@@ -96,21 +96,21 @@
   transition: 0.2s;
 }
 
-.user-management-container .btn-secondary:hover {
+.btn-secondary:hover {
   background: #636e72;
 }
 
-.user-management-container .table-section {
+.table-section {
   margin-top: 25px;
 }
 
-.user-management-container .table-section h3 {
+.table-section h3 {
   margin-bottom: 12px;
   font-size: 18px;
   color: #2c3e50;
 }
 
-.user-management-container .user-table {
+.user-table {
   width: 100%;
   border-collapse: collapse;
   background: #fafafa;
@@ -119,31 +119,55 @@
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
-.user-management-container .user-table th, 
-.user-management-container .user-table td {
+.user-table th,
+.user-table td {
   padding: 12px 15px;
   text-align: left;
   font-size: 14px;
 }
 
-.user-management-container .user-table th {
+.user-table th {
   background: #3498db;
   color: #fff;
 }
 
-.user-management-container .user-table tr:nth-child(even) {
+.user-table tr:nth-child(even) {
   background: #f4f8fb;
 }
 
-.user-management-container .user-table tr:hover {
+.user-table tr:hover {
   background: #eaf2f8;
   transition: 0.2s;
 }
 
-.user-management-container .not-allowed {
+.not-allowed {
   text-align: center;
   color: red;
   font-size: 18px;
   font-weight: 600;
   margin-top: 50px;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.change-btn {
+  width: auto;
+  padding: 10px 20px;
+  display: inline-block;
+  background: #3498db;
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.change-btn:hover {
+  background: #2980b9;
 }

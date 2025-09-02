@@ -20,6 +20,7 @@ namespace Easypay_App.Repositories
         public override async Task<Employee> GetValueById(int key)
         {
             var result = await _context.Employees
+                .Include(e => e.UserAccount)
                 .FirstOrDefaultAsync(e => e.Id == key);
             if (result == null)
                 throw new NoItemFoundException();

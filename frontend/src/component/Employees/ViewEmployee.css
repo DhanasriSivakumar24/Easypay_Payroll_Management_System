@@ -1,0 +1,78 @@
+.view-employee-container {
+  max-width: 900px;
+  margin: 40px auto;
+}
+
+.view-employee-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  padding: 30px 40px;
+  transition: all 0.3s ease;
+}
+
+.view-employee-card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.view-employee-card h4 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 25px;
+  color: #1f2a56;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 5px;
+}
+
+.employee-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 40px;
+}
+
+.employee-info-grid label {
+  font-weight: 500;
+  color: #555;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.employee-info-grid p {
+  margin: 0;
+  padding: 8px 12px;
+  background: #f9f9fc;
+  border-radius: 8px;
+  border: 1px solid #e0e4eb;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.view-employee-card button {
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.view-employee-card button.btn-primary {
+  background-color: #4a90e2;
+  border-color: #4a90e2;
+}
+
+.view-employee-card button.btn-primary:hover {
+  background-color: #3578c6;
+  border-color: #3578c6;
+  box-shadow: 0 4px 12px rgba(53, 120, 198, 0.3);
+}
+
+@media (max-width: 768px) {
+  .employee-info-grid {
+    grid-template-columns: 1fr;
+  }
+  .view-employee-card {
+    padding: 20px;
+  }
+  .view-employee-card h4 {
+    font-size: 1.5rem;
+  }
+}

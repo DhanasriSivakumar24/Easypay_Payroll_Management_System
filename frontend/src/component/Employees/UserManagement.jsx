@@ -3,10 +3,13 @@ import { useSelector } from "react-redux";
 import { GetAllEmployees } from "../../service/employee.service";
 import { RegisterUser } from "../../service/login.service";
 import AdminLayout from "../Sidebar/AdminLayout";
+import { useNavigate } from "react-router-dom";
 import "./userManagement.css";
 
 const UserManagement = () => {
   const { role } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+
   const [employees, setEmployees] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [employeeId, setEmployeeId] = useState("");
@@ -24,6 +27,15 @@ const UserManagement = () => {
   const handleRegister = () => {
     if (!employeeId || !userName) {
       alert("Please select employee and enter username");
+      return;
+    }
+
+    if (
+      registeredUsers.some(
+        (user) => user.employeeId === parseInt(employeeId)
+      )
+    ) {
+      alert("This employee is already registered.");
       return;
     }
 
@@ -54,7 +66,9 @@ const UserManagement = () => {
   if (role !== "Admin" && role !== "HR Manager") {
     return (
       <div className="user-management-container">
-        <div className="not-allowed">You are not allowed to manage users.</div>
+        <div className="not-allowed">
+          You are not allowed to manage users.
+        </div>
       </div>
     );
   }
@@ -62,65 +76,78 @@ const UserManagement = () => {
   const filteredEmployees = searchTerm
     ? employees.filter(
         (emp) =>
-          (emp.name && emp.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-          (emp.email && emp.email.toLowerCase().includes(searchTerm.toLowerCase()))
+          (emp.name &&
+            emp.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (emp.email &&
+            emp.email.toLowerCase().includes(searchTerm.toLowerCase()))
       )
     : employees;
 
   return (
     <AdminLayout>
       <div className="user-management-container">
-        <h2>User Management</h2>
-
-        <div className="form-section">
-          <div className="employee-row">
-            <div className="employee-dropdown">
-              <label>Choose Employee</label>
-              <select
-                value={employeeId}
-                onChange={(e) => setEmployeeId(e.target.value)}
-                className="dropdown large-dropdown"
-              >
-                <option value="">-- Select Employee --</option>
-                {filteredEmployees.map((emp) => (
-                  <option key={emp.id} value={emp.id}>
-                    {emp.name} ({emp.email})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="employee-search">
-              <label>Search Employee</label>
-              <input
-                type="text"
-                className="input-box small-search"
-                placeholder="Type name or email..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
+        <div className="user-management-box">
+          <div className="header-row">
+            <h2>User Management</h2>
+            <button
+              className="change-btn"
+              onClick={() => navigate("/user-management/change-user-role")}
+            >
+              Change User Role
+            </button>
           </div>
 
-          <label>Username</label>
-          <input
-            type="text"
-            className="input-box"
-            placeholder="Enter username"
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
-          />
+          <div className="form-section">
+            <div className="employee-row">
+              <div className="employee-dropdown">
+                <label>Choose Employee</label>
+                <select
+                  value={employeeId}
+                  onChange={(e) => setEmployeeId(e.target.value)}
+                  className="dropdown large-dropdown"
+                >
+                  <option value="">-- Select Employee --</option>
+                  {filteredEmployees.map((emp) => (
+                    <option key={emp.id} value={emp.id}>
+                      {emp.name} ({emp.email})
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-          <div className="btn-row">
-            <button className="btn-primary" onClick={handleRegister}>
-              Register User
-            </button>
-            <button className="btn-secondary" onClick={handleCancel}>
-              Cancel
-            </button>
+              <div className="employee-search">
+                <label>Search Employee</label>
+                <input
+                  type="text"
+                  className="input-box small-search"
+                  placeholder="Type name or email..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <label>Username</label>
+            <input
+              type="text"
+              className="input-box"
+              placeholder="Enter username"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+            />
           </div>
         </div>
 
+        <div className="btn-row">
+          <button className="btn-primary" onClick={handleRegister}>
+            Register User
+          </button>
+          <button className="btn-secondary" onClick={handleCancel}>
+            Cancel
+          </button>
+        </div>
+
+        {/* Registered Users Table */}
         {registeredUsers.length > 0 && (
           <div className="table-section">
             <h3>Registered Users</h3>

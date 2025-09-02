@@ -44,7 +44,7 @@ const ApplyTimesheet = () => {
     AddTimesheet(payload)
       .then(() => {
         alert(" Timesheet submitted successfully!");
-        handleCancel(); // reset after submit
+        handleCancel(); 
       })
       .catch((err) => {
         console.error("Timesheet submit failed:", err.response?.data || err.message);

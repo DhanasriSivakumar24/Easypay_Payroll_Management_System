@@ -193,7 +193,7 @@ const AllPayrolls = () => {
                       {isManager && (
                         <button
                           className="btn-view"
-                          onClick={() => alert(`Viewing payroll for ${p.employeeName}`)}
+                          onClick={() => navigate(`/payrolls/view/${p.id}`)}
                         >
                           View
                         </button>

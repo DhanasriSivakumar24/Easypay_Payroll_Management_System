@@ -11,6 +11,9 @@ const AllEmployees = () => {
   const { role } = useSelector((state) => state.auth);
   const [employees, setEmployees] = useState([]);
   const [search, setSearch] = useState("");
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [employeeToDelete, setEmployeeToDelete] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,10 +43,25 @@ const AllEmployees = () => {
       ? ManagerLayout
       : AdminLayout;
 
+  const handleDeleteClick = (emp) => {
+    setEmployeeToDelete(emp);
+    setShowConfirm(true);
+  };
+
+  const confirmDelete = () => {
+    setEmployees((prev) => prev.filter((e) => e.id !== employeeToDelete.id));
+    setShowConfirm(false);
+    setEmployeeToDelete(null);
+  };
+
+  const cancelDelete = () => {
+    setShowConfirm(false);
+    setEmployeeToDelete(null);
+  };
+
   return (
     <Layout>
       <div className="employee-container">
-
         <div className="header-row">
           <h2>Employees</h2>
           <div className="actions">
@@ -100,7 +118,9 @@ const AllEmployees = () => {
                     <td className="text-center">
                       <button
                         className="btn-view"
-                        onClick={() => alert(`View profile of ${emp?.firstName}`)}
+                        onClick={() =>
+                          navigate(`/employees/view-employee/${emp.id}`)
+                        }
                       >
                         View
                       </button>
@@ -119,7 +139,7 @@ const AllEmployees = () => {
                       {role === "Admin" && (
                         <button
                           className="btn-delete"
-                          onClick={() => alert("Delete functionality")}
+                          onClick={() => handleDeleteClick(emp)}
                         >
                           Delete
                         </button>
@@ -137,6 +157,26 @@ const AllEmployees = () => {
             </tbody>
           </table>
         </div>
+
+        {showConfirm && (
+          <div className="confirm-modal">
+            <div className="confirm-box">
+              <h3>Confirm Delete</h3>
+              <p>
+                Are you sure you want to delete{" "}
+                <strong>{employeeToDelete?.firstName} {employeeToDelete?.lastName}</strong>?
+              </p>
+              <div className="confirm-actions">
+                <button className="btn-confirm" onClick={confirmDelete}>
+                  Yes, Delete
+                </button>
+                <button className="btn-cancel" onClick={cancelDelete}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   );

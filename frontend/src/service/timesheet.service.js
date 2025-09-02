@@ -11,7 +11,7 @@ export function GetTimesheetsByEmployee(employeeId) {
   return axios.get(url);
 }
 
-export function ApproveTimesheet(timesheetId) {
+export function ApproveTimesheetAPI(timesheetId) {
   const url = baseUrl + `Timesheet/${timesheetId}/approve`;
   return axios.put(url);
 }

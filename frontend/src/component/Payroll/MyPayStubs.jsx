@@ -51,14 +51,12 @@ const MyPayStubs = () => {
     const pageWidth = doc.internal.pageSize.getWidth();
     let yPos = 20;
 
-    // --- Title ---
     doc.setFont("helvetica", "bold");
     doc.setFontSize(16);
     doc.text("Pay Stub", pageWidth / 2, yPos, { align: "center" });
 
     yPos += 20;
 
-    // --- Employee Info Box ---
     doc.setDrawColor(200, 200, 200);
     doc.rect(20, yPos, pageWidth - 40, 40);
 

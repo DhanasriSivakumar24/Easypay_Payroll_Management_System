@@ -30,6 +30,10 @@ import PayrollReport from './component/Payroll/PayrollReport';
 import PendingPayroll from './component/Payroll/PendingPayroll';
 import { GeneratePayroll } from './service/payroll.service';
 import ManagerDashboard from './component/Dashboard/ManagerDashboard';
+import ViewEmployee from './component/Employees/ViewEmployee';
+import EditBenefitEnrollment from './component/Benefits/EditBenefitEnrollment';
+import ViewPayroll from './component/Payroll/ViewPayroll';
+import ChangeUserRole from './component/Employees/ChangeUserRole';
 
 function App() {
   return (
@@ -43,16 +47,20 @@ function App() {
                 <Route path="/employees/add-employee" element={<ProtectedRoute><AddEmployee /></ProtectedRoute>} />
                 <Route path="/employees/update-employee/:id" element={<ProtectedRoute><UpdateEmployeeDetail /></ProtectedRoute>} />
                 <Route path='/employees' element={<ProtectedRoute><AllEmployees/></ProtectedRoute>} />
-                <Route path='/user-management' element={<ProtectedRoute><UserManagement/></ProtectedRoute>} />
+                <Route path='/user-management' element={<ProtectedRoute><UserManagement/></ProtectedRoute>} />                
+                <Route path='/user-management/change-user-role' element={<ProtectedRoute><ChangeUserRole/></ProtectedRoute>} />
                 <Route path='/audit' element={<ProtectedRoute><AuditTrail/></ProtectedRoute>} />
                 <Route path='/benefits-management' element={<ProtectedRoute><AllBenefitEnrollments/></ProtectedRoute>} />
                 <Route path='/benefits-management/enroll' element={<ProtectedRoute><BenefitEnrollment/></ProtectedRoute>} />
-                <Route path="/benefits/view/:id" element ={<ProtectedRoute><ViewBenefitEnrollment/></ProtectedRoute>}/>
+                <Route path="/benefits-management/view/:id" element ={<ProtectedRoute><ViewBenefitEnrollment/></ProtectedRoute>}/>
+                <Route path='/benefits-management/edit/:id' element={<ProtectedRoute><EditBenefitEnrollment/></ProtectedRoute>}/>
                 <Route path='/notifications/admin-notifications' element={<ProtectedRoute><SendNotification/></ProtectedRoute>}/>
                 <Route path='/payrolls' element={<ProtectedRoute><AllPayrolls/></ProtectedRoute>}/>
+                <Route path='/payrolls/view/:id' element={<ProtectedRoute><ViewPayroll/></ProtectedRoute>}/>
                 <Route path='/payrolls/generate-payroll' element={<ProtectedRoute><GeneratePayrollPage/></ProtectedRoute>}/>
                 <Route path='/compliance' element={<ProtectedRoute><ComplianceReport/></ProtectedRoute>}/>
                 <Route path='/leaves' element={<ProtectedRoute><ApproveLeaveRequests/></ProtectedRoute>}/>
+                <Route path='/employees/view-employee/:id' element={<ProtectedRoute><ViewEmployee/></ProtectedRoute>}/>
                 
                 <Route path="/employee-dashboard" element={<ProtectedRoute><EmployeeDashboard /></ProtectedRoute>}/>
                 <Route path="/leave-requests/leaves/apply" element={<ApplyLeave />} />

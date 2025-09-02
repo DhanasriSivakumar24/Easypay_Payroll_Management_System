@@ -14,6 +14,7 @@ namespace Easypay_App.Services
         private readonly IRepository<int, RoleMaster> _roleRepository;
         private readonly IRepository<int, EmployeeStatusMaster> _statusRepository;
         private readonly IRepository<int, UserRoleMaster> _userRoleRepository;
+        private readonly IRepository<string, UserAccount> _userAccountRepository;
         private readonly IMapper _mapper;
 
         public EmployeeService(
@@ -22,6 +23,7 @@ namespace Easypay_App.Services
             IRepository<int, RoleMaster> roleRepository,
             IRepository<int, EmployeeStatusMaster> statusRepository,
             IRepository<int, UserRoleMaster> userRoleRepository,
+            IRepository<string, UserAccount> userAccountRepository,
             IMapper mapper)
         {
             _employeeRepository = employeeRepository;
@@ -29,6 +31,7 @@ namespace Easypay_App.Services
             _roleRepository = roleRepository;
             _statusRepository = statusRepository;
             _userRoleRepository = userRoleRepository;
+            _userAccountRepository = userAccountRepository;
             _mapper = mapper;
         }
 
@@ -115,8 +118,11 @@ namespace Easypay_App.Services
             var employee = await _employeeRepository.GetValueById(dto.EmployeeId);
             if (employee == null) throw new NoItemFoundException();
 
-            employee.UserRoleId = dto.NewUserRoleId;
-            await _employeeRepository.UpdateValue(employee.Id, employee);
+            var userAccount = employee.UserAccount;
+            if (userAccount == null) throw new Exception("UserAccount not found for this employee");
+
+            userAccount.UserRoleId = dto.NewUserRoleId;
+            await _userAccountRepository.UpdateValue(userAccount.UserName, userAccount);
 
             var response = _mapper.Map<EmployeeAddResponseDTO>(employee);
             await PopulateNames(response, employee);

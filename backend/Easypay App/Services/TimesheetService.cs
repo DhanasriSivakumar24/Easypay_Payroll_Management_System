@@ -34,26 +34,23 @@ namespace Easypay_App.Services
                 throw new NoItemFoundException($"Employee with id {request.EmployeeId} not found.");
 
             var allStatuses = await _statusRepository.GetAllValue();
-            var pending = allStatuses.FirstOrDefault(s => s.StatusName.ToLower() == "pending");
-
-            if (pending == null)
+            var approved = allStatuses.FirstOrDefault(s => s.StatusName.ToLower() == "approved");
+            if (approved == null)
             {
-                pending = await _statusRepository.GetValueById(1);
+                approved = await _statusRepository.GetValueById(2);
             }
 
-            if (pending == null)
-                throw new NoItemFoundException("Timesheet default status (Pending) not found in TimesheetStatusMaster.");
+            if (approved == null)
+                throw new NoItemFoundException("Timesheet status 'Approved' not found in TimesheetStatusMaster.");
 
             var timesheet = _mapper.Map<Timesheet>(request);
-            timesheet.StatusId = pending.Id;
+            timesheet.StatusId = approved.Id;
             timesheet.CreatedAt = DateTime.Now;
 
             await _timesheetRepository.AddValue(timesheet);
 
-            // Map response and populate names
             var response = _mapper.Map<TimesheetResponseDTO>(timesheet);
             await PopulateNames(response, timesheet);
-
             return response;
         }
 

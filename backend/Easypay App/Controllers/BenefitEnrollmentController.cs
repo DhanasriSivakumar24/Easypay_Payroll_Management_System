@@ -92,7 +92,7 @@ namespace Easypay_App.Controllers
         {
             try
             {
-                var oldEnrollment = await _benefitEnrollmentService.GetBenefitById(id); // old values
+                var oldEnrollment = await _benefitEnrollmentService.GetBenefitById(id);
                 var updatedEnrollment = await _benefitEnrollmentService.UpdateBenefit(id, requestDTO);
                 string ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
 
