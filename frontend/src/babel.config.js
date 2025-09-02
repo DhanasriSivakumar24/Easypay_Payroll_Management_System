@@ -2,11 +2,11 @@ module.exports = {
   presets: [
     ['@babel/preset-env', {
       targets: { node: 'current' },
-      modules: 'auto', // Handle ESM/CommonJS automatically
+      modules: 'auto', 
     }],
-    '@babel/preset-react', // Support JSX
+    '@babel/preset-react', 
   ],
   plugins: [
-    '@babel/plugin-transform-modules-commonjs', // Transform ESM to CommonJS
+    '@babel/plugin-transform-modules-commonjs', 
   ],
 };

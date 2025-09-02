@@ -5,7 +5,6 @@ const ProtectedRoute = ({ children }) => {
   const { username, role } = useSelector((state) => state.auth);
 
   if (!username) {
-    console.log("User not logged in, redirecting to /login");
     return <Navigate to="/login" replace />;
   }
 

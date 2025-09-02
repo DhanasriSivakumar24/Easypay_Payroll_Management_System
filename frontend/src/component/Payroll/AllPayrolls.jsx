@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import {
-  GetAllPayrolls,
-  VerifyPayroll,
-  ApprovePayroll,
-  MarkPayrollAsPaid,
-} from "../../service/payroll.service";
+import {  GetAllPayrolls,  VerifyPayroll,  ApprovePayroll,  MarkPayrollAsPaid,} from "../../service/payroll.service";
 import AdminLayout from "../Sidebar/AdminLayout";
 import PayrollProcessorLayout from "../Sidebar/PayrollProcessorLayout";
 import ManagerLayout from "../Sidebar/ManagerLayout";
@@ -30,28 +25,24 @@ const AllPayrolls = () => {
     ? ManagerLayout
     : AdminLayout;
 
-  useEffect(() => {
-    const fetchPayrolls = async () => {
-      try {
-        let data = (await GetAllPayrolls()).data || [];
-        setPayrolls(data);
-      } catch (err) {
-        alert("Failed to load payrolls. Please check your connection or contact support.");
-      }
-    };
+  const fetchPayrolls = () => {
+    GetAllPayrolls()
+      .then((res) => setPayrolls(res.data || []))
+      .catch(() =>
+        alert("Failed to load payrolls. Please check your connection or contact support.")
+      );
+  };
 
+  useEffect(() => {
     if (isAdmin || isProcessor || isManager) {
       fetchPayrolls();
     }
   }, [isAdmin, isProcessor, isManager]);
 
-  const refreshPayrolls = async () => {
-    try {
-      let data = (await GetAllPayrolls()).data || [];
-      setPayrolls(data);
-    } catch (err) {
-      alert("Failed to refresh payrolls. Please try again.");
-    }
+  const refreshPayrolls = () => {
+    GetAllPayrolls()
+      .then((res) => setPayrolls(res.data || []))
+      .catch(() => alert("Failed to refresh payrolls. Please try again."));
   };
 
   const handleVerify = (id) => {
@@ -61,9 +52,7 @@ const AllPayrolls = () => {
           alert("Payroll verified successfully!");
           refreshPayrolls();
         })
-        .catch((err) => {
-          alert("Failed to verify payroll. Please try again.");
-        });
+        .catch(() => alert("Failed to verify payroll. Please try again."));
     }
   };
 
@@ -74,9 +63,7 @@ const AllPayrolls = () => {
           alert("Payroll approved successfully!");
           refreshPayrolls();
         })
-        .catch((err) => {
-          alert("Failed to approve payroll. Please try again.");
-        });
+        .catch(() => alert("Failed to approve payroll. Please try again."));
     }
   };
 
@@ -92,9 +79,7 @@ const AllPayrolls = () => {
           alert("Payroll marked as Paid!");
           refreshPayrolls();
         })
-        .catch((err) => {
-          alert("Failed to mark payroll as paid. Please try again.");
-        });
+        .catch(() => alert("Failed to mark payroll as paid. Please try again."));
     }
   };
 

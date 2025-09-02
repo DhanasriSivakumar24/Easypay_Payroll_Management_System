@@ -26,7 +26,6 @@ const ApplyLeave = () => {
       .catch((err) => console.error("Failed to load leave types", err));
   }, []);
 
-  // auto-calc days
   useEffect(() => {
     if (form.startDate && form.endDate) {
       const s = new Date(form.startDate);
@@ -67,7 +66,6 @@ const ApplyLeave = () => {
 
       let dataToSend = payload;
 
-      // if attachment exists, switch to FormData
       if (form.attachment) {
         const fd = new FormData();
         Object.entries(payload).forEach(([k, v]) => fd.append(k, v));
@@ -94,10 +92,10 @@ const ApplyLeave = () => {
   return (
     <EmployeeLayout active="leaves">
       <div className="apply-leave-container">
-        <h2>Apply Leave ✍️</h2>
+        <h2>Apply Leave </h2>
 
         <form className="apply-leave-form" onSubmit={handleSubmit}>
-          {/* Leave Type */}
+
           <label>Leave Type</label>
           <select
             value={form.leaveTypeId}
@@ -112,7 +110,6 @@ const ApplyLeave = () => {
             ))}
           </select>
 
-          {/* Dates */}
           <div className="date-row">
             <div>
               <label>Start Date</label>
@@ -136,7 +133,6 @@ const ApplyLeave = () => {
 
           {days > 0 && <p className="days-info">📅 Total Days: {days}</p>}
 
-          {/* Reason */}
           <label>Reason</label>
           <textarea
             placeholder="Enter reason"
@@ -145,11 +141,9 @@ const ApplyLeave = () => {
             required
           />
 
-          {/* Attachment */}
           <label>Attachment (Optional)</label>
           <input type="file" onChange={handleFile} />
 
-          {/* Submit */}
           <div className="btn-row">
             <button type="submit" className="btn btn-primary w-50">
                Submit

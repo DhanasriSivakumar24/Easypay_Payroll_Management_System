@@ -79,7 +79,7 @@ const LeaveRequests = () => {
             className="apply-leave-btn"
             onClick={() => navigate('/leave-requests/leaves/apply')}
           >
-            ➕ Apply Leave
+             Apply Leave
           </button>
         </div>
 

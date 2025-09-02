@@ -27,20 +27,17 @@ const ViewNotification = () => {
     : EmployeeLayout;
 
   useEffect(() => {
-    const fetchData = async () => {
-      const id = employeeId || sessionStorage.getItem('employeeId');
-      if (!id) return;
+    const id = employeeId || sessionStorage.getItem('employeeId');
+    if (!id) return;
 
-      try {
-        const res = await GetNotificationsByUser(id);
+    GetNotificationsByUser(id)
+      .then((res) => {
         setRequests(res.data);
         setFilteredRequests(res.data);
-      } catch (err) {
+      })
+      .catch((err) => {
         console.error('Failed to load notifications:', err);
-      }
-    };
-
-    fetchData();
+      });
   }, [employeeId]);
 
   useEffect(() => {

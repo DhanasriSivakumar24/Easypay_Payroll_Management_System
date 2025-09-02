@@ -28,47 +28,47 @@ const SendNotification = () => {
       .catch((e) => console.error("Failed to load channels", e));
   }, [role]);
 
-  const handleSend = async () => {
+  const handleSend = () => {
     if (!userId) return alert("Select a user");
     if (!channelId) return alert("Select a channel");
     if (!message.trim()) return alert("Enter a message");
 
-    try {
-      setSending(true);
-      await SendNotificationAPI({
-        userId: Number(userId),
-        channelId: Number(channelId),
-        message: message.trim(),
-      });
-      alert(" Notification sent!");
-      setMessage("");
-      setUserId("");
-      setChannelId("");
-    } catch (err) {
+    setSending(true);
 
-      if (err?.response?.status === 401) {
-        alert("Unauthorized: please log in again or check your token/role.");
-      } else if (err?.response?.status === 403) {
-        alert("Forbidden: your role cannot send notifications.");
-      } else {
-        alert(" Failed to send notification.");
-      }
-      console.error(err);
-    } finally {
-      setSending(false);
-    }
+    SendNotificationAPI({
+      userId: Number(userId),
+      channelId: Number(channelId),
+      message: message.trim(),
+    })
+      .then(() => {
+        alert("Notification sent!");
+        setMessage("");
+        setUserId("");
+        setChannelId("");
+      })
+      .catch((err) => {
+        if (err?.response?.status === 401) {
+          alert("Unauthorized: please log in again or check your token/role.");
+        } else if (err?.response?.status === 403) {
+          alert("Forbidden: your role cannot send notifications.");
+        } else {
+          alert("Failed to send notification.");
+        }
+        console.error(err);
+      })
+      .finally(() => {
+        setSending(false);
+      });
   };
 
-  if (role !== "Admin" && role !== "HR Manager"&& role !== "Payroll Processor") {
-    return (
-        <div className="not-allowed"> You are not allowed to send notifications.</div>
-    );
+  if (role !== "Admin" && role !== "HR Manager" && role !== "Payroll Processor") {
+    return <div className="not-allowed">You are not allowed to send notifications.</div>;
   }
 
   return (
     <AdminLayout>
       <div className="send-notification-container">
-        <h2 className="notification-title"> Send Notification</h2>
+        <h2 className="notification-title">Send Notification</h2>
 
         <div className="form-grid">
           <div className="form-field">
@@ -113,7 +113,7 @@ const SendNotification = () => {
         />
 
         <button className="send-btn" onClick={handleSend} disabled={sending}>
-          {sending ? "Sending..." : " Send Notification"}
+          {sending ? "Sending..." : "Send Notification"}
         </button>
       </div>
     </AdminLayout>

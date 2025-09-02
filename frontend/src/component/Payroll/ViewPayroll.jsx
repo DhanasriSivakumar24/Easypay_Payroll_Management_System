@@ -15,23 +15,22 @@ const ViewPayroll = () => {
 
   const normalizedRole = role?.toLowerCase();
   const Layout =
-    normalizedRole  === "payrollprocessor"
+    normalizedRole === "payrollprocessor"
       ? PayrollProcessorLayout
-      : normalizedRole  === "manager"
+      : normalizedRole === "manager"
       ? ManagerLayout
       : AdminLayout;
 
   useEffect(() => {
-    const fetchPayroll = async () => {
-      try {
-        const data = (await GetAllPayrolls()).data || [];
+    GetAllPayrolls()
+      .then((res) => {
+        const data = res.data || [];
         const selected = data.find((p) => p.id === parseInt(id));
         setPayroll(selected);
-      } catch (err) {
+      })
+      .catch((err) => {
         console.error("Failed to load payroll details:", err);
-      }
-    };
-    fetchPayroll();
+      });
   }, [id]);
 
   if (!payroll) {
@@ -64,22 +63,17 @@ const ViewPayroll = () => {
             <div>
               <label>Period</label>
               <p>
-                {payroll.periodStart?.slice(0, 10)} -{" "}
-                {payroll.periodEnd?.slice(0, 10)}
+                {payroll.periodStart?.slice(0, 10)} - {payroll.periodEnd?.slice(0, 10)}
               </p>
             </div>
             <div>
               <label>Pay Date</label>
-              <p>
-                {payroll.paidDate?.slice(0, 10)}
-              </p>
+              <p>{payroll.paidDate?.slice(0, 10)}</p>
             </div>
             <div>
               <label>Status</label>
               <p>
-                <span
-                  className={` ${payroll.statusName?.toLowerCase()}`}
-                >
+                <span className={`${payroll.statusName?.toLowerCase()}`}>
                   {payroll.statusName}
                 </span>
               </p>

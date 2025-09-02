@@ -66,7 +66,6 @@
 .status-badge.paid { background: #d1e7ff; color: #0a58ca; }
 .status-badge.unknown { background: #f0f0f0; color: #555; }
 
-/* Action buttons */
 .btn-verify,
 .btn-approve,
 .btn-paid {

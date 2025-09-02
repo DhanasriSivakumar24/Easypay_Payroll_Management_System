@@ -34,10 +34,10 @@ const PayrollReport = () => {
     const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const lastDayPrevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
 
-    const start = prevMonth.toISOString().split("T")[0]; // 1st of previous month
+    const start = prevMonth.toISOString().split("T")[0]; 
     const end = lastDayPrevMonth.getDate() >= 31
       ? new Date(now.getFullYear(), now.getMonth() - 1, 31).toISOString().split("T")[0]
-      : lastDayPrevMonth.toISOString().split("T")[0]; // 31st or last day
+      : lastDayPrevMonth.toISOString().split("T")[0]; 
 
     setStartDate(start);
     setEndDate(end);
@@ -47,23 +47,23 @@ const PayrollReport = () => {
     fetchPayrolls(start, end);
   }, []);
 
-  const fetchPayrolls = async (start, end) => {
-    try {
-      setLoading(true);
-      const res = await GetAllPayrolls();
-      const allPayrolls = res.data || [];
-      const filtered = allPayrolls.filter((p) => {
-        if (!p.paidDate) return false;
-        const payDate = new Date(p.paidDate);
-        return payDate >= new Date(start) && payDate <= new Date(end);
-      });
-      setPayrolls(filtered);
-    } catch (err) {
-      console.error("Error fetching payrolls:", err);
-      alert("Failed to load payrolls. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+  const fetchPayrolls = (start, end) => {
+    setLoading(true);
+    GetAllPayrolls()
+      .then((res) => {
+        const allPayrolls = res.data || [];
+        const filtered = allPayrolls.filter((p) => {
+          if (!p.paidDate) return false;
+          const payDate = new Date(p.paidDate);
+          return payDate >= new Date(start) && payDate <= new Date(end);
+        });
+        setPayrolls(filtered);
+      })
+      .catch((err) => {
+        console.error("Error fetching payrolls:", err);
+        alert("Failed to load payrolls. Please try again.");
+      })
+      .finally(() => setLoading(false));
   };
 
   const handleFilter = () => {
@@ -99,9 +99,7 @@ const PayrollReport = () => {
     const groupedPayrolls = payrolls.reduce((acc, p) => {
       const payDate = new Date(p.paidDate);
       const monthYear = payDate.toLocaleString("en-IN", { month: "long", year: "numeric" });
-      if (!acc[monthYear]) {
-        acc[monthYear] = [];
-      }
+      if (!acc[monthYear]) acc[monthYear] = [];
       acc[monthYear].push(p);
       return acc;
     }, {});

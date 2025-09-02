@@ -12,44 +12,60 @@ const TimesheetHistory = () => {
   const [timesheets, setTimesheets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedMonth, setSelectedMonth] = useState(new Date().toLocaleString('default', { month: 'long' }));
-  const [sortOption, setSortOption] = useState('dateAsc');
+  const [selectedMonth, setSelectedMonth] = useState(
+    new Date().toLocaleString("default", { month: "long" })
+  );
+  const [sortOption, setSortOption] = useState("dateAsc");
 
   useEffect(() => {
-    const fetchTimesheets = async () => {
-      try {
-        setLoading(true);
-        const res = await GetTimesheetsByEmployee(employeeId);
-        setTimesheets(res.data || []);
-      } catch (err) {
-        setError("Failed to fetch timesheets ❌");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchTimesheets();
+    setLoading(true);
+    GetTimesheetsByEmployee(employeeId)
+      .then((res) => setTimesheets(res.data || []))
+      .catch(() => setError("Failed to fetch timesheets ❌"))
+      .finally(() => setLoading(false));
   }, [employeeId]);
 
-  const filteredTimesheets = timesheets.filter(t => 
-    new Date(t.workDate).toLocaleString('default', { month: 'long' }) === selectedMonth
+  const filteredTimesheets = timesheets.filter(
+    (t) =>
+      new Date(t.workDate).toLocaleString("default", { month: "long" }) ===
+      selectedMonth
   );
 
   const sortedTimesheets = [...filteredTimesheets].sort((a, b) => {
     const dateA = new Date(a.workDate);
     const dateB = new Date(b.workDate);
-    return sortOption === 'dateAsc' ? dateA - dateB : dateB - dateA;
+    return sortOption === "dateAsc" ? dateA - dateB : dateB - dateA;
   });
 
   const summary = {
-    totalHours: sortedTimesheets.reduce((sum, t) => sum + (t.hoursWorked || 0), 0),
-    approved: sortedTimesheets.filter((t) => t.statusName?.toLowerCase() === "approved").length,
-    pending: sortedTimesheets.filter((t) => t.statusName?.toLowerCase() === "pending").length,
-    rejected: sortedTimesheets.filter((t) => t.statusName?.toLowerCase() === "rejected").length,
+    totalHours: sortedTimesheets.reduce(
+      (sum, t) => sum + (t.hoursWorked || 0),
+      0
+    ),
+    approved: sortedTimesheets.filter(
+      (t) => t.statusName?.toLowerCase() === "approved"
+    ).length,
+    pending: sortedTimesheets.filter(
+      (t) => t.statusName?.toLowerCase() === "pending"
+    ).length,
+    rejected: sortedTimesheets.filter(
+      (t) => t.statusName?.toLowerCase() === "rejected"
+    ).length,
   };
 
   const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
   const handleSubmitClick = () => {
@@ -67,11 +83,15 @@ const TimesheetHistory = () => {
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
             >
-              {months.map(month => (
-                <option key={month} value={month}>{month}</option>
+              {months.map((month) => (
+                <option key={month} value={month}>
+                  {month}
+                </option>
               ))}
             </select>
-            <button className="submit-btn" onClick={handleSubmitClick}> Submit Timesheet</button>
+            <button className="submit-btn" onClick={handleSubmitClick}>
+              Submit Timesheet
+            </button>
           </div>
         </div>
 
@@ -132,7 +152,11 @@ const TimesheetHistory = () => {
                         <td>{t.taskDescription}</td>
                         <td>{t.isBillable ? "Yes" : "No"}</td>
                         <td>
-                          <span className={`status-badge ${t.statusName?.toLowerCase() || 'pending'}`}>
+                          <span
+                            className={`status-badge ${
+                              t.statusName?.toLowerCase() || "pending"
+                            }`}
+                          >
                             {t.statusName || "Pending"}
                           </span>
                         </td>
@@ -141,7 +165,7 @@ const TimesheetHistory = () => {
                   ) : (
                     <tr>
                       <td colSpan="6" style={{ textAlign: "center" }}>
-                        No timesheets found 🙅‍♂️
+                        No timesheets found 
                       </td>
                     </tr>
                   )}
