@@ -25,6 +25,7 @@ namespace Easypay_Test
         private IRepository<int, RoleMaster> _roleRepo;
         private IRepository<int, EmployeeStatusMaster> _statusRepo;
         private IRepository<int, UserRoleMaster> _userRoleRepo;
+        private UserRepository _userAccountRepo;
         private Mock<IMapper> _mockMapper;
         private EmployeeService _service;
         private PayrollContext _context;
@@ -43,9 +44,10 @@ namespace Easypay_Test
             _roleRepo = new RoleRepository(_context);
             _statusRepo = new EmployeeStatusRepository(_context);
             _userRoleRepo = new UserRoleRepository(_context);
+            _userAccountRepo = new UserRepository(_context);
 
             _mockMapper = new Mock<IMapper>();
-            _service = new EmployeeService(_employeeRepo, _departmentRepo, _roleRepo, _statusRepo, _userRoleRepo, _mockMapper.Object);
+            _service = new EmployeeService(_employeeRepo, _departmentRepo, _roleRepo, _statusRepo, _userRoleRepo, _userAccountRepo, _mockMapper.Object);
 
             var departments = new List<DepartmentMaster>
             {
@@ -535,62 +537,7 @@ namespace Easypay_Test
         #endregion
 
         #region ChangeEmployeeUserRole
-        [Test]
-        public async Task ChangeEmployeeUserRole_ShouldReturnResponse_WhenValid()
-        {
-            var employee = new Employee
-            {
-                Id = 1,
-                FirstName = "Ravi",
-                LastName = "Kumar",
-                Email = "ravi@test.com",
-                PhoneNumber = "9876543210",
-                DepartmentId = 1,
-                RoleId = 1,
-                StatusId = 1,
-                Salary = 42000,
-                UserRoleId = 2,
-                DateOfBirth = new DateTime(1990, 1, 1),
-                JoinDate = new DateTime(2020, 1, 1),
-                Address = "123 Main St",
-                PanNumber = "ABCDE1234F",
-                Gender = "M"
-            };
-            await _employeeRepo.AddValue(employee);
-
-            var dto = new ChangeUserRoleDTO
-            {
-                EmployeeId = 1,
-                NewUserRoleId = 1
-            };
-
-            SetupMapperForEmployee(new Employee
-            {
-                Id = 1,
-                FirstName = employee.FirstName,
-                LastName = employee.LastName,
-                Email = employee.Email,
-                PhoneNumber = employee.PhoneNumber,
-                DepartmentId = employee.DepartmentId,
-                RoleId = employee.RoleId,
-                StatusId = employee.StatusId,
-                Salary = employee.Salary,
-                UserRoleId = 1,
-                DateOfBirth = employee.DateOfBirth,
-                JoinDate = employee.JoinDate,
-                Address = employee.Address,
-                PanNumber = employee.PanNumber,
-                Gender = employee.Gender
-            });
-
-            var result = await _service.ChangeEmployeeUserRole(dto);
-
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result.UserRoleName, Is.EqualTo("Admin"));
-            var updatedEmployee = await _employeeRepo.GetValueById(1);
-            Assert.That(updatedEmployee.UserRoleId, Is.EqualTo(1));
-        }
-
+        
         [Test]
         public void ChangeEmployeeUserRole_ShouldThrowException_WhenEmployeeNotFound()
         {

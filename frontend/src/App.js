@@ -34,13 +34,14 @@ import ViewEmployee from './component/Employees/ViewEmployee';
 import EditBenefitEnrollment from './component/Benefits/EditBenefitEnrollment';
 import ViewPayroll from './component/Payroll/ViewPayroll';
 import ChangeUserRole from './component/Employees/ChangeUserRole';
+import LandingPage from './component/Landing Page/LandingPage';
 
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
             <Routes >
-                <Route path= '/' element= {<Login/>}/>
+                <Route path= '/' element= {<LandingPage/>}/>
                 <Route path= '/login' element = {<Login/>}/>
                 
                 <Route path="/admin-dashboard" element={<ProtectedRoute><AdminDashboard/></ProtectedRoute>} />

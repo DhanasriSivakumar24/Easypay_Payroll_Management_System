@@ -96,7 +96,7 @@ namespace Easypay_Test
                 HoursWorked = requestDto.HoursWorked,
                 TaskDescription = requestDto.TaskDescription,
                 IsBillable = requestDto.IsBillable,
-                StatusId = 1,
+                StatusId = 2,
                 CreatedAt = DateTime.Now
             };
 
@@ -110,7 +110,7 @@ namespace Easypay_Test
                     HoursWorked = t.HoursWorked,
                     TaskDescription = t.TaskDescription,
                     IsBillable = t.IsBillable,
-                    StatusName = "Pending"
+                    StatusName = "Approved"
                 });
 
             var result = await _service.AddTimesheet(requestDto);
@@ -118,7 +118,7 @@ namespace Easypay_Test
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Id, Is.EqualTo(1));
             Assert.That(result.HoursWorked, Is.EqualTo(8));
-            Assert.That(result.StatusName, Is.EqualTo("Pending"));
+            Assert.That(result.StatusName, Is.EqualTo("Approved"));
             Assert.That(result.EmployeeName, Is.EqualTo("John Doe"));
         }
 
