@@ -1,5 +1,5 @@
 import axios from "../interceptors/AuthInterceptor";
-import { baseUrl } from "../enviroment.dev";
+import { baseUrl } from "../environment.dev";
 
 export function AddTimesheet(timesheetData) {
   const url = baseUrl + "Timesheet";

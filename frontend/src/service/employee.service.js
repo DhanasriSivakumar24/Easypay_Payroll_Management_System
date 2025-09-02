@@ -1,5 +1,5 @@
 import axios from "../interceptors/AuthInterceptor";
-import {baseUrl} from '../enviroment.dev';
+import {baseUrl} from '../environment.dev';
 
 export function SearchEmployees(searchData){
     const url = baseUrl +'Employee/search';// for accessing the authorized url we need to provide the token.. while logining we store it in thesession object.. now we will go and pick it from there //to do that we need to create a interceptor

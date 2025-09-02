@@ -1,5 +1,5 @@
 import axios from "axios";
-import {baseUrl} from '../enviroment.dev';
+import {baseUrl} from '../environment.dev';
 import { LoginModel } from "../models/login.model";
 
 export function loginAPICall(LoginModel)
