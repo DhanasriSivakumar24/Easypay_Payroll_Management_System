@@ -17,11 +17,14 @@ const TimesheetHistory = () => {
   );
   const [sortOption, setSortOption] = useState("dateAsc");
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const timesheetsPerPage = 10; 
+
   useEffect(() => {
     setLoading(true);
     GetTimesheetsByEmployee(employeeId)
       .then((res) => setTimesheets(res.data || []))
-      .catch(() => setError("Failed to fetch timesheets ❌"))
+      .catch(() => setError("Failed to fetch timesheets "))
       .finally(() => setLoading(false));
   }, [employeeId]);
 
@@ -54,23 +57,18 @@ const TimesheetHistory = () => {
   };
 
   const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    "January","February","March","April","May","June",
+    "July","August","September","October","November","December",
   ];
 
   const handleSubmitClick = () => {
     navigate("/timesheets/submit-timesheet");
   };
+
+  const indexOfLast = currentPage * timesheetsPerPage;
+  const indexOfFirst = indexOfLast - timesheetsPerPage;
+  const currentTimesheets = sortedTimesheets.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(sortedTimesheets.length / timesheetsPerPage);
 
   return (
     <EmployeeLayout active="timesheet-history">
@@ -81,7 +79,10 @@ const TimesheetHistory = () => {
             <select
               className="filter-dropdown"
               value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
+              onChange={(e) => {
+                setSelectedMonth(e.target.value);
+                setCurrentPage(1); 
+              }}
             >
               {months.map((month) => (
                 <option key={month} value={month}>
@@ -125,12 +126,16 @@ const TimesheetHistory = () => {
                 <select
                   className="sort-button"
                   value={sortOption}
-                  onChange={(e) => setSortOption(e.target.value)}
+                  onChange={(e) => {
+                    setSortOption(e.target.value);
+                    setCurrentPage(1); 
+                  }}
                 >
                   <option value="dateAsc">Date Ascending</option>
                   <option value="dateDesc">Date Descending</option>
                 </select>
               </div>
+
               <table className="timesheet-table">
                 <thead>
                   <tr>
@@ -143,10 +148,10 @@ const TimesheetHistory = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {sortedTimesheets.length > 0 ? (
-                    sortedTimesheets.map((t, index) => (
+                  {currentTimesheets.length > 0 ? (
+                    currentTimesheets.map((t, index) => (
                       <tr key={t.id}>
-                        <td>{index + 1}</td>
+                        <td>{indexOfFirst + index + 1}</td>
                         <td>{new Date(t.workDate).toISOString().split("T")[0]}</td>
                         <td>{t.hoursWorked}</td>
                         <td>{t.taskDescription}</td>
@@ -171,6 +176,36 @@ const TimesheetHistory = () => {
                   )}
                 </tbody>
               </table>
+
+              {totalPages > 1 && (
+                <div className="pagination">
+                  <button
+                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                  >
+                    Previous
+                  </button>
+
+                  {Array.from({ length: totalPages }, (_, idx) => (
+                    <button
+                      key={idx + 1}
+                      className={currentPage === idx + 1 ? "active" : ""}
+                      onClick={() => setCurrentPage(idx + 1)}
+                    >
+                      {idx + 1}
+                    </button>
+                  ))}
+
+                  <button
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                    }
+                    disabled={currentPage === totalPages}
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
             </div>
           </>
         )}

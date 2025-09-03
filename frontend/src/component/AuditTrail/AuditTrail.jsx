@@ -16,6 +16,9 @@ const AuditTrail = () => {
   const [searchId, setSearchId] = useState("");
   const [actionsList, setActionsList] = useState([]);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const logsPerPage = 10; 
+
   useEffect(() => {
     if (role === "Admin" || role === "Payroll Processor") {
       GetAllAuditTrail()
@@ -49,6 +52,7 @@ const AuditTrail = () => {
     }
 
     setFilteredLogs(temp);
+    setCurrentPage(1); 
   }, [searchUser, searchAction, searchId, auditLogs]);
 
   if (loading) return <p>Loading audit trail...</p>;
@@ -56,6 +60,11 @@ const AuditTrail = () => {
     return <p>Access Denied: Only Admin or Payroll Processor can see audit logs.</p>;
 
   const Layout = role === "Payroll Processor" ? PayrollProcessorLayout : AdminLayout;
+
+  const indexOfLastLog = currentPage * logsPerPage;
+  const indexOfFirstLog = indexOfLastLog - logsPerPage;
+  const currentLogs = filteredLogs.slice(indexOfFirstLog, indexOfLastLog);
+  const totalPages = Math.ceil(filteredLogs.length / logsPerPage);
 
   return (
     <Layout>
@@ -103,14 +112,14 @@ const AuditTrail = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredLogs.length === 0 ? (
+            {currentLogs.length === 0 ? (
               <tr>
                 <td colSpan="9">No audit logs found</td>
               </tr>
             ) : (
-              filteredLogs.map((log, index) => (
+              currentLogs.map((log, index) => (
                 <tr key={log.id}>
-                  <td>{index + 1}</td>
+                  <td>{indexOfFirstLog + index + 1}</td>
                   <td>{log.userName}</td>
                   <td>{log.actionName}</td>
                   <td>{log.entityName}</td>
@@ -124,6 +133,34 @@ const AuditTrail = () => {
             )}
           </tbody>
         </table>
+
+        {totalPages > 1 && (
+          <div className="pagination">
+            <button 
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+
+            {Array.from({ length: totalPages }, (_, idx) => (
+              <button
+                key={idx + 1}
+                className={currentPage === idx + 1 ? "active" : ""}
+                onClick={() => setCurrentPage(idx + 1)}
+              >
+                {idx + 1}
+              </button>
+            ))}
+
+            <button 
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} 
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </Layout>
   );
